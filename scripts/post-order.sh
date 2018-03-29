@@ -1,0 +1,1 @@
+curl -i -X POST -H "Content-Type:application/json" -d "{ \"item\" : \"Ethiopia Blend\", \"price\" : 28.75, \"quantity\" : 80, \"description\" : \"Medium Roast Ethiopian\", \"cname\" : \"Acme Corporation\", \"dcode\" : \"8%\", \"origin\" : \"SAP\"}" http://po-service-myproject.192.168.64.6.nip.io/orders

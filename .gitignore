@@ -1,0 +1,4 @@
+*.jar
+*.war
+target/
+pom.xml.h2
