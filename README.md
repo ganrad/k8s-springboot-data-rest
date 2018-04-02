@@ -1,12 +1,46 @@
-#  Create, Build and Deploy a Springboot Microservice (Application/API Endpoint) in OpenShift CP
+#  This project describes the steps for building and deploying a Java Springboot microservice application on Azure Kubernetes Service (AKS) running on Microsoft Azure.
+
+In a nutshell, you will work on the following two activities.
+1.  Build a Springboot Java Microservice Application (API Endpoint) using VSTS (Visual Studio Team Services and 
+2.  Deploy the containerized Java microservice application in Azure Kubernetes Service (AKS) running on Azure
 
 **Prerequisities:**
-1.  OpenShift CP v3.6 or above.
-2.  Select a MySql Server v5.7 (or above) image when deploying the database server Pod.
+1.  A Visual Studio Team Services Account.  If required, create a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
+2.  An active Microsoft Azure subscription.  If required, you can obtain a free subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
-This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on OpenShift CP. The deployed microservice supports all CRUD operations on purchase orders.
+This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
-### A] First, create a new project in OpenShift using the Web Console (UI).
+### A] Deploy a VSTS application build agent in a separate Azure VM
+This agent is used by VSTS to run application and container builds.  Follow instructions below to create a VM and deploy the VSTS build (docker) container.
+
+
+### B] Create a new Build definition in VSTS
+1.  Fork this GitHub repository.
+
+2.  Login to VSTS using your account ID and create a new VSTS project. Name the project **sb-po-service**
+
+![alt tag](./images/A-02.png)
+
+3.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition**
+
+![alt tag](./images/A-03.png)
+
+4.  In the **Select a source** page, select *GitHub* as the source repository. Give your connection a name and then select *Authorize using OAuth* link.  Optionally, you can use a GitHub *personal access token* instead of OAuth.  When prompted, sign in to your **GitHub account**.  Then select *Authorize* to grant access to your VSTS account.
+
+5.  Once authorized, select the **GitHub Repo** which you forked in step [1] above.  Then hit continue.
+
+![alt tag](./images/A-05.png)
+
+6.  Search for text *Maven* in the **Select a template** field and then select *Maven* build.  Then click apply.
+
+![alt tag](./images/A-06.png)
+
+7.  Select *Default* in the **Agent Queue** field.
+
+![alt tag](./images/A-07.png)
+
+
+First, create a new project in OpenShift using the Web Console (UI).
 Name the project as *myproject*.
 ### B] Deploy a ephemeral MySql database server instance (Pod) in OpenShift.
 Name the application as *mysql*.  Specify the following values for the database parameters

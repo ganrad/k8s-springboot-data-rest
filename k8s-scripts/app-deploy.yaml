@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-db-name
+data:
+  mysqldb.properties: |
+    mysql.dbname=sampledb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  username.properties: bXlzcWwudXNlcj1teXNxbAo=
+  password.properties: bXlzcWwucGFzc3dvcmQ9cGFzc3dvcmQK
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: po-service
+  labels:
+    app: po-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: po-service
+  template:
+    metadata:
+      labels:
+        app: po-service
+    spec:
+      volumes:
+      - name: mysqlcm
+        configMap:
+          name: mysql-db-name
+      - name: mysqlse
+        secret:
+          secretName: mysql-secret
+      containers:
+      - name: po-service
+        image: mtcsdevgrtsacr.azurecr.io/po-service:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: mysqlcm
+          mountPath: /etc/config
+        - name: mysqlse
+          mountPath: /etc/vol-secrets
+      imagePullSecrets:
+      - name: acr-registry
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: po-service
+spec:
+  selector:
+    app: po-service
+  ports:
+  - name: 8080-tcp
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
