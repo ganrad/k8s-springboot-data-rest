@@ -14,7 +14,9 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 This agent is used by VSTS to run application and container builds.  Follow instructions below to create a VM and deploy the VSTS build (docker) container.
 
 
-### B] Create a new Build definition in VSTS
+### B] Deploy Azure Container Registry (ACR) on Azure
+
+### C] Create a new Build definition in VSTS
 1.  Fork this GitHub repository.
 
 2.  Login to VSTS using your account ID and create a new VSTS project. Name the project **sb-po-service**
@@ -35,11 +37,49 @@ This agent is used by VSTS to run application and container builds.  Follow inst
 
 ![alt tag](./images/A-06.png)
 
-7.  Select *Default* in the **Agent Queue** field.
+7.  Select *Default* in the **Agent Queue** field.  The VSTS build agent connects to this *queue* and listens for build requests.
 
 ![alt tag](./images/A-07.png)
 
+8.  On the top extensions menu in VSTS, click on **Browse Markplace** and then search for text *replace tokens*.  In the results list below, click on **Colin's ALM Corner Build and Release Tools**.  Then click on **Get it free** to install this extension in your VSTS account.
 
+![alt tag](./images/A-08.png)
+
+9.  Go back to your build definition and click on the plus symbol beside **Phase 1**.  Search by text *replace tokens* and then select the extension **Replace Tokens** which you just installed in the previous step.  Click **Add**.
+
+![alt tag](./images/A-09.png)
+
+10.  Click on the **Replace Tokens** task and drag it to the top of the task list.  In the **Source Path** field, select *src/main/resources* and specify *.properties in the **Target File Pattern** field.  In the **Token Regex** field, specify **__(\w+[.\w+]*)__** as shown in the screenshot below.  We will use this task to specify the target kubernetes service name and namespace name before running this build.
+
+![alt tag](./images/A-10.png)
+
+11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.
+
+![alt tag](./images/A-11.png)
+
+12.  Switch back to the **Tasks** tab and click on the **Maven** task.  Specify values for fields **Goal(s)**, **Options** as shown in the screen shot below.  Ensure **Publish to TFS/Team Services** checkbox is enabled.
+
+![alt tag](./images/A-12.png)
+
+13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.
+
+14.  Click on the plus symbol to add a new task. Search for text *Docker Compose* and click **Add**.
+
+![alt tag](./images/A-14.png)
+
+15.  Click on the **Run a Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the**Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
+
+![alt tag](./images/A-15.PNG)
+
+16.  Add another task to publish the container image built in the previous step to ACR. Search by text *Docker Compose* and click **Add**.
+
+17.  Click on the **Run a Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the**Azure Subscription** field, select your Azure subscription.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Push service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
+
+![alt tag](./images/A-17.PNG)
+
+18.  Click **Save and Queue** to save the build definition and queue it for execution.
+
+First, create a new project in OpenShift using the Web Console (UI).
 First, create a new project in OpenShift using the Web Console (UI).
 Name the project as *myproject*.
 ### B] Deploy a ephemeral MySql database server instance (Pod) in OpenShift.
