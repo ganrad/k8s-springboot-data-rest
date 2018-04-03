@@ -46,9 +46,9 @@ $ sudo systemctl enable docker
 $ sudo groupadd docker
 $ sudo usermod -aG docker labuser
 ```
------------------
+
 LOGOUT AND RESTART YOUR VM BEFORE PROCEEDING
------------------
+
 ```
 $ sudo docker info
 ```
