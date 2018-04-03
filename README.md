@@ -20,7 +20,7 @@ This agent will be used by VSTS to run application and container builds.  Follow
 az group create --name myResrouceGroupVM --location westus
 ```
 
-3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect (SSH) into this VM in later steps.
+3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
 ```
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
@@ -30,24 +30,33 @@ az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:C
 $ ssh labuser@x.x.x.x
 ```
 
-5.  Install OpenJDK 8 on the VM.  See commands below.
+5.  (Optional) Install OpenJDK 8 on the VM.  See commands below.
 ```
 $ sudo yum install -y java-1.8.0-openjdk-devel
 $ java --version
 ```
 
-6.  Next, install **docker** container runtime. Refer to the commands below.
+6.  Next, install **docker-ce** container runtime. Refer to the commands below.
 ```
-$ sudo yum install -y docker
+$ sudo yum update
+$ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+$ sudo yum install docker-ce-18.03.0.ce
 $ sudo systemctl enable docker
-$ sudo systemctl start docker
+$ sudo groupadd docker
+$ sudo usermod -aG docker labuser
+```
+-----------------
+LOGOUT AND RESTART YOUR VM BEFORE PROCEEDING
+-----------------
+```
 $ sudo docker info
 ```
 
 7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image.
 ```
-$ sudo docker pull microsoft/vsts-agent
-$ sudo docker images
+$ docker pull microsoft/vsts-agent
+$ docker images
 ```
 
 8.  Next, we will generate a VSTS personal access token (PAT) to connect our VSTS build agent to your VSTS account.  Login to VSTS using your account ID. In the upper right, click on your profile image and click **security**.  
@@ -62,10 +71,10 @@ In the next page, make sure to **copy and store** the PAT into a file.  Keep in 
 
 9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_TOKEN** parameter, the value which you copied and stored in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
 ```
-sudo docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
+docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
 ```
 
-### B] Deploy Azure Container Registry (ACR) on Azure
+### B] Deploy Azure Container Registry (ACR)
 In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in the next steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
 
 1.  Login to your Azure portal account.  Then click on **Container registries** in the navigational panel on the left.  If you don't see this option in the nav. panel then click on **All services**, scroll down to the **COMPUTE** section and click on the star beside **Container registries**.  This will add the **Container registries** option to the service list in the navigational panel.  Now click on the **Container registries** option.  You will see a page as displayed below.
