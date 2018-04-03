@@ -130,7 +130,7 @@ svc.name.k8s.namespace mysql.development
 
 ![alt tag](./images/A-14.png)
 
-15.  Click on the **Run a Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
+15.  Click on the *Run a Docker Compose ...* task on the left panel.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
 
 ![alt tag](./images/A-15.PNG)
 
@@ -140,7 +140,7 @@ svc.name.k8s.namespace mysql.development
 
 ![alt tag](./images/A-17.PNG)
 
-18.  Click **Save and Queue** to save the build definition and queue it for execution.
+18.  Click **Save and Queue** to save the build definition and queue it for execution. Wait for the build to finish.
 
 First, create a new project in OpenShift using the Web Console (UI).
 First, create a new project in OpenShift using the Web Console (UI).
