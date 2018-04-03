@@ -1,4 +1,4 @@
-#  This project describes the steps for building and deploying a Java Springboot microservice application on Azure Kubernetes Service (AKS) running on Microsoft Azure.
+#  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS) running on Microsoft Azure.
 
 In a nutshell, you will work on the following two activities.
 1.  Build a Springboot Java Microservice Application (API Endpoint) using VSTS (Visual Studio Team Services and 
@@ -11,19 +11,70 @@ In a nutshell, you will work on the following two activities.
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
 ### A] Deploy a VSTS application build agent in a separate Azure VM
-This agent is used by VSTS to run application and container builds.  Follow instructions below to create a VM and deploy the VSTS build (docker) container.
+This agent will be used by VSTS to run application and container builds.  Follow instructions below to create a Linux VM and deploy the VSTS build (docker) container.
 
+1.  Open a command terminal on your workstation.  This tutorial requires that you are running the Azure CLI version 2.0.4 or later.  If you need to install or upgrade Azure CLI, see [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation.
+
+2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
+```
+az group create --name myResrouceGroupVM --location westus
+```
+
+3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect (SSH) into this VM in later steps.
+```
+az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
+```
+
+4.  Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
+```
+$ ssh labuser@x.x.x.x
+```
+
+5.  Install OpenJDK 8 on the VM.  See commands below.
+```
+$ sudo yum install -y java-1.8.0-openjdk-devel
+$ java --version
+```
+
+6.  Next, install **docker** container runtime. Refer to the commands below.
+```
+$ sudo yum install -y docker
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+$ sudo docker info
+```
+
+7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image.
+```
+$ sudo docker pull microsoft/vsts-agent
+$ sudo docker images
+```
+
+8.  Next, we will generate a VSTS personal access token (PAT) to connect our VSTS build agent to your VSTS account.  Login to VSTS using your account ID. In the upper right, click on your profile image and click **security**.  
+
+![alt tag](./images/C-01.png)
+
+Click on **Add** to create a new PAT.  In the next page, provide a short description for this token, select a expiry period and click **Create Token**.  See screenshot below.
+
+![alt tag](./images/C-02.png)
+
+In the next page, make sure to **copy and store** the PAT into a file.  Keep in mind, you will not be able to retrieve this token again.  The only option would be to create a new PAT incase you happen to lose or misplace the token.  So save it to a file.
+
+9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_TOKEN** parameter, the value which you copied and stored in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
+```
+sudo docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it vsts/agent
+```
 
 ### B] Deploy Azure Container Registry (ACR) on Azure
 
 ### C] Create a new Build definition in VSTS
 1.  Fork this GitHub repository.
 
-2.  Login to VSTS using your account ID and create a new VSTS project. Name the project **sb-po-service**
+2.  If you haven't already, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
 
 ![alt tag](./images/A-02.png)
 
-3.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition**
+3.  We will now create a **Build** definition and define tasks which will execute as part of the application build process.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition**
 
 ![alt tag](./images/A-03.png)
 
@@ -41,7 +92,7 @@ This agent is used by VSTS to run application and container builds.  Follow inst
 
 ![alt tag](./images/A-07.png)
 
-8.  On the top extensions menu in VSTS, click on **Browse Markplace** and then search for text *replace tokens*.  In the results list below, click on **Colin's ALM Corner Build and Release Tools**.  Then click on **Get it free** to install this extension in your VSTS account.
+8.  On the top extensions menu in VSTS, click on **Browse Markplace** and then search for text *replace tokens*.  In the results list below, click on **Colin's ALM Corner Build and Release Tools** (circled in yellow in the screenshot).  Then click on **Get it free** to install this extension in your VSTS account.
 
 ![alt tag](./images/A-08.PNG)
 
