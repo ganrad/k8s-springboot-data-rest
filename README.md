@@ -85,6 +85,10 @@ $ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.mic
 $ sudo yum install azure-cli
 # Test the install
 $ az -v
+# Login to your Azure account
+$ az login -u <user name> -p <password>
+# View help on az commands, sub-commands
+$ az --help
 ```
 
 ### B] Deploy Azure Container Registry (ACR)
@@ -189,7 +193,7 @@ In case you want to modify the default passwords for MySQL, database name, datab
 
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*
 
-2.  Switch back to the VM terminal window where you have Azure CLI installed.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
+2.  Switch back to the VM terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
 ```
 # Switch to your home directory
 $ cd
