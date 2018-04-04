@@ -302,9 +302,24 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 **NOTE:**
-SERVICE_PRINCIPAL_ID = appId
-YOUR_PASSWORD = password
+SERVICE_PRINCIPAL_ID = appId; YOUR_PASSWORD = password
+
 For *appId* and *password*, use the values which you saved in step [B]
+
+8.  Update the **app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Replace the value of *image* attribute in the pod spec as shown in the screenshot below.
+
+![alt tag](./images/D-01.PNG)
+
+9.  Deploy the **MySQL* database container.
+```
+$ kubectl create -f mysql-deploy
+#
+# List pods.  You can specify the '-w' switch to watch the status of pod change.
+$ kubectl get pods
+```
+The status of the mysql pod should change to *Running*.  See screenshot below.
+
+![alt tag](./images/D-02.png)
 
 
 
