@@ -310,7 +310,7 @@ For *appId* and *password*, use the values which you saved in step [B]
 
 ![alt tag](./images/D-01.PNG)
 
-9.  Deploy the **MySQL* database container.
+9.  Deploy the **MySQL** database container.
 ```
 $ kubectl create -f mysql-deploy_v1.8.yaml
 #
