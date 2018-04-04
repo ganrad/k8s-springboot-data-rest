@@ -18,6 +18,8 @@ This Linux VM will be used for the following purposes
 - Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources, especially the AKS cluster resources.
 - Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources which will be deployed to the AKS cluster.
 
+Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI, install Git client and cloning this GitHub repository.
+
 1.  Open a command terminal on your workstation.  This tutorial requires you to run Azure CLI version 2.0.4 or later.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
@@ -119,9 +121,22 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
 ![alt tag](./images/B-01.png)
 
-2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and choose a location.  Enable the **Admin user** option and managed registry.  Select the **Basic** pricing tier (if applicable).  Click **Create** when you are done.
+2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and choose a location.  Select the **Basic** pricing tier (if applicable).  Click **Create** when you are done.
 
 ![alt tag](./images/B-02.png)
+
+3.  From the Linux terminal window connected to the Bastion host, create a **Service Principal** and grant relevant permissions (role) to this principal.  This is required to allow our AKS cluster to pull container images from this ACR registry.
+```
+# List your Azure subscriptions.  Note down the subscription ID.  We will need it in the next step.
+$ az account list
+#
+# (Optional) Select and use the appropriate subscription ID (value of 'id' from previous step) 
+$ az account set --subscription <SUBSCRIPTION_ID>
+#
+# Create the Azure service principal.  Substitute values for SUBSCRIPTION_ID, RG_GROUP, REGISTRY_NAME & SERVICE_PRINCIPAL_NAME.  Specify a meaningful name for the service principal.
+$ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RG_NAME>/providers/Microsoft.ContainerRegistry/registries/<REGISTRY_NAME> --role Contributor --name <SERVICE_PRINCIPAL_NAME>
+```
+**NOTE:** From the JSON output of the last command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
 
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
@@ -224,12 +239,16 @@ az provider register -n Microsoft.ContainerService
 ```
 # Switch to your home directory
 $ cd
+#
 # Create a new directory 'aztools' under home directory to store the kubectl binary
 $ mkdir aztools
+#
 # Install kubectl binary in the new directory
 $ az aks install-cli --install-location=./aztools/kubectl
+#
 # Add the location of kubectl binary to your search path
 $ export PATH=$PATH:/home/labuser/aztools
+#
 # Check if kubectl is installed OK
 $ kubectl version -o yaml
 ```
@@ -244,18 +263,48 @@ $ az aks create --resource-group myResourceGroup --name akscluster --node-count 
 ```
 # Configure kubectl to connect to the AKS cluster
 $ az aks get-credentials --resource-group myResourceGroup --name akscluster
+#
 # Check cluster nodes
 $ kubectl get nodes -o wide
+#
 # Check default namespaces in the cluster
 $ kubectl get namespaces
-
 ```
 
-5.  Next, we will create a new Kubernetes **namespace** to host our application.  Copy file *k8s-scripts/dev-namespace.json* to your home directory.
+5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
 ```
-kubectl create -f de
+# Make sure you are in the *k8s-springboot-data-rest* directory.
+$ kubectl create -f dev-namespace.json 
+#
+# List the namespaces
+$ kubectl get namespaces
+```
 
+6.  Create a new Kubernetes context and associate it with the **development** namespace.  We will be deploying all our application artifacts into this namespace in subsequent steps.
+```
+# Create the 'dev' context
+$ kubectl config set-context dev --cluster=akscluster --user=clusterUser_myResourceGroup_akscluster --namespace=development
+#
+# Switch the current context to 'dev'
+$ kubectl config use-context dev
+#
+# Check your current context (should list 'dev' in the output)
+$ kubectl config current-context
+```
 
+7.  Configure Kubernetes to use the ACR (configured in step [B]) to pull our application container images and deploy containers.
+When creating deployments, replica sets or pods, AKS (Kubernetes) will try to use docker images already stored locally (on nodes) or pull them from the public docker hub.  To change this, we need to specify the ACR as part of Kubernetes object configuration (yaml or json).  Instead of specifying this directly in the configuration, we will use Kubernetes **Secrets**.  By using secrets, we tell the Kubernetes runtime to use the info. contained in the secret to authenticate against ACR and push/pull images.  In the Kubernetes object (pod definition), we reference the secret by it's name only.
+```
+# Create a secret containing credentials to authenticate against ACR.  Substitute values for REGISTRY_NAME, YOUR_MAIL, SERVICE_PRINCIPAL ID and YOUR_PASSWORD.
+$ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_NAME>.azurecr.io --docker-email <YOUR_MAIL> --docker-username=<SERVICE_PRINCIPAL_ID> --docker-password <YOUR_PASSWORD>
+#
+# List the secrets
+$ kubectl get secrets
+```
+**NOTE:**
+SERVICE_PRINCIPAL_ID = appId
+YOUR_PASSWORD = password
+For *appId* and *password*, use the values which you saved in step [B]
 
 
 
