@@ -14,7 +14,7 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 ### A] Deploy a VSTS application build agent in a separate Azure VM
 This agent will be used by VSTS to run application and container builds.  Follow instructions below to create a Linux VM and deploy the VSTS build (docker) container.
 
-1.  Open a command terminal on your workstation.  This tutorial requires you to run the Azure CLI version 2.0.4 or later.  If you need to install or upgrade Azure CLI, see [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation.
+1.  Open a command terminal on your workstation.  This tutorial requires you to run Azure CLI version 2.0.4 or later.  If you need to install or upgrade Azure CLI, see [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
 ```
@@ -73,6 +73,18 @@ In the next page, make sure to **copy and store** the PAT (token) into a file.  
 9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_TOKEN** parameter, the value which you copied and saved in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
 ```
 docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
+```
+
+10.  (Optional) Refer to the commands below in order to install Azure CLI on this VM.  We will need a VM with Azure CLI installed on it in order to deploy this application to the AKS cluster (step [D]).
+```
+# Import the Microsoft repository key.
+$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+# Create the local azure-cli repository information.
+$ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+# Install with the yum install command.
+$ sudo yum install azure-cli
+# Test the install
+$ az -v
 ```
 
 ### B] Deploy Azure Container Registry (ACR)
@@ -170,12 +182,49 @@ Kubernetes manifest files for deploying the **MySQL** and **po-service** (Spring
 Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box capabilities provided by Kubernetes.
 -  How confidential data such as database user names & passwords are injected (at runtime) into the application container using **Secrets**
 -  How application configuration information such as database connection URL and the database name parameters are injected (at runtime) into the application container using **ConfigMaps**
--  How environment variables such as the MySQL listening port is injected (at runtime) into the application container.
+-  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
 -  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
 
+In case you want to modify the default passwords for MySQL, database name, database connection parameters (JDBC URL...) etc, you can do the changes in the respective manifest files.
+
+1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*
+
+2.  Switch back to the VM terminal window where you have Azure CLI installed.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
+```
+# Switch to your home directory
+$ cd
+# Create a new directory 'aztools' under home directory to store the kubectl binary
+$ mkdir aztools
+# Install kubectl binary in the new directory
+$ az aks install-cli --install-location=./aztools/kubectl
+# Add the location of kubectl binary to your search path
+$ export PATH=$PATH:/home/labuser/aztools
+# Check if kubectl is installed OK
+$ kubectl version
+```
+
+3.  Use the command below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.
+```
+```
 
 
-In case you want to modify the default passwords for MySQL, database name, database connection parameters (JDBC URL...), you can do the changes in the respective manifest files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 First, create a new project in OpenShift using the Web Console (UI).
 First, create a new project in OpenShift using the Web Console (UI).
