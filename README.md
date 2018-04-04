@@ -1,8 +1,9 @@
 #  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS) running on Microsoft Azure.
 
-In a nutshell, you will work on the following two activities.
-1.  Build a Springboot Java Microservice Application (API Endpoint) using VSTS (Visual Studio Team Services and 
-2.  Deploy the containerized Java microservice application in Azure Kubernetes Service (AKS) running on Azure
+In a nutshell, you will work on the following activities.
+1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This step will constitute the **Continuous Deployment** step.
+2.  Deploy the containerized Java Springboot microservice application in Azure Kubernetes Service (AKS) running on Azure
+3.  Update application code (version 2.0) and then re-build and re-deploy the containerized application to AKS.  This step will constitute the **Continuous Integration** step.
 
 **Prerequisities:**
 1.  A Visual Studio Team Services Account.  If required, create a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
@@ -67,7 +68,7 @@ Click on **Add** to create a new PAT.  In the next page, provide a short descrip
 
 ![alt tag](./images/C-02.png)
 
-In the next page, make sure to **copy and store** the PAT into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
+In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
 
 9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_TOKEN** parameter, the value which you copied and saved in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
 ```
@@ -85,10 +86,14 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
 ![alt tag](./images/B-02.png)
 
-### C] Create a new Build definition in VSTS
+### C] Create a new Build definition in VSTS to deploy the Springboot microservice
+In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
+
+Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continous deployment (CD) can be easily implemented using VSTS.
+
 1.  Fork this GitHub repository.
 
-2.  If you haven't already, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
+2.  If you haven't already done so, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
 
 ![alt tag](./images/A-02.png)
 
@@ -149,7 +154,28 @@ svc.name.k8s.namespace mysql.development
 
 ![alt tag](./images/A-17.PNG)
 
-18.  Click **Save and Queue** to save the build definition and queue it for execution. Wait for the build to finish.
+18.  Click **Save and Queue** to save the build definition and queue it for execution. Wait for the build process to finish.  When all build tasks complete OK and the build process finishes, you will see the screen below.
+
+![alt tag](./images/A-18.png)
+
+In the VSTS build agent terminal window, you will notice that a build request was received from VSTS and processed successfully. See below.
+
+![alt tag](./images/A-19.png)
+
+### D] Create an Azure Kubernetes Service (AKS) cluster and deploy our Springboot microservice.
+In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
+
+Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
+
+Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box capabilities provided by Kubernetes.
+-  How confidential data such as database user names & passwords are injected (at runtime) into the application container using **Secrets**
+-  How application configuration information such as database connection URL and the database name parameters are injected (at runtime) into the application container using **ConfigMaps**
+-  How environment variables such as the MySQL listening port is injected (at runtime) into the application container.
+-  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
+
+
+
+In case you want to modify the default passwords for MySQL, database name, database connection parameters (JDBC URL...), you can do the changes in the respective manifest files.
 
 First, create a new project in OpenShift using the Web Console (UI).
 First, create a new project in OpenShift using the Web Console (UI).
