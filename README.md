@@ -217,7 +217,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 ### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice.
 In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
 
-Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
+Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy_v1.8.yaml** and **app-deploy_v1.8.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
 
 Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box capabilities provided by Kubernetes.
 -  How confidential data such as database user names & passwords are injected (at runtime) into the application container using **Secrets**
@@ -306,18 +306,33 @@ SERVICE_PRINCIPAL_ID = appId; YOUR_PASSWORD = password
 
 For *appId* and *password*, use the values which you saved in step [B]
 
-8.  Update the **app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Replace the value of *image* attribute in the pod spec as shown in the screenshot below.
+8.  Update the **app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Replace the value of *image* attribute in the pod spec as shown in the screenshot below.
 
 ![alt tag](./images/D-01.PNG)
 
 9.  Deploy the **MySQL* database container.
 ```
-$ kubectl create -f mysql-deploy
+$ kubectl create -f mysql-deploy_v1.8.yaml
 #
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
 ```
 The status of the mysql pod should change to *Running*.  See screenshot below.
+
+![alt tag](./images/D-02.png)
+
+(Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID.
+```
+$ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
+```
+
+10.  Deploy the **po-service** microservice container.
+```
+$ kubectl create -f app-deploy_v1.8.yaml
+#
+# List pods.  You can specify the '-w' switch to watch the status of pod change.
+$ kubectl get pods
+```
 
 ![alt tag](./images/D-02.png)
 
