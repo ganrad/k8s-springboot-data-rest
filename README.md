@@ -1,24 +1,28 @@
-#  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS) running on Microsoft Azure.
+#  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS) running on Microsoft Azure.
 
 In a nutshell, you will work on the following activities.
 1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This step will constitute the **Continuous Deployment** step.
-2.  Deploy the containerized Java Springboot microservice application in Azure Kubernetes Service (AKS) running on Azure
+2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure
 3.  Update application code (version 2.0) and then re-build and re-deploy the containerized application to AKS.  This step will constitute the **Continuous Integration** step.
 
 **Prerequisities:**
-1.  A Visual Studio Team Services Account.  If required, create a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-2.  An active Microsoft Azure subscription.  If required, you can obtain a free subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
+1.  A GitHub account to fork this GitHub repository and/or clone this repository.
+2.  A Visual Studio Team Services Account.  If required, create a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
+3.  An active Microsoft Azure subscription.  If required, you can obtain a free subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
-This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
+This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
-### A] Deploy a VSTS application build agent in a separate Azure VM
-This agent will be used by VSTS to run application and container builds.  Follow instructions below to create a Linux VM and deploy the VSTS build (docker) container.
+### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
+This Linux VM will be used for the following purposes
+- Running a VSTS build agent (docker container) which will be used for running application and container builds.
+- Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources, especially the AKS cluster resources.
+- Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources which will be deployed to the AKS cluster.
 
-1.  Open a command terminal on your workstation.  This tutorial requires you to run Azure CLI version 2.0.4 or later.  If you need to install or upgrade Azure CLI, see [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
+1.  Open a command terminal on your workstation.  This tutorial requires you to run Azure CLI version 2.0.4 or later.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
 ```
-az group create --name myResrouceGroupVM --location westus
+az group create --name myResourceGroup --location eastus
 ```
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
@@ -26,9 +30,42 @@ az group create --name myResrouceGroupVM --location westus
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
 
-4.  Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
+4.  Install Azure CLI and Git client on this VM.  Then clone this GitHub repository on this VM. Refer to the commands below.  **Note:** Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are comments.
+
 ```
+# Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
 $ ssh labuser@x.x.x.x
+#
+# Next, we will install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
+#
+# Import the Microsoft repository key.
+$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+#
+# Create the local azure-cli repository information.
+$ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+#
+# Install with the yum install command.
+$ sudo yum install azure-cli
+#
+# Test the install
+$ az -v
+#
+# Login to your Azure account
+$ az login -u <user name> -p <password>
+#
+# View help on az commands, sub-commands
+$ az --help
+#
+# Install Git client
+$ sudo yum install git
+#
+# Check Git version number
+$ git --version
+#
+# Switch to home directory and clone this GitHub repository.  Later on you will also be forking this GitHub repository to get a separate copy of this project added to your GitHub account.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
+$ cd
+$ git clone https://github.com/ganrad/k8s-springboot-data-rest.git
+$ cd k8s-springboot-data-rest
 ```
 
 5.  (Optional) Install OpenJDK 8 on the VM.  See commands below.
@@ -75,22 +112,6 @@ In the next page, make sure to **copy and store** the PAT (token) into a file.  
 docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
 ```
 
-10.  (Optional) Refer to the commands below in order to install Azure CLI on this VM.  We will need a VM with Azure CLI installed on it in order to deploy this application to the AKS cluster (step [D]).
-```
-# Import the Microsoft repository key.
-$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-# Create the local azure-cli repository information.
-$ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
-# Install with the yum install command.
-$ sudo yum install azure-cli
-# Test the install
-$ az -v
-# Login to your Azure account
-$ az login -u <user name> -p <password>
-# View help on az commands, sub-commands
-$ az --help
-```
-
 ### B] Deploy Azure Container Registry (ACR)
 In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in the next steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
 
@@ -107,7 +128,7 @@ In this step, we will define the tasks for building the microservice (binary art
 
 Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continous deployment (CD) can be easily implemented using VSTS.
 
-1.  Fork this GitHub repository.
+1.  Fork this GitHub repository to your GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  Remember you must be signed in to your GitHub account in order to fork this repository.
 
 2.  If you haven't already done so, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
 
@@ -178,7 +199,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 
 ![alt tag](./images/A-19.png)
 
-### D] Create an Azure Kubernetes Service (AKS) cluster and deploy our Springboot microservice.
+### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice.
 In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
@@ -191,9 +212,15 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 
 In case you want to modify the default passwords for MySQL, database name, database connection parameters (JDBC URL...) etc, you can do the changes in the respective manifest files.
 
-1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*
+1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
+```
+az provider register -n Microsoft.Network
+az provider register -n Microsoft.Storage
+az provider register -n Microsoft.Compute
+az provider register -n Microsoft.ContainerService
+```
 
-2.  Switch back to the VM terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
+2.  Switch back to the Linux VM (Bastion Host) terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
 ```
 # Switch to your home directory
 $ cd
@@ -204,12 +231,30 @@ $ az aks install-cli --install-location=./aztools/kubectl
 # Add the location of kubectl binary to your search path
 $ export PATH=$PATH:/home/labuser/aztools
 # Check if kubectl is installed OK
-$ kubectl version
+$ kubectl version -o yaml
 ```
 
-3.  Use the command below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.
+3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
 ```
+# Create the AKS cluster
+$ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys
 ```
+
+4.  Connect to the AKS cluster.
+```
+# Configure kubectl to connect to the AKS cluster
+$ az aks get-credentials --resource-group myResourceGroup --name akscluster
+# Check cluster nodes
+$ kubectl get nodes -o wide
+# Check default namespaces in the cluster
+$ kubectl get namespaces
+
+```
+
+5.  Next, we will create a new Kubernetes **namespace** to host our application.  Copy file *k8s-scripts/dev-namespace.json* to your home directory.
+```
+kubectl create -f de
+
 
 
 
