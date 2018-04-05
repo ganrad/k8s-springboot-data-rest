@@ -26,6 +26,7 @@ Follow the steps below to create the Bastion host (Linux VM), install Azure CLI,
 ```
 az group create --name myResourceGroup --location eastus
 ```
+**NOTE:** Ensure you specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions.  And ensure **all** Azure resources are deployed to the same resource group.
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
 ```
@@ -334,7 +335,7 @@ $ kubectl create -f app-deploy_v1.8.yaml
 $ kubectl get pods
 ```
 
-![alt tag](./images/D-02.png)
+![alt tag](./images/D-03.png)
 
 
 
