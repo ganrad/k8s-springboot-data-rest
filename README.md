@@ -228,7 +228,7 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 
 In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](#appendix-a) for details.  You will need to update the Kubernetes manifest files.
 
-Follow the steps below to provision the AKS cluster and deploy our microservice.
+Follow the steps below to provision the AKS cluster and deploy the *po-service* microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
 ```
 az provider register -n Microsoft.Network
@@ -344,6 +344,39 @@ The status of the mysql pod should change to *Running*.  See screenshot below.
 11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets provisioned and auto-configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
 
 ![alt tag](./images/D-04.png)
+
+### E] Accessing the Purchase Order Microservice REST API 
+
+As soon as the **po-service** application is deployed in AKS, 2 purchase orders will be inserted into the backend (MySQL) database.  The inserted purchase orders have ID's 1 and 2.  The application's REST API supports all CRUD operations (list, search, create, update and delete) on purchase orders.
+
+In a Kubernetes cluster, applications deployed within pods communicate with each other via services.  A service is responsible for forwarding all incoming requests to the backend application pods.  A service can also expose an *External IP Address* so that applications thatare external to the AKS cluster can access services deployed within the cluster.
+
+Use the command below to determine the *External* (public) IP address (Azure load balancer IP) assigned to the service end-point.
+```
+# List the kubernetes service objects
+$ kubectl get svc
+```
+The above command will list the **IP Address** (both internal and external) for all services deployed within the *development* namespace as shown below.  Note how the **mysql** service doesn't have an *External IP* assisgned to it.  Reason for that is, we don't want the *MySQL* service to be accessible from outside the AKS cluster.
+
+![alt tag](./images/E-01.png)
+
+The REST API exposed by this microservice can be accessed by using the _context-path_ (or Base Path) `orders/`.  The REST API endpoint's exposed are as follows.
+
+URI Template | HTTP VERB | DESCRIPTION
+------------ | --------- | -----------
+orders/ | GET | To list all available purchase orders in the backend database.
+orders/{id} | GET | To get order details by `order id`.
+orders/search/getByItem?{item=value} | GET | To search for a specific order by item name
+orders/ | POST | To create a new purchase order.  The API consumes and produces orders in `JSON` format.
+orders/{id} | PUT | To update a new purchase order. The API consumes and produces orders in `JSON` format.
+orders/{id} | DELETE | To delete a purchase order.
+
+You can access the Purchase Order REST API from your Web browser, e.g.:
+
+- http://<Azure_load_balancer_ip>/orders
+- http://<Azure_load_balancer_ip>/orders/1
+
+Use the sample scripts in the *./scripts* folder to test this microservice.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
