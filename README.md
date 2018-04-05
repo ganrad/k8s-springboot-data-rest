@@ -226,7 +226,7 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 -  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
 -  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
 
-In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](Appendix A) for details.  You will need to update the Kubernetes manifest files.
+In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](#appendix-a) for details.  You will need to update the Kubernetes manifest files.
 
 Follow the steps below to provision the AKS cluster and deploy our microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
@@ -296,6 +296,12 @@ $ kubectl config current-context
 
 7.  Configure Kubernetes to use the ACR (configured in step [B]) to pull our application container images and deploy containers.
 When creating deployments, replica sets or pods, AKS (Kubernetes) will try to use docker images already stored locally (on nodes) or pull them from the public docker hub.  To change this, we need to specify the ACR as part of Kubernetes object configuration (yaml or json).  Instead of specifying this directly in the configuration, we will use Kubernetes **Secrets**.  By using secrets, we tell the Kubernetes runtime to use the info. contained in the secret to authenticate against ACR and push/pull images.  In the Kubernetes object (pod definition), we reference the secret by it's name only.
+
+kubectl parameter | Value to substitute
+----------------- | -------------------
+SERVICE_PRINCIPAL_ID | 'appId' value from step [B]
+YOUR_PASSWORD | 'password' value from step [B]
+
 ```
 # Create a secret containing credentials to authenticate against ACR.  Substitute values for REGISTRY_NAME, YOUR_MAIL, SERVICE_PRINCIPAL ID and YOUR_PASSWORD.
 $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_NAME>.azurecr.io --docker-email <YOUR_MAIL> --docker-username=<SERVICE_PRINCIPAL_ID> --docker-password <YOUR_PASSWORD>
@@ -303,12 +309,6 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 # List the secrets
 $ kubectl get secrets
 ```
-**NOTE:**
-
-kubectl parameter | Value to substitute
------------------ | -------------------
-SERVICE_PRINCIPAL_ID | 'appId' value from step [B]
-YOUR_PASSWORD | 'password' value from step [B]
 
 8.  Update the **app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
