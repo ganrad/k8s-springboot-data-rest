@@ -215,7 +215,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 
 ![alt tag](./images/A-19.png)
 
-### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice.
+### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice
 In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy_v1.8.yaml** and **app-deploy_v1.8.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
@@ -226,8 +226,9 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 -  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
 -  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
 
-In case you want to modify the default passwords for MySQL, database name, database connection parameters (JDBC URL...) etc, you can do the changes in the respective manifest files.
+In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to **Appendix A** for details.  You will need to update the Kubernetes manifest files.
 
+Follow the steps below to provision the AKS cluster and deploy our microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
 ```
 az provider register -n Microsoft.Network
@@ -334,9 +335,34 @@ $ kubectl create -f app-deploy_v1.8.yaml
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
 ```
+The status of the mysql pod should change to *Running*.  See screenshot below.
 
 ![alt tag](./images/D-03.png)
 
+11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets provisioned and auto-configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
+
+![alt tag](./images/D-04.png)
+
+### Appendix A
+In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
+
+- Update the *Secret* object **mysql** in file *./k8s-scripts/mysql-deploy_v1.8.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
+```
+# Create Base64 encoded values for the MySQL server user name, password, root password and database name. Repeat this command to generate values for each property you want to change.
+$ echo "xxxx" | base64 -w 0
+# Then update the corresponding parameter value in the Secret object.
+```
+
+- Update the *./k8s-scripts/app-deploy_v1.8.yaml* file.  Specify the correct value for the database name in the *ConfigMap* object **mysql-db-name** parameter **mysql.dbname** 
+
+- Update the *Secret* object **mysql-sql** in file *./k8s-scripts/app-deploy_v1.8.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
+```
+# Create Base64 encoded values for the MySQL server user name and password.
+$ echo "mysql.user=xxxx" | base64 -w 0
+$ echo "mysql.password=xxxx" | base64 -w 0
+# Then update the *db.username* and *db.password* parameters in the Secret object accordingly.
+
+```
 
 
 
@@ -350,14 +376,6 @@ $ kubectl get pods
 
 
 
-
-
-
-
-
-First, create a new project in OpenShift using the Web Console (UI).
-First, create a new project in OpenShift using the Web Console (UI).
-Name the project as *myproject*.
 ### B] Deploy a ephemeral MySql database server instance (Pod) in OpenShift.
 Name the application as *mysql*.  Specify the following values for the database parameters
 ```
