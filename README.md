@@ -304,9 +304,10 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 **NOTE:**
-SERVICE_PRINCIPAL_ID = appId; YOUR_PASSWORD = password
-
-For *appId* and *password*, use the values which you saved in step [B]
+kubectl parameter | Value to substitute
+----------------- | -------------------
+SERVICE_PRINCIPAL_ID | 'appId' value from step [B]
+YOUR_PASSWORD | 'password' value from step [B]
 
 8.  Update the **app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
