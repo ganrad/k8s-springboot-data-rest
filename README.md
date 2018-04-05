@@ -12,7 +12,7 @@ In a nutshell, you will work on the following activities.
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
-###A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
+### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
 - Running a VSTS build agent (docker container) which will be used for running application and container builds.
 - Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources, especially the AKS cluster resources.
@@ -115,7 +115,7 @@ In the next page, make sure to **copy and store** the PAT (token) into a file.  
 docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
 ```
 
-###B] Deploy Azure Container Registry (ACR)
+### B] Deploy Azure Container Registry (ACR)
 In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in the next steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
 
 1.  Login to your Azure portal account.  Then click on **Container registries** in the navigational panel on the left.  If you don't see this option in the nav. panel then click on **All services**, scroll down to the **COMPUTE** section and click on the star beside **Container registries**.  This will add the **Container registries** option to the service list in the navigational panel.  Now click on the **Container registries** option.  You will see a page as displayed below.
@@ -139,7 +139,7 @@ $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegro
 ```
 **NOTE:** From the JSON output of the last command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
 
-###C] Create a new Build definition in VSTS to deploy the Springboot microservice
+### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
 Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continous deployment (CD) can be easily implemented using VSTS.
@@ -215,7 +215,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 
 ![alt tag](./images/A-19.png)
 
-###D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice
+### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice
 In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy_v1.8.yaml** and **app-deploy_v1.8.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
@@ -226,7 +226,7 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 -  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
 -  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
 
-In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](#appendix-a) for details.  You will need to update the Kubernetes manifest files.
+In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](#Appendix-A) for details.  You will need to update the Kubernetes manifest files.
 
 Follow the steps below to provision the AKS cluster and deploy our microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
@@ -343,7 +343,7 @@ The status of the mysql pod should change to *Running*.  See screenshot below.
 
 ![alt tag](./images/D-04.png)
 
-###Appendix A
+### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
 
 - Update the *Secret* object **mysql** in file *./k8s-scripts/mysql-deploy_v1.8.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
