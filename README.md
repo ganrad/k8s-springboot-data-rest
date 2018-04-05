@@ -122,7 +122,7 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
 ![alt tag](./images/B-01.png)
 
-2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and choose a location.  Select the **Basic** pricing tier (if applicable).  Click **Create** when you are done.
+2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and leave the location as-is.  The location should default to the location assigned to the resource group.  Select the **Basic** pricing tier.  Click **Create** when you are done.
 
 ![alt tag](./images/B-02.png)
 
@@ -137,7 +137,7 @@ $ az account set --subscription <SUBSCRIPTION_ID>
 # Create the Azure service principal.  Substitute values for SUBSCRIPTION_ID, RG_GROUP, REGISTRY_NAME & SERVICE_PRINCIPAL_NAME.  Specify a meaningful name for the service principal.
 $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RG_NAME>/providers/Microsoft.ContainerRegistry/registries/<REGISTRY_NAME> --role Contributor --name <SERVICE_PRINCIPAL_NAME>
 ```
-**NOTE:** From the JSON output of the last command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
+**NOTE:** From the `JSON` output of the previous command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
 
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
