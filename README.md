@@ -304,6 +304,7 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 **NOTE:**
+
 kubectl parameter | Value to substitute
 ----------------- | -------------------
 SERVICE_PRINCIPAL_ID | 'appId' value from step [B]
