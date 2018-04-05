@@ -226,7 +226,7 @@ Before proceeding with the next steps, feel free to inspect the Kubernetes manif
 -  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
 -  How services in Kubernetes can auto discover themselves using the built-in **Kube-DNS** proxy.
 
-In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A][Appendix A] for details.  You will need to update the Kubernetes manifest files.
+In case you want to modify the default values used for MySQL database name and/or database connection properties (user name, password ...), refer to [Appendix A](Appendix A) for details.  You will need to update the Kubernetes manifest files.
 
 Follow the steps below to provision the AKS cluster and deploy our microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
