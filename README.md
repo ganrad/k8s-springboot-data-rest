@@ -1,9 +1,9 @@
 #  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS) running on Microsoft Azure.
 
 In a nutshell, you will work on the following activities.
-1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This step will constitute the **Continuous Deployment** step.
-2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure
-3.  Update application code (version 2.0) and then re-build and re-deploy the containerized application to AKS.  This step will constitute the **Continuous Integration** step.
+1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity relates to the **Continuous Deployment** aspect of a DevOps process/solution.
+2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure.
+3.  TBD: Update the application code (version 2.0) in a separate branch and then re-build and re-deploy the containerized application to AKS.  This activity focuses on the **Continuous Integration** aspect of a DevOps solution.
 
 **Prerequisities:**
 1.  A GitHub account to fork this GitHub repository and/or clone this repository.
