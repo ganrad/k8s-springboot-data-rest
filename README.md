@@ -1,22 +1,25 @@
 #  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS) running on Microsoft Azure.
 
 In a nutshell, you will work on the following activities.
-1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity relates to the **Continuous Deployment** aspect of a DevOps process/solution.
+1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity corresponds to the **Continuous Deployment** aspect of a DevOps solution.
 2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure.
 3.  TBD: Update the application code (version 2.0) in a separate branch and then re-build and re-deploy the containerized application on AKS.  This activity focuses on the **Continuous Integration** aspect of a DevOps solution.
 
 **Prerequisities:**
 1.  A GitHub account to fork this GitHub repository and/or clone this repository.
-2.  A Visual Studio Team Services Account.  If required, create a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-3.  An active Microsoft Azure subscription.  If required, you can obtain a free subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
+2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
+3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
-This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice as a containerized application (po-service) on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
+**Important Notes:**
+- Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are to be treated as comments. 
+
+This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
 - Running a VSTS build agent (docker container) which will be used for running application and container builds.
-- Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources, especially the AKS cluster resources.
-- Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources which will be deployed to the AKS cluster.
+- Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources including the AKS cluster resources.
+- Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
 
 Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI, install Git client and cloning this GitHub repository.
 
@@ -26,15 +29,15 @@ Follow the steps below to create the Bastion host (Linux VM), install Azure CLI,
 ```
 az group create --name myResourceGroup --location eastus
 ```
-**NOTE:** Ensure you specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions.  And ensure **all** Azure resources are deployed to the same resource group.
+**NOTE:** Specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions.  **All** Azure resources will be deployed to the same resource group.
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
+Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
 ```
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
 
-4.  Install Azure CLI and Git client on this VM.  Then clone this GitHub repository on this VM. Refer to the commands below.  **Note:** Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are comments.
-
+4.  Install Azure CLI and Git client on this VM.  Then clone this GitHub repository to this VM. Refer to the commands below.
 ```
 # Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
 $ ssh labuser@x.x.x.x
@@ -116,7 +119,7 @@ docker run -e VSTS_ACCOUNT=ganrad -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/v
 ```
 
 ### B] Deploy Azure Container Registry (ACR)
-In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in the next steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
+In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in later steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
 
 1.  Login to your Azure portal account.  Then click on **Container registries** in the navigational panel on the left.  If you don't see this option in the nav. panel then click on **All services**, scroll down to the **COMPUTE** section and click on the star beside **Container registries**.  This will add the **Container registries** option to the service list in the navigational panel.  Now click on the **Container registries** option.  You will see a page as displayed below.
 
@@ -144,7 +147,9 @@ In this step, we will define the tasks for building the microservice (binary art
 
 Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continous deployment (CD) can be easily implemented using VSTS.
 
-1.  Fork this GitHub repository to your GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  Remember you must be signed in to your GitHub account in order to fork this repository.
+1.  Fork this GitHub repository to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  Remember you must be signed in to your GitHub account in order to fork this repository.
+
+![alt tag](./images/A-01.png)
 
 2.  If you haven't already done so, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
 
@@ -176,14 +181,14 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
 ![alt tag](./images/A-09.png)
 
-10.  Click on the **Replace Tokens** task and drag it to the top of the task list.  In the **Source Path** field, select *src/main/resources* and specify *.properties in the **Target File Pattern** field.  In the **Token Regex** field, specify __(\w+[.\w+]*)__ as shown in the screenshot below.  In the next step, we will use this task to specify the target kubernetes service name and namespace name.
+10.  Click on the **Replace Tokens** task and drag it to the top of the task list.  In the **Source Path** field, select *src/main/resources* and specify `*.properties` in the **Target File Pattern** field.  In the **Token Regex** field, specify `__(\w+[.\w+]*)__` as shown in the screenshot below.  In the next step, we will use this task to specify the target kubernetes service name and namespace name.
 
 ![alt tag](./images/A-10.png)
 
 11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.
-```
-svc.name.k8s.namespace mysql.development
-```
+Varibale Name | Value
+------------- | ------
+svc.name.k8s.namespace | mysql.development
 
 ![alt tag](./images/A-11.png)
 
@@ -197,13 +202,13 @@ svc.name.k8s.namespace mysql.development
 
 ![alt tag](./images/A-14.png)
 
-15.  Click on the *Run a Docker Compose ...* task on the left panel.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
+15.  Click on the *Run a Docker Compose ...* task on the left panel.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
 
 ![alt tag](./images/A-15.PNG)
 
-16.  Once our application container image has been built, we will push it into the ACR.  Add another task to publish the container image built in the previous step to ACR. Repeat step [15] and search for task *Docker Compose* and click **Add**.
+16.  Once our application container image has been built, we will push it into the ACR.  Let's add another task to publish the container image built in the previous step to ACR.  Similar to step [15], search for task *Docker Compose* and click **Add**.
 
-17.  Click on the *Run a Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to **/docker-compose.yml.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Push service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
+17.  Click on the *Run a Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Push service images* and also enable **Include Latest Tag** checkbox.  See screenshot below.
 
 ![alt tag](./images/A-17.PNG)
 
@@ -216,7 +221,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 ![alt tag](./images/A-19.png)
 
 ### D] Create an Azure Container Service (AKS) cluster and deploy our Springboot microservice
-In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  All application deployments to a **Kubernetes** cluster are managed by manifest (yaml/json) files.  These manifest files contain Kubernetes object (resource) definitions.
+In this step, we will first deploy an AKS cluster on Azure.  Our Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  Kubernetes resources (object definitions) are usually specified in manifest files (yaml/json) and then submitted to the API Server.  The API server is responsible for instantiating corresponding objects and bringing the state of the system to the desired state.
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy_v1.8.yaml** and **app-deploy_v1.8.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
 
@@ -341,7 +346,7 @@ The status of the mysql pod should change to *Running*.  See screenshot below.
 
 ![alt tag](./images/D-03.png)
 
-11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets provisioned and auto-configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
+11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets auto-provisioned and configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
 
 ![alt tag](./images/D-04.png)
 
