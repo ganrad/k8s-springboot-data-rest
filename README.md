@@ -186,7 +186,8 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 ![alt tag](./images/A-10.png)
 
 11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.
-Varibale Name | Value
+
+Variable Name | Value
 ------------- | ------
 svc.name.k8s.namespace | mysql.development
 
