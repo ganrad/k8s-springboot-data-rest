@@ -1,19 +1,27 @@
-#  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS) running on Microsoft Azure.
+#  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS)
 
 In a nutshell, you will work on the following activities.
-1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity corresponds to the **Continuous Deployment** aspect of a DevOps solution.
+1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity focuses on the **Continuous Deployment** aspect of a DevOps solution.
 2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure.
 3.  TBD: Update the application code (version 2.0) in a separate branch and then re-build and re-deploy the containerized application on AKS.  This activity focuses on the **Continuous Integration** aspect of a DevOps solution.
 
-**Prerequisities:**
+**Prerequisites:**
 1.  A GitHub account to fork this GitHub repository and/or clone this repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
 **Important Notes:**
-- Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are to be treated as comments. 
+- This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted for developers/solution architects who have a good understanding of some or all of these areas/topics.  If you are new to Linux Containers / Kubernetes and/or would like to explore container solutions available on Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
+- AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
+- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS.  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
+
+For easy and quick reference, readers can refer to the following on-line resources are needed.
+1.  [Azure Container Instance]
+2.  [Creating an Azure VM]
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
+
+Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are to be treated as comments. 
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -145,7 +153,7 @@ $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegro
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
-Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continous deployment (CD) can be easily implemented using VSTS.
+Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous deployment (CD) can be easily implemented using VSTS.
 
 1.  Fork this GitHub repository to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  Remember you must be signed in to your GitHub account in order to fork this repository.
 
