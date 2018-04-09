@@ -11,17 +11,22 @@ In a nutshell, you will work on the following activities.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
 **Important Notes:**
-- This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted for developers/solution architects who have a good understanding of some or all of these areas/topics.  If you are new to Linux Containers / Kubernetes and/or would like to explore container solutions available on Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
+- This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at developers/solution architects who have a good understanding of some or all of these areas/topics.  If you are new to Linux Containers / Kubernetes and/or would like to explore container solutions available on Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
 - This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS.  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
 
-For easy and quick reference, readers can refer to the following on-line resources are needed.
-1.  [Azure Container Instance]
-2.  [Creating an Azure VM]
+For easy and quick reference, readers can refer to the following on-line resources as needed.
+- [Spring Getting Started Guides](https://spring.io/guides)
+- [Docker Documentation](https://docs.docker.com/)
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/?path=users&persona=app-developer&level=foundational)
+- [Creating an Azure VM](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-cli)
+- [Azure Container Service (AKS) Documentation](https://docs.microsoft.com/en-us/azure/aks/)
+- [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
+- [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
-Only commands prefixed with a **$** sign (denotes the command prompt in Linux) are required to be executed on the Linux terminal window.  Lines prefixed with the **#** symbol are to be treated as comments. 
+**NOTE:** Commands which are required to be issued on a Linux terminal window are prefixed with a **$** sign.  Lines that are prefixed with the **#** symbol are to be treated as comments. 
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
