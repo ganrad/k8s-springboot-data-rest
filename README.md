@@ -42,7 +42,7 @@ Follow the steps below to create the Bastion host (Linux VM), install Azure CLI,
 ```
 az group create --name myResourceGroup --location eastus
 ```
-**NOTE:** Specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions.  **All** Azure resources will be deployed to the same resource group.
+**NOTE:** Specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions only.  Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to specify the same name in all commands in subsequent steps.  This project assumes that **all** Azure resources are deployed to the same resource group.
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
 Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
@@ -295,7 +295,7 @@ $ kubectl get namespaces
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
 ```
 # Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f dev-namespace.json 
+$ kubectl create -f k8s-scripts/dev-namespace.json 
 #
 # List the namespaces
 $ kubectl get namespaces
@@ -329,13 +329,14 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 
-8.  Update the **app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
+8.  Update the **k8s-scripts/app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
 ![alt tag](./images/D-01.PNG)
 
 9.  Deploy the **MySQL** database container.
 ```
-$ kubectl create -f mysql-deploy_v1.8.yaml
+# Make sure you are in the *k8s-springboot-data-rest* directory.
+$ kubectl create -f k8s-scripts/mysql-deploy_v1.8.yaml
 #
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
@@ -351,7 +352,8 @@ $ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
 
 10.  Deploy the **po-service** microservice container.
 ```
-$ kubectl create -f app-deploy_v1.8.yaml
+# Make sure you are in the *k8s-springboot-data-rest* directory.
+$ kubectl create -f k8s-scripts/app-deploy_v1.8.yaml
 #
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
@@ -395,7 +397,7 @@ You can access the Purchase Order REST API from your Web browser, e.g.:
 - http://<Azure_load_balancer_ip>/orders
 - http://<Azure_load_balancer_ip>/orders/1
 
-Use the sample scripts in the *./scripts* folder to test this microservice.
+Use the sample scripts in the **./scripts** folder to test this microservice.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
