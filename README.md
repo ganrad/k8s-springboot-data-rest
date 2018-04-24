@@ -403,6 +403,8 @@ You can access the Purchase Order REST API from your Web browser, e.g.:
 
 Use the sample scripts in the **./scripts** folder to test this microservice.
 
+Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
+
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
 
@@ -476,5 +478,3 @@ $ kubectl get pods
 # View all details for a pod - Start time, current status, volume mounts etc
 $ kubectl describe pod <Pod ID>
 ```
-
-Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
