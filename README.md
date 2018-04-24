@@ -423,7 +423,7 @@ $ echo "mysql.password=xxxx" | base64 -w 0
 
 ```
 ### Troubleshooting
-- In case you created the **po-service** application artifacts in the wrong Kubernetes namespace (other than `development`), use the commands below to clean all API objects from the current namespace.  Then follow instructions in Step D to create the 'development' namespaceand deploy this application.
+- In case you created the **po-service** application artifacts in the wrong Kubernetes namespace (other than `development`), use the commands below to clean all API objects from the current namespace.  Then follow instructions in Section D starting Step 6 to create the API objects in the 'development' namespace.
 ```
 #
 # Delete replication controllers - mysql, po-service
@@ -445,7 +445,7 @@ $ kubectl delete configmap mysql-db-name
 # 
 ```
 
-- In case you want to delete all API objects in the 'development' namespace and start over again with Step D.
+- In case you want to delete all API objects in the 'development' namespace and start over again, delete the 'development' namespace.  Also, delete the 'dev' context.  Then start from Section D Step 5 to create the 'development' namespace, create the API objects and deploy the microservices.
 ```
 # Make sure you are in the 'dev' context
 $ kubectl config current-context
