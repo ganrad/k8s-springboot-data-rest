@@ -25,8 +25,8 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
 - This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS.  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
-- Commands which are required to be issued on a Linux terminal window are prefixed with a **$** sign.  Lines that are prefixed with the ** # ** symbol are to be treated as comments.
-- This project assumes that **all** Azure resources will be deployed to the same **Resource Group**.
+- Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
+- This project assumes that **all** Azure resources will be deployed to the same **Resource Group** (myResourceGroup).
 - Make sure to specify either **eastus** or **westus2** as the location for the Azure **Resource Group**.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
@@ -85,6 +85,7 @@ $ git --version
 # Switch to home directory and clone this GitHub repository.  Later on you will also be forking this GitHub repository to get a separate copy of this project added to your GitHub account.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
 $ cd
 $ git clone https://github.com/ganrad/k8s-springboot-data-rest.git
+#
 # Switch to the 'k8s-springboot-data-rest' directory
 $ cd k8s-springboot-data-rest
 ```
@@ -269,8 +270,8 @@ $ mkdir aztools
 # Install kubectl binary in the new directory
 $ az aks install-cli --install-location=./aztools/kubectl
 #
-# Add the location of kubectl binary to your search path
-# Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your vm (Bastion Host) from the terminal window and log back in for changes to take effect.
+# Add the location of 'kubectl' binary to your search path and export it.
+# Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your VM (Bastion Host) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you logout and log in to this VM.
 $ export PATH=$PATH:/home/labuser/aztools
 #
 # Check if kubectl is installed OK
@@ -279,7 +280,7 @@ $ kubectl version -o yaml
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
 ```
-# Create the AKS cluster
+# Create a 1 Node AKS cluster
 $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys
 ```
 
