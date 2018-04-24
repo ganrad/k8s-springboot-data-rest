@@ -5,15 +5,7 @@ In a nutshell, you will work on the following activities.
 2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure.
 3.  TBD: Update the application code (version 2.0) in a separate branch and then re-build and re-deploy the containerized application on AKS.  This activity focuses on the **Continuous Integration** aspect of a DevOps solution.
 
-**Prerequisites:**
-1.  A GitHub account to fork this GitHub repository and/or clone this repository.
-2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
-
-**Important Notes:**
-- This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
-- AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
-- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS.  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
+This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Spring Getting Started Guides](https://spring.io/guides)
@@ -24,9 +16,18 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
 - [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 
-This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
+**Prerequisites:**
+1.  A GitHub account to fork this GitHub repository and/or clone this repository.
+2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
+3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 
-**NOTE:** Commands which are required to be issued on a Linux terminal window are prefixed with a **$** sign.  Lines that are prefixed with the **#** symbol are to be treated as comments. 
+**Important Notes:**
+- This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
+- AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
+- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS.  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
+- Commands which are required to be issued on a Linux terminal window are prefixed with a **$** sign.  Lines that are prefixed with the ** # ** symbol are to be treated as comments.
+- This project assumes that **all** Azure resources will be deployed to the same **Resource Group**.
+- Make sure to specify either **eastus** or **westus2** as the location for the Azure **Resource Group**.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -42,7 +43,7 @@ Follow the steps below to create the Bastion host (Linux VM), install Azure CLI,
 ```
 az group create --name myResourceGroup --location eastus
 ```
-**NOTE:** Specify either *eastus* or *westus2* as the location for the resource group.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions only.  Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to specify the same name in all commands in subsequent steps.  This project assumes that **all** Azure resources are deployed to the same resource group.
+**NOTE:** Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to specify the same name in all commands in subsequent steps.  
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
 Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
@@ -84,6 +85,7 @@ $ git --version
 # Switch to home directory and clone this GitHub repository.  Later on you will also be forking this GitHub repository to get a separate copy of this project added to your GitHub account.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
 $ cd
 $ git clone https://github.com/ganrad/k8s-springboot-data-rest.git
+# Switch to the 'k8s-springboot-data-rest' directory
 $ cd k8s-springboot-data-rest
 ```
 
@@ -268,6 +270,7 @@ $ mkdir aztools
 $ az aks install-cli --install-location=./aztools/kubectl
 #
 # Add the location of kubectl binary to your search path
+# Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your vm (Bastion Host) from the terminal window and log back in for changes to take effect.
 $ export PATH=$PATH:/home/labuser/aztools
 #
 # Check if kubectl is installed OK
@@ -345,7 +348,7 @@ The status of the mysql pod should change to *Running*.  See screenshot below.
 
 ![alt tag](./images/D-02.png)
 
-(Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID.
+(Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID (Value under 'Name' column listed in the previous command output).  The password for the 'mysql' user is 'password'.
 ```
 $ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
 ```
@@ -418,6 +421,61 @@ $ echo "mysql.user=xxxx" | base64 -w 0
 $ echo "mysql.password=xxxx" | base64 -w 0
 # Then update the *db.username* and *db.password* parameters in the Secret object accordingly.
 
+```
+### Troubleshooting
+- In case you created the **po-service** application artifacts in the wrong Kubernetes namespace (other than `development`), use the commands below to clean all API objects from the current namespace.  Then follow instructions in Step D to create the 'development' namespaceand deploy this application.
+```
+#
+# Delete replication controllers - mysql, po-service
+$ kubectl delete rc mysql
+$ kubectl delete rc po-service
+#
+# Delete service - mysql, po-service
+$ kubectl delete svc mysql
+$ kubectl delete svc po-service
+#
+# Delete secrets - acr-registry, mysql, mysql-secret
+$ kubectl delete secret acr-registry
+$ kubectl delete secret mysql
+$ kubectl delete secret mysql-secret
+#
+# Delete configmap - mysql-db-name
+$ kubectl delete configmap mysql-db-name
+#
+# 
+```
+
+- In case you want to delete all API objects in the 'development' namespace and start over again with Step D.
+```
+# Make sure you are in the 'dev' context
+$ kubectl config current-context
+#
+# Switch to the 'akscluster' context
+$ kubectl config use-context akscluster
+#
+# Delete the 'dev' context
+$ kubectl config delete-context dev
+#
+# Delete the 'development' namespace
+$ kubectl delete namespace development
+```
+
+- A few useful Kubernetes commands.
+```
+# List all user contexts
+$ kubectl config view
+#
+# Switch to a given 'dev' context
+$ kubectl config use-context dev
+#
+# View compute resources (memory, cpu) consumed by pods in current namespace.
+$ kubectl top pods
+#
+# List all pods
+$ kubectl get pods
+#
+# View all details for a pod - Start time, current status, volume mounts etc
+$ kubectl describe pod <Pod ID>
 ```
 
 Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
