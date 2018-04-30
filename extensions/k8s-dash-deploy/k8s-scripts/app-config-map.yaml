@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-db-name
+data:
+  mysqldb.properties: |
+    mysql.dbname=sampledb
