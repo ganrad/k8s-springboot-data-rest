@@ -295,7 +295,7 @@ $ kubectl get nodes -o wide
 # Check default namespaces in the cluster
 $ kubectl get namespaces
 ```
-**NOTE:** At this point, you can use the Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application.  To use the *Dashboard* UI, refer to the steps [./extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure AKS CLI to deploy this application, proceed with the next steps.
+**NOTE:** At this point, you can use the Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application.  To use the *Dashboard* UI, refer to the steps in [./extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure AKS CLI to deploy this application, proceed with the next steps.
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
 ```
