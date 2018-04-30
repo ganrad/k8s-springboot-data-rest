@@ -295,7 +295,7 @@ $ kubectl get nodes -o wide
 # Check default namespaces in the cluster
 $ kubectl get namespaces
 ```
-**NOTE:** At this point, you can use the Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application.  To use the *Dashboard* UI, refer to the steps [here](./extensions/k8s-dash-deploy).  To use the Azure AKS CLI to deploy this application, proceed with the next steps.
+**NOTE:** At this point, you can use the Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application.  To use the *Dashboard* UI, refer to the steps [./extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure AKS CLI to deploy this application, proceed with the next steps.
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
 ```
@@ -371,7 +371,7 @@ The status of the mysql pod should change to *Running*.  See screenshot below.
 
 ![alt tag](./images/D-04.png)
 
-### E] Accessing the Purchase Order Microservice REST API 
+### Accessing the Purchase Order Microservice REST API 
 
 As soon as the **po-service** application is deployed in AKS, 2 purchase orders will be inserted into the backend (MySQL) database.  The inserted purchase orders have ID's 1 and 2.  The application's REST API supports all CRUD operations (list, search, create, update and delete) on purchase orders.
 
