@@ -3,9 +3,9 @@
 In order to access the Kubernetes Dashboard (Web UI), a PC (or a VM) running MacOS or Linux Desktop OS such as Fedora/Ubuntu/Debian (any Linux flavor) will be required.  Alternatively, a Windows 10 PC running Ubuntu/Debian/SLES Linux OS on Windows Sub-System for Linux should also work.  Azure CLI v2.0.4 or later should be installed on this VM/Machine.  Refer to the [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI on this machine.
 For the remainder of this text, this machine (Linux/MacOS/Windows) will be referred to as the **Host** machine.
 
-We will first deploy an AKS cluster on Azure using the Azure Portal.  We will then use the Kubernetes Dashboard (Web) UI to deploy the **MySQL** database and **po-service** application resources.
+You will first deploy an AKS cluster on Azure using the Azure Portal.  You will then use the Kubernetes Dashboard (Web) UI to deploy the **MySQL** database and **po-service** application containers.
 
-YAML files for deploying all required Kubernetes objects (API resources) are provided in the **k8s-scripts** sub-directory.  Before proceeding with the next steps, we highly recommend that you go thru the Kubernetes object definition files.
+YAML files for deploying all required Kubernetes objects (API resources) are provided in the [k8s-scripts](./k8s-scripts) sub-directory.  Before proceeding with the next steps, we highly recommend that you go thru the Kubernetes object definition files in this directory.
 
 Follow the steps below to provision the AKS cluster and deploy the Springboot microservice application.
 1.  Open a terminal window on the **Host** machine & use Azure CLI to login to your Azure account.  Next, install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
