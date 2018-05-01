@@ -1,4 +1,4 @@
-## Create an Azure Container Service (AKS) cluster and then use **Kubernetes Dashboard** to deploy the **po-service** Springboot Java Microservice
+## Create an Azure Container Service (AKS) cluster and then use *Kubernetes Dashboard* to deploy the *po-service* Springboot Java Microservice
 
 In order to access the Kubernetes Dashboard (Web UI), a PC (or a VM) running MacOS or Linux Desktop OS such as Fedora/Ubuntu/Debian (any Linux flavor) will be required.  Alternatively, a Windows 10 PC running Ubuntu/Debian/SLES Linux OS on Windows Sub-System for Linux should also work.  Azure CLI v2.0.4 or later should be installed on this VM/Machine.  Refer to the [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI on this machine.
 For the remainder of this text, this machine (Linux/MacOS/Windows) will be referred to as the **Host** machine.
