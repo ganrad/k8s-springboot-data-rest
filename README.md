@@ -240,7 +240,7 @@ In the VSTS build agent terminal window, you will notice that a build request wa
 ### D] Create an Azure Container Service (AKS) cluster and deploy Springboot microservice
 In this step, we will first deploy an AKS cluster on Azure.  The Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  Kubernetes resources (object definitions) are usually specified in manifest files (yaml/json) and then submitted to the API Server.  The API server is responsible for instantiating corresponding objects and bringing the state of the system to the desired state.
 
-Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy_v1.8.yaml** and **app-deploy_v1.8.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
+Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in the GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
 
 Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box capabilities provided by Kubernetes.
 -  How confidential data such as database user names & passwords are injected (at runtime) into the application container using **Secrets**
@@ -334,14 +334,14 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 
-8.  Update the **k8s-scripts/app-deploy_v1.8.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
+8.  Update the **k8s-scripts/app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
 ![alt tag](./images/D-01.PNG)
 
 9.  Deploy the **MySQL** database container.
 ```
 # Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f k8s-scripts/mysql-deploy_v1.8.yaml
+$ kubectl create -f k8s-scripts/mysql-deploy.yaml
 #
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
@@ -358,7 +358,7 @@ $ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
 10.  Deploy the **po-service** microservice container.
 ```
 # Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f k8s-scripts/app-deploy_v1.8.yaml
+$ kubectl create -f k8s-scripts/app-deploy.yaml
 #
 # List pods.  You can specify the '-w' switch to watch the status of pod change.
 $ kubectl get pods
@@ -409,16 +409,16 @@ Congrats!  You have just built and deployed a Java Springboot microservice on Az
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
 
-- Update the *Secret* object **mysql** in file *./k8s-scripts/mysql-deploy_v1.8.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
+- Update the *Secret* object **mysql** in file *./k8s-scripts/mysql-deploy.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
 ```
 # Create Base64 encoded values for the MySQL server user name, password, root password and database name. Repeat this command to generate values for each property you want to change.
 $ echo "xxxx" | base64 -w 0
 # Then update the corresponding parameter value in the Secret object.
 ```
 
-- Update the *./k8s-scripts/app-deploy_v1.8.yaml* file.  Specify the correct value for the database name in the *ConfigMap* object **mysql-db-name** parameter **mysql.dbname** 
+- Update the *./k8s-scripts/app-deploy.yaml* file.  Specify the correct value for the database name in the *ConfigMap* object **mysql-db-name** parameter **mysql.dbname** 
 
-- Update the *Secret* object **mysql-sql** in file *./k8s-scripts/app-deploy_v1.8.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
+- Update the *Secret* object **mysql-sql** in file *./k8s-scripts/app-deploy.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
 ```
 # Create Base64 encoded values for the MySQL server user name and password.
 $ echo "mysql.user=xxxx" | base64 -w 0
