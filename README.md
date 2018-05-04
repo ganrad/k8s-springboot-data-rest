@@ -96,7 +96,7 @@ $ sudo yum install -y java-1.8.0-openjdk-devel
 $ java --version
 ```
 
-6.  Next, install **docker-ce** container runtime. Refer to the commands below.
+6.  Next, install **docker-ce** container runtime. Refer to the commands below.  You can also refer to the [Docker CE install docs for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
 ```
 $ sudo yum update
 $ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
