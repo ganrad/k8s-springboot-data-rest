@@ -106,7 +106,6 @@ public class PurchaseOrder {
 	return ( (this.price * this.quantity) - getDiscountAmount() );
     }
 */
-
     public String toString() {
 	StringBuffer sb = new StringBuffer();
 	sb.append(
