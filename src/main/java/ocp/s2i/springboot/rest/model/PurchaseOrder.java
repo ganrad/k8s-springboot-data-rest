@@ -97,7 +97,7 @@ public class PurchaseOrder {
         this.origin = origin;
     }
 
-// Uncomment this method for retrieving order total !!!
+/** Uncomment this method for retrieving order total !!!
     public Float getDiscountAmount() {
 	return ( (this.price * this.quantity) * ( Float.parseFloat(this.dcode) / 100 ) );
     } 
@@ -105,7 +105,7 @@ public class PurchaseOrder {
     public Float getOrderTotal() {
 	return ( (this.price * this.quantity) - getDiscountAmount() );
     }
-
+*/
     public String toString() {
 	StringBuffer sb = new StringBuffer();
 	sb.append(
