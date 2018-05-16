@@ -477,6 +477,28 @@ Click the checkbox for both **Enable continuous integration** and **Batch change
 
 ![alt tag](./images/E-16.PNG)
 
+3.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
+
+Open a web browser tab and navigate to this project (your Fork) on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
+
+![alt tag](./images/E-17.PNG)
+
+Click on the pencil (Edit) icon on the top right of the code view panel (see below) to edit this file.
+
+![alt tag](./images/E-18.PNG)
+
+Uncomment lines 100 thru 108 (highlighted in yellow).
+
+![alt tag](./images/E-19.PNG)
+
+Provide a comment and commit (save) the file.  The git commit will trigger a new build (**Continuous Integration**) for the **po-service** microservice in VSTS.  Upon successful completion of the build process, the updated container images will be pushed into the ACR and the release pipeline (**Continuous Deployment**) will be executed.   As part of the CD process, the Kubernetes deployment object for the **po-service** microservice will be updated with the newly built container image.  This action will trigger a **Rolling** deployment of **po-service** microservice in AKS.  As a result, the **po-service** containers (*Pods*) from the old deployment (version 1.0) will be deleted and a new deployment (version 2.0) will be instantiated in AKS.  The new deployment will use the latest container image from the ACR and spin up new containers (*Pods*).  During this deployment process, users of the **po-service** microservice will not experience any downtime as AKS will do a rolling deployment of containers.
+
+4.  Switch to a browser window and test the **po-Service** REST API.  Verify that the **po-service** API is returning two additional fields (*discountAmount* and *orderTotal*) in the JSON response.
+
+Congrats!  You have successfully used DevOps to automate the build and deployment of a containerized microservice application on Kubernetes.  
+
+In this project, we experienced how DevOps, Microservices and Containers can be used to build next generation applications.  These three technologies are changing the way we develop and deploy software applications and are at the forefront of fueling digital transformation in enterprises today!
+
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
 
