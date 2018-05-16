@@ -459,6 +459,13 @@ Click on the **Deploy to Kubernetes** task on the left panel and fill out the de
 
 ![alt tag](./images/E-12.PNG)
 
+Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.
+
+![alt tag](./images/E-13.PNG)
+
+Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.
+
+![alt tag](./images/E-14.PNG)
 
 
 ### Appendix A
