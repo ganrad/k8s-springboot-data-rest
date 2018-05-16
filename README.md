@@ -1,9 +1,8 @@
 #  Build and deploy a Java Springboot microservice application on Azure Container Service (AKS)
 
-In a nutshell, you will work on the following activities.
-1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  This activity focuses on the **Continuous Deployment** aspect of a DevOps solution.
-2.  Deploy the containerized Java Springboot microservice application in Azure Container Service (AKS) running on Azure.
-3.  TBD: Update the application code (version 2.0) in a separate branch and then re-build and re-deploy the containerized application on AKS.  This activity focuses on the **Continuous Integration** aspect of a DevOps solution.
+In a nutshell, you will work on the following two tasks.
+1.  Build a containerized Springboot Java Microservice Application (version 1.0) using VSTS (Visual Studio Team Services).  Deploy the containerized microservice application in Azure Container Service (AKS) on Azure.  This task focuses on the **Continuous Integration** aspect of the DevOps process.  Complete Steps [A] thru [D].
+2.  Update the SpringBoot application code (version 2.0) and then re-build and re-deploy the containerized microservice application on AKS.  This task focuses on the **Continuous Deployment** aspect of the DevOps process.  Complete Steps [E].
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
@@ -19,7 +18,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 **Prerequisites:**
 1.  A GitHub account to fork this GitHub repository and/or clone this repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
+3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website. The Azure **Resource Group** in which all resources will be created should have **Owner** Role assigned to it as well.
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
@@ -411,6 +410,57 @@ You can access the Purchase Order REST API from your Web browser, e.g.:
 Use the sample scripts in the **./scripts** folder to test this microservice.
 
 Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
+
+If you would like to learn how to implement **Continuous Deployment** in VSTS, continue with the next steps.  We will define a **Release Pipeline** in VSTS to perform automated application deployments next.
+
+### E] Create a simple *Release Pipeline* in VSTS
+1.  Using a web browser, login to your VSTS account (if you haven't already) and select your project which you created in Step [C]. Click on *Build and Release* menu on the top panel and select *Releases*.  Next, click on the *+* icon on the *Releases* tab and select *Create release definition*.
+
+![alt tag](./images/E-02.png)
+
+In the *Select a Template* page, click on *Empty process*.  See screenshot below.
+
+![alt tag](./images/E-03.png)
+
+In the *Environment* page, specify *Staging-A* as the name for the environment.  Then click on *+Add* besides *Artifacts* (under *Pipeline* tab).
+
+![alt tag](./images/E-04.png)
+
+In the *Add artifact* page, select *Build* for **Source type**, select your VSTS project from the **Project** drop down menu and select your *Build definition* in the drop down menu for **Source (Build definition)**.  Leave the remaining field values as is and click **Add**.  See screenshot below. 
+
+![alt tag](./images/E-05.png)
+
+In the *Pipeline* tab, click on the *trigger* icon (highlighted in yellow) and enable **Continuous deployment trigger**.  See screenshot below.
+
+![alt tag](./images/E-06.png)
+
+Next, click on *1 phase, 0 task* in the **Environments** box under environment *Staging-A*.  Click on *Agent phase* under the *Tasks* tab and make sure **Agent queue** value is set to *Hosted VS2017*.  Leave the remaining field values as is.  See screenshot below.
+
+![alt tag](./images/E-07.png)
+
+Recall that we had installed a **Tokenizer utility** extension in VSTS in Step [C].  We will now use this extension to update the container image *Tag value* in Kubernetes deployment manifest file *./k8s-scripts/app-update-deploy.yaml*.  Open/View the deployment manifest file in an editor (vi) and search for variable **__Build.BuildNumber__**.  When we re-run (execute) the *Build* pipeline, it will generate a new tag (Build number) for the *po-service* container image.  The *Tokenizer* extension will then substitute the latest tag value in the substitution variable.
+
+Click on the ** + ** symbol beside **Agent phase** and search for text **Tokenize with** in the *Search* text box (besides **Add tasks**). Click on **Add**.  See screenshot below.
+
+![alt tag](./images/E-08.png)
+
+Click on the **Tokenizer** task and click on the ellipsis (...) below field **Source filename**.  In the **Select File Or Folder** window, select the deployment manifest file from the respective folder as shown in the screenshots below. Click **OK**.
+
+![alt tag](./images/E-09.png)
+
+![alt tag](./images/E-10.png)
+
+Again, click on the ** + ** symbol beside **Agent phase** and search for text **Deploy to Kubernetes**, select this extension and click **Add*.  See screenshot below.
+
+![alt tag](./images/E-11.png)
+
+Click on the **Deploy to Kubernetes** task on the left panel and fill out the details (numbered) as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
+
+![alt tag](./images/E-12.png)
+
+
+
+
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
