@@ -459,14 +459,23 @@ Click on the **Deploy to Kubernetes** task on the left panel and fill out the de
 
 ![alt tag](./images/E-12.PNG)
 
-Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.
+Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.  See screenshot below.
 
 ![alt tag](./images/E-13.PNG)
 
-Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.
+Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.  Provide a comment and click **OK**.
 
 ![alt tag](./images/E-14.PNG)
 
+We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
+
+2.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
+
+![alt tag](./images/E-15.PNG)
+
+Click the checkbox for both **Enable continuous integration** and **Batch changes while a build is in progress**.  Leave other fields as is.  Click on **Save & queue** menu and select the **Save** option.
+
+![alt tag](./images/E-16.PNG)
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
