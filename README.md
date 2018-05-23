@@ -17,23 +17,24 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 
 **Prerequisites:**
-1.  A GitHub account to fork this GitHub repository and/or clone this repository.
+1.  A GitHub account to fork this GitHub repository and clone this repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website. The Azure **Resource Group** in which all resources will be created should have **Owner** Role assigned to it as well.
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
-- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS (Kubernetes v1.8.x).  Both managed and unmanaged Kubernetes clusters can be easily deployed on Azure.
+- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS (Kubernetes v1.9.6).  Both managed and unmanaged (standalone) Kubernetes clusters can be easily deployed on Azure.
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
 - This project assumes that **all** Azure resources will be deployed to the same **Resource Group** (myResourceGroup).
-- Make sure to specify either **eastus** or **westus2** as the location for the Azure **Resource Group**.  At the time of this writing, AKS cluster is available in public preview mode in eastus, westus2, centralus and canada regions only.  
+- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group**.  At the time of this writing, AKS is available only in East US (eastus), Central US (centralus) and Canada and West Europe regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
 - Running a VSTS build agent (docker container) which will be used for running application and container builds.
 - Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources including the AKS cluster resources.
 - Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
+- (TBD) Installing Jenkins.  If you would like to learn how to build and deploy this SpringBoot microservice to AKS using Jenkins CI/CD, then you will also need to install Java run-time and Jenkins.
 
 Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI, install Git client and cloning this GitHub repository.
 
@@ -90,7 +91,7 @@ $ git clone https://github.com/ganrad/k8s-springboot-data-rest.git
 $ cd k8s-springboot-data-rest
 ```
 
-5.  (Optional) Install OpenJDK 8 on the VM.  See commands below.
+5.  Install OpenJDK 8 on the VM.  See commands below.
 ```
 $ sudo yum install -y java-1.8.0-openjdk-devel
 $ java --version
@@ -283,6 +284,7 @@ $ export PATH=$PATH:/home/labuser/aztools
 # Check if kubectl is installed OK
 $ kubectl version -o yaml
 ```
+**NOTE:** At this point, you can use a) The Azure Portal UI to create an AKS cluster and b) The Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure CLI, proceed with the next steps.
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
 ```
@@ -301,7 +303,6 @@ $ kubectl get nodes -o wide
 # Check default namespaces in the cluster
 $ kubectl get namespaces
 ```
-**NOTE:** At this point, you can use the Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application.  To use the *Dashboard* UI, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure AKS CLI to deploy this application, proceed with the next steps.
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
 ```
