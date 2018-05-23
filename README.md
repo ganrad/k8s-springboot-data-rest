@@ -284,7 +284,7 @@ $ export PATH=$PATH:/home/labuser/aztools
 # Check if kubectl is installed OK
 $ kubectl version -o yaml
 ```
-**NOTE:** At this point, you can use a) The Azure Portal UI to create an AKS cluster and b) The Kubernetes Dashboard (Web) UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  To use the Azure CLI, proceed with the next steps.
+**NOTE:** At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a browser (*Web UI*) for deploying the cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
 ```
