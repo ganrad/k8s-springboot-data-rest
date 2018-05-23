@@ -15,7 +15,7 @@ data:
   username.properties: bXlzcWwudXNlcj1teXNxbAo=
   password.properties: bXlzcWwucGFzc3dvcmQ9cGFzc3dvcmQK
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: po-service

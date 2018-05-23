@@ -27,7 +27,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS (Kubernetes v1.9.6).  Both managed and unmanaged (standalone) Kubernetes clusters can be easily deployed on Azure.
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
 - This project assumes that **all** Azure resources will be deployed to the same **Resource Group** (myResourceGroup).
-- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group**.  At the time of this writing, AKS is available only in East US (eastus), Central US (centralus) and Canada and West Europe regions only.  
+- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group**.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus) and Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
