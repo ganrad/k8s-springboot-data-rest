@@ -1,6 +1,6 @@
 ## Create an Azure Container Service (AKS) cluster and then use *Kubernetes Dashboard* to deploy the *po-service* Springboot Java Microservice
 
-In order to access the Kubernetes Dashboard (Web UI), a PC (or a VM) running MacOS or Linux Desktop OS such as Fedora/Ubuntu/Debian (any Linux flavor) will be required.  Alternatively, a Windows 10 PC running Ubuntu/Debian/SLES Linux OS on Windows Sub-System for Linux should also work.  Azure CLI v2.0.4 or later should be installed on this VM/Machine.  Refer to the [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI on this machine.
+In order to access the Kubernetes Dashboard (Web UI), a PC (or a VM) running MacOS or Linux Desktop OS such as Fedora/Ubuntu/Debian (any Linux flavor) will be required.  Alternatively, a Windows 10 PC running Ubuntu/Debian/SLES Linux OS on Windows Sub-System for Linux should also work.  Azure CLI v2.0.4 or later **should** be installed on this VM/Machine.  Refer to the [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI on this machine.
 For the remainder of this text, this machine (Linux/MacOS/Windows) will be referred to as the **Host** machine.
 
 You will first deploy an AKS cluster on Azure using the Azure Portal.  You will then use the Kubernetes Dashboard (Web) UI to deploy the **MySQL** database and **po-service** application containers.
@@ -34,15 +34,25 @@ $ kubectl version -o yaml
 
 ![alt tag](./images/Az-01.PNG)
 
-3.  Search for **Container services (managed)** PaaS service in **All services**. Click on the link to open up the blade (detail panel).  Then click on *Create container service (managed)* button.  Provide details for AKS cluster as shown in the screen shots below.  In the summary page, review all the details and then click on **Ok**.  
+3.  Search for **Kubernetes services (PREVIEW)** PaaS service in **All services**. Click on the link to open up the blade (detail panel).  Then click on *Create Kubernetes service* button.
 
 ![alt tag](./images/k8s-dash-deploy-01.PNG)
 
+In the *Basics* tab, leave the default value for **Service principal** and specify values for **Subscription**, **Resource group**, **Kubernetes cluster name** & **DNS name prefix** as shown in the screenshot below.  Also, change the value of field **Node count** to **1** or else AKS will deploy a 3-node cluster (default).  Click **Next:Networking**.
+
 ![alt tag](./images/k8s-dash-deploy-02.PNG)
+
+Leave all the default values as-is on the **Networking** tab.  Click **Monitoring**.
 
 ![alt tag](./images/k8s-dash-deploy-03.PNG)
 
+Leave the default values on the **Monitoring** and **Tags** tabs and click on **Review + create** button.
+
 ![alt tag](./images/k8s-dash-deploy-04.PNG)
+
+In the summary page, review all the details and then click on **Create**.
+
+![alt tag](./images/k8s-dash-deploy-041.PNG)
 
 The AKS cluster will take a few minutes (5-10 mins) to get provisioned.  Once the cluster creation process finishes, the **akscluster** cluster will be displayed in the list as shown in the screenshot below.
 
@@ -118,7 +128,7 @@ $ kubectl get secrets
 
 ![alt tag](./images/k8s-dash-deploy-11.PNG)
 
--  Create the MySQL Replication Controller API object.  Click on the *Replication Controllers* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/mysql-rc.yaml* into the editor and then click *UPLOAD*.  Alternatively, use the *Create From File" option to upload the contents of this file and create the Replication Controller API object.
+-  Create the MySQL *Deployment* API object.  Click on the *Deployments* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/mysql-deployment.yaml* into the editor and then click *UPLOAD*.  Alternatively, use the *Create From File" option to upload the contents of this file and create the Kubernetes Deployment API object.
 
 ![alt tag](./images/k8s-dash-deploy-12.PNG)
 
@@ -126,7 +136,7 @@ $ kubectl get secrets
 
 ![alt tag](./images/k8s-dash-deploy-14.PNG)
 
-11.  Update the file **k8s-scripts/app-rc.yaml**.  The *image* attribute should point to your ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
+11.  Update the file **k8s-scripts/app-deployment.yaml**.  The *image* attribute should point to your ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
 ![alt tag](./../../images/D-01.PNG)
 
@@ -149,7 +159,7 @@ $ kubectl get secrets
 
 ![alt tag](./images/k8s-dash-deploy-20.PNG)
 
--  Create the Replication Controller API object.  Click on the *Replication Controllers* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/app-rc.yaml* into the editor and then click *UPLOAD*.  Alternatively, use the *Create From File" option to upload the contents of this file and create the replication controller API object.
+-  Create the po-service *Deployment* API object.  Click on the *Deployments* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/app-deployment.yaml* into the editor and then click *UPLOAD*.  Alternatively, use the *Create From File" option to upload the contents of this file and create the Kubernetes Deployment API object.
 
 ![alt tag](./images/k8s-dash-deploy-21.PNG)
 
