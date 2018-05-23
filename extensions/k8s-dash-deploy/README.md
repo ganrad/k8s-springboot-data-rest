@@ -42,7 +42,7 @@ In the *Basics* tab, leave the default value for **Service principal** and speci
 
 ![alt tag](./images/k8s-dash-deploy-02.PNG)
 
-Leave all the default values as-is on the **Networking** tab.  Click **Monitoring**.
+Leave all the default values as-is on the **Networking** tab.  Click **Next:Monitoring**.
 
 ![alt tag](./images/k8s-dash-deploy-03.PNG)
 
