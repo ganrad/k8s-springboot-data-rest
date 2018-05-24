@@ -19,15 +19,16 @@ For easy and quick reference, readers can refer to the following on-line resourc
 **Prerequisites:**
 1.  A GitHub account to fork this GitHub repository and clone this repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website. The Azure **Resource Group** in which all resources will be created should have **Owner** Role assigned to it as well.
+3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
+4.  This project requires you to have Azure CLI version 2.0.4 or later installed on your workstation.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
-- This project has been tested on both an unmanaged Kubernetes cluster (v1.9+) and on AKS (Kubernetes v1.9.6).  Both managed and unmanaged (standalone) Kubernetes clusters can be easily deployed on Azure.
+- This project has been tested on both an unmanaged (Standalone) Kubernetes cluster v1.9.x and on AKS (Kubernetes v1.9.6).  Kubernetes artifacts such as manifest files for application *Deployments* may not work **as-is** on AKS v1.8.x.  These objects are `Beta` level objects in Kubernetes v1.8.x and therefore version info. for the corresponding API objects will have to be changed in the manifest files prior to deployment to AKS.
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
-- This project assumes that **all** Azure resources will be deployed to the same **Resource Group** (myResourceGroup).
-- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group**.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus) and Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
+- This project assumes that **all** resources will be deployed to the same Azure *Resource Group* (**myResourceGroup**).  This resource group should also have **Owner** Role assigned to it.
+- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group** and the **AKS cluster**.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus) and Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -36,15 +37,15 @@ This Linux VM will be used for the following purposes
 - Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
 - (TBD) Installing Jenkins.  If you would like to learn how to build and deploy this SpringBoot microservice to AKS using Jenkins CI/CD, then you will also need to install Java run-time and Jenkins.
 
-Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI, install Git client and cloning this GitHub repository.
+Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI and install Git client.
 
-1.  Open a command terminal on your workstation.  This tutorial requires you to run Azure CLI version 2.0.4 or later.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
+1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation then open a command terminal and install it before proceeding with next steps.
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
 ```
 az group create --name myResourceGroup --location eastus
 ```
-**NOTE:** Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to specify the same name in all commands in subsequent steps.  
+**NOTE:** Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to substitute the same value in multiple CLI commands in the remainder of this project!  If you are new to AKS, it's best to use the suggested name.
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the public IP address, login name and password info. so that we can connect to this VM using SSH (secure shell).
 Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
@@ -52,7 +53,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
 
-4.  Install Azure CLI and Git client on this VM.  Then clone this GitHub repository to this VM. Refer to the commands below.
+4.  Install Azure CLI and Git client on this VM.
 ```
 # Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
 $ ssh labuser@x.x.x.x
@@ -82,13 +83,6 @@ $ sudo yum install git
 #
 # Check Git version number
 $ git --version
-#
-# Switch to home directory and clone this GitHub repository.  Later on you will also be forking this GitHub repository to get a separate copy of this project added to your GitHub account.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
-$ cd
-$ git clone https://github.com/ganrad/k8s-springboot-data-rest.git
-#
-# Switch to the 'k8s-springboot-data-rest' directory
-$ cd k8s-springboot-data-rest
 ```
 
 5.  Install OpenJDK 8 on the VM.  See commands below.
@@ -162,11 +156,22 @@ $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegro
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
-Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous deployment (CD) can be easily implemented using VSTS.
+Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous integration (CI) can be easily implemented using VSTS.
 
-1.  Fork this GitHub repository to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  Remember you must be signed in to your GitHub account in order to fork this repository.
+1.  Fork this [GitHub repository](https://github.com/ganrad/k8s-springboot-data-rest) to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  You must be signed in to your GitHub account in order to fork this repository.
 
 ![alt tag](./images/A-01.png)
+
+From the terminal window connected to the Bastion host, clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
+```
+# Switch to home directory
+$ cd
+# Clone your GitHub repository.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
+$ git clone https://github.com/<YOUR-GITHUB-ACCOUNT>/k8s-springboot-data-rest.git
+#
+# Switch to the 'k8s-springboot-data-rest' directory
+$ cd k8s-springboot-data-rest
+```
 
 2.  If you haven't already done so, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
 
