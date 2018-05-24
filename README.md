@@ -17,18 +17,18 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 
 **Prerequisites:**
-1.  A GitHub account to fork this GitHub repository and clone this repository.
+1.  A GitHub account to fork and clone this GitHub repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
-4.  This project requires you to have Azure CLI version 2.0.4 or later installed on your workstation.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
+4.  Azure CLI version 2.0.4 or later installed on your workstation.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
-- This project has been tested on both an unmanaged (Standalone) Kubernetes cluster v1.9.x and on AKS (Kubernetes v1.9.6).  Kubernetes artifacts such as manifest files for application *Deployments* may not work **as-is** on AKS v1.8.x.  These objects are `Beta` level objects in Kubernetes v1.8.x and therefore version info. for the corresponding API objects will have to be changed in the manifest files prior to deployment to AKS.
+- This project has been tested on both an unmanaged (Standalone) Kubernetes cluster v1.9.x and on AKS v1.9.1+.  Kubernetes artifacts such as manifest files for application *Deployments* may not work **as-is** on **AKS v1.8.x**.  Some of these objects are `Beta` level objects in Kubernetes v1.8.x and therefore version info. for the corresponding API objects will have to be changed in the manifest files prior to deployment to AKS.
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
-- This project assumes that **all** resources will be deployed to the same Azure *Resource Group* (**myResourceGroup**).  This resource group should also have **Owner** Role assigned to it.
-- Make sure to specify either **eastus** or **centralus** as the location for the Azure **Resource Group** and the **AKS cluster**.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus) and Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
+- This project requires **all** resources to be deployed to the same Azure *Resource Group* (**myResourceGroup**).  The resource group should also have **Owner** Role assigned to it.
+- Make sure to specify either **eastus** or **centralus** as the *location* for the Azure *Resource Group* and the *AKS cluster*.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus), Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -39,7 +39,7 @@ This Linux VM will be used for the following purposes
 
 Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI and install Git client.
 
-1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation then open a command terminal and install it before proceeding with next steps.
+1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation then open a terminal window and install it before proceeding with next steps.
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
 ```
@@ -85,7 +85,7 @@ $ sudo yum install git
 $ git --version
 ```
 
-5.  Install OpenJDK 8 on the VM.  See commands below.
+5.  Install OpenJDK 8 on the VM.
 ```
 $ sudo yum install -y java-1.8.0-openjdk-devel
 $ java --version
@@ -271,7 +271,7 @@ az provider register -n Microsoft.Compute
 az provider register -n Microsoft.ContainerService
 ```
 
-2.  Switch back to the Linux VM (Bastion Host) terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
+2.  Switch back to the Bastion host (Linux VM) terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
 ```
 # Switch to your home directory
 $ cd
@@ -295,6 +295,9 @@ $ kubectl version -o yaml
 ```
 # Create a 1 Node AKS cluster
 $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys
+#
+# Verify state of AKS cluster
+$ az aks show -g myResourceGroup -n akscluster --output table
 ```
 
 4.  Connect to the AKS cluster.
