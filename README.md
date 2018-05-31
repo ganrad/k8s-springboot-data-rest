@@ -60,7 +60,7 @@ $ ssh labuser@x.x.x.x
 #
 ```
 
-5.  Install Azure CLI, Git client and Java VM on this VM.
+5.  Install Azure CLI, Git client and Open JDK on this VM.
 ```
 # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
 #
