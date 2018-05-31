@@ -53,12 +53,16 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
 
-4.  Install Azure CLI and Git client on this VM.
+4.  Login into the Linux VM via SSH. 
 ```
-# Open a terminal window and SSH into the VM.  Substitute your public IP address in the command below.
+# Open a terminal window and SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
 $ ssh labuser@x.x.x.x
 #
-# Next, we will install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
+```
+
+5.  Install Azure CLI, Git client and Java VM on this VM.
+```
+# Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
 #
 # Import the Microsoft repository key.
 $ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -83,11 +87,10 @@ $ sudo yum install git
 #
 # Check Git version number
 $ git --version
-```
-
-5.  Install OpenJDK 8 on the VM.
-```
+#
+# Install OpenJDK 8 on the VM.
 $ sudo yum install -y java-1.8.0-openjdk-devel
+# Check JDK version
 $ java --version
 ```
 
