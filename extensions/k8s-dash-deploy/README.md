@@ -173,7 +173,7 @@ Alternatively, if you are new to Kubernetes then you may want to proceed with th
 
 ![alt tag](./images/k8s-dash-deploy-23.PNG)
 
-You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project web page and follow the instructions for testing the **po-service** microservice application.
+You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project and follow the instructions for testing the **po-service** microservice application.
 
 ### Deploy All Kubernetes API Objects
 1.  Update the file **k8s-scripts/deploy-app.yaml**.  The *image* attribute should point to **your** ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) within the deployment API object (*containers section*) as shown in the screenshot below.
@@ -190,3 +190,4 @@ You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/
 
 ![alt tag](./images/k8s-dash-deploy-23.PNG)
 
+You can now go to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project and follow the steps for testing the **po-service** microservice application.
