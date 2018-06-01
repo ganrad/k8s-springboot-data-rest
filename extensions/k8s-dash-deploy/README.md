@@ -7,7 +7,8 @@ You will first deploy an AKS cluster on Azure using the Azure Portal.  You will 
 
 YAML files for deploying all required Kubernetes objects (API resources) are provided in the [k8s-scripts](./k8s-scripts) sub-directory.  Before proceeding with the next steps, we highly recommend that you go thru the Kubernetes object definition files in this directory.
 
-Follow the steps below to provision the AKS cluster and deploy the Springboot microservice application.
+
+### Provision the AKS cluster
 1.  Open a terminal window on the **Host** machine & use Azure CLI to login to your Azure account.  Next, install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
 ```
 # (Optional) Login to your Azure account.  Substitute correct values for <Azure account id> and <password>.
@@ -115,7 +116,14 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 
-10.  Use the Kubernetes Dashboard (Web UI) to deploy the **MySQL** database resources on Kubernetes.
+There are two options for deploying this SpringBoot application.  If you are new to Kubernetes then you may want to proceed with option 1 below (step by step) as this will give you the opportunity to deploy each object individually and help you understand the relationships between the objects (Kubernetes API/Object Model).  Alternatively, if you are familiar with Kubernetes then choose option 2 and this will deploy all application artifacts at once.
+
+[Deploy Kubernetes API Objects Step By Step](deploy-kubernetes-api-objects-step-by-step)
+[Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects)
+
+
+### Deploy Kubernetes API Objects Step By Step
+1.  Use the Kubernetes Dashboard (Web UI) to deploy the **MySQL** database resources on Kubernetes.
 -  Create the MySQL Secret API object.  Click on *Secrets* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/mysql-secret.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file and create the Secret API object.
 
 ![alt tag](./images/k8s-dash-deploy-08.PNG)
@@ -136,11 +144,11 @@ $ kubectl get secrets
 
 ![alt tag](./images/k8s-dash-deploy-14.PNG)
 
-11.  Update the file **k8s-scripts/app-deployment.yaml**.  The *image* attribute should point to your ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
+2.  Update the file **k8s-scripts/app-deployment.yaml**.  The *image* attribute should point to **your** ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) within the *containers section* as shown in the screenshot below.
 
 ![alt tag](./../../images/D-01.PNG)
 
-12.  Use the Kubernetes Dashboard (Web UI) to deploy the **po-service** Springboot application resources on Kubernetes.
+3.  Use the Kubernetes Dashboard (Web UI) to deploy the **po-service** Springboot application resources on Kubernetes.
 -  Create the Config Map API object.  Click on *Config Maps* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/app-config-map.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file and create the Configmap API object.
 
 ![alt tag](./images/k8s-dash-deploy-15.PNG)
@@ -160,6 +168,21 @@ $ kubectl get secrets
 ![alt tag](./images/k8s-dash-deploy-20.PNG)
 
 -  Create the po-service *Deployment* API object.  Click on the *Deployments* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/app-deployment.yaml* into the editor and then click *UPLOAD*.  Alternatively, use the *Create From File" option to upload the contents of this file and create the Kubernetes Deployment API object.
+
+![alt tag](./images/k8s-dash-deploy-21.PNG)
+
+![alt tag](./images/k8s-dash-deploy-22.PNG)
+
+![alt tag](./images/k8s-dash-deploy-23.PNG)
+
+### Deploy All Kubernetes API Objects
+1.  Update the file **k8s-scripts/deploy-app.yaml**.  The *image* attribute should point to **your** ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) within the deployment API object (*containers section*) as shown in the screenshot below.
+
+![alt tag](./../../images/D-01.PNG)
+
+2.  Use the Kubernetes Dashboard (Web UI) to deploy the Springboot application resources on Kubernetes.  In the **Overview** page of the Kubernetes Dashboard UI, click on **CREATE** link on the top.  Cut and paste the contents of file *./k8s-scripts/deploy-app.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file and create the Configmap API object.
+
+![alt tag](./images/k8s-dash-deploy-25.PNG)
 
 ![alt tag](./images/k8s-dash-deploy-21.PNG)
 
