@@ -116,12 +116,9 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 
-There are two options for deploying this SpringBoot application.  If you are new to Kubernetes then you may want to proceed with option 1 below (step by step) as this will give you the opportunity to deploy each object individually and help you understand the relationships between the objects (Kubernetes API/Object Model).  Alternatively, if you are familiar with Kubernetes then choose option 2 and this will deploy all application artifacts at once.
+If you are familiar with Kubernetes API/Object model then you can skip to [Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects).  This will deploy all application artifacts to AKS.
 
-[Deploy Kubernetes API Objects Step By Step](deploy-kubernetes-api-objects-step-by-step)
-
-[Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects)
-
+Alternatively, if you are new to Kubernetes then you may want to proceed with the next steps.  This will give you the opportunity to study/deploy each object individually and help you understand the relationships between the objects (Kubernetes API/Object Model), how everything ties together.  
 
 ### Deploy Kubernetes API Objects Step By Step
 1.  Use the Kubernetes Dashboard (Web UI) to deploy the **MySQL** database resources on Kubernetes.
@@ -176,6 +173,8 @@ There are two options for deploying this SpringBoot application.  If you are new
 
 ![alt tag](./images/k8s-dash-deploy-23.PNG)
 
+You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project web page and follow the instructions for testing the **po-service** microservice application.
+
 ### Deploy All Kubernetes API Objects
 1.  Update the file **k8s-scripts/deploy-app.yaml**.  The *image* attribute should point to **your** ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) within the deployment API object (*containers section*) as shown in the screenshot below.
 
@@ -191,4 +190,3 @@ There are two options for deploying this SpringBoot application.  If you are new
 
 ![alt tag](./images/k8s-dash-deploy-23.PNG)
 
-You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project web page and follow the instructions for testing the **po-service** microservice application.
