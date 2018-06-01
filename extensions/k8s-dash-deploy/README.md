@@ -119,6 +119,7 @@ $ kubectl get secrets
 There are two options for deploying this SpringBoot application.  If you are new to Kubernetes then you may want to proceed with option 1 below (step by step) as this will give you the opportunity to deploy each object individually and help you understand the relationships between the objects (Kubernetes API/Object Model).  Alternatively, if you are familiar with Kubernetes then choose option 2 and this will deploy all application artifacts at once.
 
 [Deploy Kubernetes API Objects Step By Step](deploy-kubernetes-api-objects-step-by-step)
+
 [Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects)
 
 
