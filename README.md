@@ -16,7 +16,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
 - [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 
-**Prerequisites:**
+**PREREQUISITES:**
 1.  A GitHub account to fork and clone this GitHub repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
