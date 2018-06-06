@@ -40,7 +40,7 @@ This Linux VM will be used for the following purposes
 
 Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI and install Git client.
 
-1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation then open a terminal window and install it before proceeding with next steps.
+1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation, open a terminal window and install it before proceeding with next steps.  Alternatively, you can use **Azure Cloud Shell** from the [Azure portal](https://portal.azure.com) to perform the next steps.  Accessing the Cloud Shell is described in [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview). 
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
 ```
