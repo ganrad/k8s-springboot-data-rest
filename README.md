@@ -18,18 +18,17 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 **PREREQUISITES:**
-1.  A GitHub account to fork and clone this GitHub repository.
-2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
-3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
+1.  An active **Microsoft Azure Subscription**.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.  This project requires **all** resources to be deployed to the same Azure *Resource Group* (**myResourceGroup**).  Either the *Azure subscription* or the *Resource Group* must have **Owner** Role assigned to it.
+2.  A **GitHub** Account to fork and clone this GitHub repository.
+3.  A **Visual Studio Team Services** Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 4.  Connect your VSTS account to your Azure account (AD Tenant).  Refer to the tutorial [Connect VSTS account to Azure Active Directory (Azure AD)](https://docs.microsoft.com/en-us/vsts/accounts/connect-account-to-aad?view=vsts) to set up your respective accounts.
-5.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  Azure Cloud Shell is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM) and logging into this VM via SSH.
+5.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  **Azure Cloud Shell** is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM) and logging into this VM via SSH.
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
 - AKS is a managed [Kubernetes](https://kubernetes.io/) service on Azure.  Please refer to the [AKS](https://azure.microsoft.com/en-us/services/container-service/) product web page for more details.
 - This project has been tested on both an unmanaged (Standalone) Kubernetes cluster v1.9.x and on AKS v1.9.1+.  Kubernetes artifacts such as manifest files for application *Deployments* may not work **as-is** on **AKS v1.8.x**.  Some of these objects are `Beta` level objects in Kubernetes v1.8.x and therefore version info. for the corresponding API objects will have to be changed in the manifest files prior to deployment to AKS.
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
-- This project requires **all** resources to be deployed to the same Azure *Resource Group* (**myResourceGroup**).  The resource group should also have **Owner** Role assigned to it.
 - Make sure to specify either **eastus** or **centralus** as the *location* for the Azure *Resource Group* and the *AKS cluster*.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus), Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.  
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
