@@ -15,13 +15,14 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure Container Service (AKS) Documentation](https://docs.microsoft.com/en-us/azure/aks/)
 - [Azure Container Registry Documentation](https://docs.microsoft.com/en-us/azure/container-registry/)
 - [Visual Studio Team Services Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
+- [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 **PREREQUISITES:**
 1.  A GitHub account to fork and clone this GitHub repository.
 2.  A Visual Studio Team Services Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 3.  An active Microsoft Azure subscription.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.
 4.  Connect your VSTS account to your Azure account (AD Tenant).  Refer to the tutorial [Connect VSTS account to Azure Active Directory (Azure AD)](https://docs.microsoft.com/en-us/vsts/accounts/connect-account-to-aad?view=vsts) to set up your respective accounts.
-5.  Azure CLI version 2.0.4 or later installed on your workstation.  Refer to [install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) documentation to install Azure CLI for your specific platform (Operating system).
+5.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  Azure Cloud Shell is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM) and logging into this VM via SSH.
 
 **Important Notes:**
 - This project assumes readers are familiar with Linux containers (`docker`), Container Platforms (`Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.
@@ -40,9 +41,9 @@ This Linux VM will be used for the following purposes
 
 Follow the steps below to create the Bastion host (Linux VM), install Azure CLI, login to your Azure account using the CLI and install Git client.
 
-1.  If you haven't already installed [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) on your workstation, open a terminal window and install it before proceeding with next steps.  Alternatively, you can use **Azure Cloud Shell** from the [Azure portal](https://portal.azure.com) to perform the next steps.  Accessing the Cloud Shell is described in [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview). 
+1.  Login to the [Azure Portal](https://portal.azure.com) using your credentials and use a **Azure Cloud Shell** session to perform the next steps.  Azure Cloud Shell is an interactive, browser-accessible shell for managing Azure resources.  The first time you access the Cloud Shell, you will be prompted to create a resource group, storage account and file share.  You can use the defaults or click on *Advanced Settings* to customize the defaults.  Accessing the Cloud Shell is described in [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview). 
 
-2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  So let's start by first creating a **Resource Group** using the Azure CLI.  Alternatively, you can use Azure Portal to create this resource group.  
+2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  From the Cloud Shell, use Azure CLI to create a **Resource Group**.  Azure CLI is already pre-installed and configured to use your Azure account (subscription) in the Cloud Shell.  Alternatively, you can also use Azure Portal to create this resource group.  
 ```
 az group create --name myResourceGroup --location eastus
 ```
@@ -56,7 +57,7 @@ az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:C
 
 4.  Login into the Linux VM via SSH. 
 ```
-# Open a terminal window and SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
+# In the Cloud Shell, SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
 $ ssh labuser@x.x.x.x
 #
 ```
@@ -107,7 +108,7 @@ $ sudo groupadd docker
 $ sudo usermod -aG docker labuser
 ```
 
-LOGOUT AND RESTART YOUR VM BEFORE PROCEEDING
+LOGOUT AND RESTART YOUR VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, you can either use the Cloud Shell or a terminal window in your workstation to Login to the Linux VM via SSH.
 
 ```
 $ sudo docker info
