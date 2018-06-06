@@ -18,7 +18,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 **PREREQUISITES:**
-1.  An active **Microsoft Azure Subscription**.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.  Most importantly, either the *Azure subscription* or the *Resource Group* must have **Owner** Role assigned to it.
+1.  An active **Microsoft Azure Subscription**.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.  In order to execute all the labs in this project, either your *Azure subscription* or the *Resource Group* **must** have **Owner** Role assigned to it.
 2.  A **GitHub** Account to fork and clone this GitHub repository.
 3.  A **Visual Studio Team Services** Account.  You can get a free VSTS account by accessing the [Visual Studio Team Services](https://www.visualstudio.com/team-services/) website.
 4.  Connect your VSTS account to your Azure account (AD Tenant).  Refer to the tutorial [Connect VSTS account to Azure Active Directory (Azure AD)](https://docs.microsoft.com/en-us/vsts/accounts/connect-account-to-aad?view=vsts) to set up your respective accounts.
