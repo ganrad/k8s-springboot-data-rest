@@ -358,6 +358,42 @@ $ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_N
 $ kubectl get secrets
 ```
 
+At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster within VSTS.  To do this, in your Terminal, `cat` the kube config file:
+```
+cat ~/.kube/config
+```
+
+It should appear similar to this
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJU---------UZJQ0FURS0tLS0tCg==
+    server: https://YOURREGISTRY.hcp.centralus.azmk8s.io:443
+  name: akscluster
+contexts:
+- context:
+    cluster: akscluster
+    namespace: development
+    user: clusterUser_atsAKS2_akscluster
+  name: akscluster
+- context:
+    cluster: akscluster
+    namespace: development
+    user: clusterUser_myResourceGroup_akscluster
+  name: dev
+current-context: akscluster
+kind: Config
+preferences: {}
+users:
+- name: clusterUser_atsAKS2_akscluster
+  user:
+    client-certificate-data: LS0tLS1CRUdJT---------lGSUNBVEUtLS0tLQo=
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJV-------------UgS0VZLS0tLS0K
+    token: 3----------------a
+```
+
 8.  Update the **k8s-scripts/app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
 ![alt tag](./images/D-01.PNG)
@@ -474,6 +510,10 @@ Again, click on the ** + ** symbol beside **Agent phase** and search for text **
 ![alt tag](./images/E-11.PNG)
 
 Click on the **Deploy to Kubernetes** task on the left panel and fill out the details (numbered) as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
+
+If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into VSTS for `Server URL`.
+
+Additionally you will need your Kuberentes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
 
 ![alt tag](./images/E-12.PNG)
 
