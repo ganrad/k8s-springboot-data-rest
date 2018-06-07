@@ -234,6 +234,7 @@ svc.name.k8s.namespace | mysql.development
 ![alt tag](./images/A-12.png)
 
 13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.
+13a. In **Copy Files...** you will need to add `**/*.yaml` to the contents
 
 14.  Next, we will package our application binary within a container.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol to add a new task. Search for task *Docker Compose* and click **Add**.
 
