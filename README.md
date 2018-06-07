@@ -179,9 +179,11 @@ $ git clone https://github.com/<YOUR-GITHUB-ACCOUNT>/k8s-springboot-data-rest.gi
 $ cd k8s-springboot-data-rest
 ```
 
-2.  If you haven't already done so, login to VSTS using your account ID and create a new VSTS project. Give a name to your VSTS project.
+2.  If you haven't already done so, login to [VSTS](https://www.visualstudio.com/team-services/) using your Microsoft Live ID (or Azure AD ID) and create an *Account*.  Give the Account a meaningful name (eg., Your initials-AzureLab) and then create a new VSTS project. Give a name to your VSTS project.
 
 ![alt tag](./images/A-02.png)
+
+**NOTE:**At this point, you may need to create an Azure **Service Principal** using the Azure CLI and then use the generated key and password to define a **Service Endpoint** in VSTS.  If you are not familiar with this process, please ask a lab procter to assist you!
 
 3.  We will now create a **Build** definition and define tasks which will execute as part of the application build process.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition**
 
