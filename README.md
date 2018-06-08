@@ -55,9 +55,9 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
 ```
 
-4.  Login into the Linux VM via SSH. 
+4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the Windows Sub-System for Linux (Windows 10) to login into the VM.  Use of Cloud Shell to SSH into the VM is not recommended.
 ```
-# In the Cloud Shell, SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
+# SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
 $ ssh labuser@x.x.x.x
 #
 ```
@@ -94,7 +94,7 @@ $ git --version
 $ sudo yum install -y java-1.8.0-openjdk-devel
 #
 # Check JDK version
-$ java --version
+$ java -version
 ```
 
 6.  Next, install **docker-ce** container runtime. Refer to the commands below.  You can also refer to the [Docker CE install docs for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
