@@ -7,6 +7,10 @@ In a nutshell, you will work on the following tasks.
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Container Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
+**Workflow:**
+
+![alt tag](./images/SB-VSTS-AKS.jpg)
+
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Spring Getting Started Guides](https://spring.io/guides)
 - [Docker Documentation](https://docs.docker.com/)
