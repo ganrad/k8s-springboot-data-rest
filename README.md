@@ -35,8 +35,8 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
 - This project requires **all** resources to be deployed to the same Azure **Resource Group**.
 - Make sure to specify either **eastus** or **centralus** as the *location* for the Azure *Resource Group* and the *AKS cluster*.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus), Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.
-  **June 13th 2018 Update:** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.
-- **Sep. 10th 2018 Update:** Visual Studio Team Services has been renamed to **Azure DevOps**.
+- **Update: June 13th 2018.** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.
+- **Update: Sep. 10th 2018.** Visual Studio Team Services has been renamed to **Azure DevOps**.
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -70,77 +70,77 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     ```
 
 5.  Install Azure CLI, Git client and Open JDK on this VM.
-```
-# Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
-#
-# Import the Microsoft repository key.
-$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-#
-# Create the local azure-cli repository information.
-$ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
-#
-# Install with the yum install command.
-$ sudo yum install azure-cli
-#
-# Test the install
-$ az -v
-#
-# Login to your Azure account
-$ az login -u <user name> -p <password>
-#
-# View help on az commands, sub-commands
-$ az --help
-#
-# Install Git client
-$ sudo yum install git
-#
-# Check Git version number
-$ git --version
-#
-# Install OpenJDK 8 on the VM.
-$ sudo yum install -y java-1.8.0-openjdk-devel
-#
-# Check JDK version
-$ java -version
-```
+    ```
+    # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
+    #
+    # Import the Microsoft repository key.
+    $ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    #
+    # Create the local azure-cli repository information.
+    $ sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+    #
+    # Install with the yum install command.
+    $ sudo yum install azure-cli
+    #
+    # Test the install
+    $ az -v
+    #
+    # Login to your Azure account
+    $ az login -u <user name> -p <password>
+    #
+    # View help on az commands, sub-commands
+    $ az --help
+    #
+    # Install Git client
+    $ sudo yum install git
+    #
+    # Check Git version number
+    $ git --version
+    #
+    # Install OpenJDK 8 on the VM.
+    $ sudo yum install -y java-1.8.0-openjdk-devel
+    #
+    # Check JDK version
+    $ java -version
+    ```
 
 6.  Next, install **docker-ce** container runtime. Refer to the commands below.  You can also refer to the [Docker CE install docs for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
-```
-$ sudo yum update
-$ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-$ sudo yum install docker-ce-18.03.0.ce
-$ sudo systemctl enable docker
-$ sudo groupadd docker
-$ sudo usermod -aG docker labuser
-```
+    ```
+    $ sudo yum update
+    $ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+    $ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    $ sudo yum install docker-ce-18.03.0.ce
+    $ sudo systemctl enable docker
+    $ sudo groupadd docker
+    $ sudo usermod -aG docker labuser
+    ```
 
-LOGOUT AND RESTART YOUR VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, you can either use the Cloud Shell or a terminal window in your workstation to Login to the Linux VM via SSH.
+    LOGOUT AND RESTART YOUR LINUX VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, log back in to the Linux VM via SSH.  Run the command below to make **docker** engine is running.
 
-```
-$ sudo docker info
-```
+    ```
+    $ docker info
+    ```
 
-7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image.
-```
-$ docker pull microsoft/vsts-agent
-$ docker images
-```
+7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image (~ 5.75GB).
+    ```
+    $ docker pull microsoft/vsts-agent
+    $ docker images
+    ```
 
 8.  Next, we will generate a VSTS personal access token (PAT) to connect our VSTS build agent to your VSTS account.  Login to VSTS using your account ID. In the upper right, click on your profile image and click **security**.  
 
-![alt tag](./images/C-01.png)
+    ![alt tag](./images/C-01.png)
 
-Click on **Add** to create a new PAT.  In the next page, provide a short description for this token, select a expiry period and click **Create Token**.  See screenshot below.
+    Click on **Add** to create a new PAT.  In the next page, provide a short description for this token, select a expiry period and click **Create Token**.  See screenshot below.
 
-![alt tag](./images/C-02.png)
+    ![alt tag](./images/C-02.png)
 
-In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
+    In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
 
 9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_ACCOUNT** and **VSTS_TOKEN** parameter, the value which you copied and saved in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
-```
-docker run -e VSTS_ACCOUNT=<YOUR ACCOUNT> -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
-```
+    ```
+    $ docker run -e VSTS_ACCOUNT=<YOUR ACCOUNT> -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
+    ```
 
 ### B] Deploy Azure Container Registry (ACR)
 In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in later steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
