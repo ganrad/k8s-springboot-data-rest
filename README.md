@@ -154,20 +154,6 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
     ![alt tag](./images/B-02.png)
 
-3.  From the Linux terminal window connected to the Bastion host, create a **Service Principal** and grant relevant permissions (role) to this principal.  This is required to allow our AKS cluster to pull container images from this ACR registry.
-    ```
-    # List your Azure subscriptions.  Note down the subscription ID.  We will need it in the next step.
-    $ az account list
-    #
-    # This step is optional. If you have multiple Azure subscriptions, then configure the appropriate subscription ID (value of 'id' from previous step) 
-    $ az account set --subscription <SUBSCRIPTION_ID>
-    #
-    # Create the Azure service principal.  Substitute values for SUBSCRIPTION_ID, RG_GROUP, REGISTRY_NAME & SERVICE_PRINCIPAL_NAME.  Specify a meaningful name for the service principal.
-    $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RG_NAME>/providers/Microsoft.ContainerRegistry/registries/<REGISTRY_NAME> --role Contributor --name <SERVICE_PRINCIPAL_NAME>
-    ```
-
-    **NOTE:** From the `JSON` output of the previous command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
-
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
@@ -283,163 +269,165 @@ In case you want to modify the default values used for MySQL database name and/o
 
 Follow the steps below to provision the AKS cluster and deploy the *po-service* microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
-```
-az provider register -n Microsoft.Network
-az provider register -n Microsoft.Storage
-az provider register -n Microsoft.Compute
-az provider register -n Microsoft.ContainerService
-```
+    ```
+    az provider register -n Microsoft.Network
+    az provider register -n Microsoft.Storage
+    az provider register -n Microsoft.Compute
+    az provider register -n Microsoft.ContainerService
+    ```
 
 2.  Switch back to the Bastion host (Linux VM) terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
-```
-# Switch to your home directory
-$ cd
-#
-# Create a new directory 'aztools' under home directory to store the kubectl binary
-$ mkdir aztools
-#
-# Install kubectl binary in the new directory
-$ az aks install-cli --install-location=./aztools/kubectl
-#
-# Add the location of 'kubectl' binary to your search path and export it.
-# Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your VM (Bastion Host) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you logout and log in to this VM.
-$ export PATH=$PATH:/home/labuser/aztools
-#
-# Check if kubectl is installed OK
-$ kubectl version -o yaml
-```
-**NOTE:** At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a browser (*Web UI*) for deploying the cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
+    ```
+    # Switch to your home directory
+    $ cd
+    #
+    # Create a new directory 'aztools' under home directory to store the kubectl binary
+    $ mkdir aztools
+    #
+    # Install kubectl binary in the new directory
+    $ az aks install-cli --install-location=./aztools/kubectl
+    #
+    # Add the location of 'kubectl' binary to your search path and export it.
+    # Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your VM (Bastion Host) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you logout and log in to this VM.
+    $ export PATH=$PATH:/home/labuser/aztools
+    #
+    # Check if kubectl is installed OK
+    $ kubectl version -o yaml
+    ```
+
+    **NOTE:** At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the AKS cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
-```
-# Create a 1 Node AKS cluster
-$ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys
-#
-# Verify state of AKS cluster
-$ az aks show -g myResourceGroup -n akscluster --output table
-```
+    ```
+    # Create a 1 Node AKS cluster
+    $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys
+    #
+    # Verify state of AKS cluster
+    $ az aks show -g myResourceGroup -n akscluster --output table
+    ```
 
 4.  Connect to the AKS cluster.
-```
-# Configure kubectl to connect to the AKS cluster
-$ az aks get-credentials --resource-group myResourceGroup --name akscluster
-#
-# Check cluster nodes
-$ kubectl get nodes -o wide
-#
-# Check default namespaces in the cluster
-$ kubectl get namespaces
-```
+    ```
+    # Configure kubectl to connect to the AKS cluster
+    $ az aks get-credentials --resource-group myResourceGroup --name akscluster
+    #
+    # Check cluster nodes
+    $ kubectl get nodes -o wide
+    #
+    # Check default namespaces in the cluster
+    $ kubectl get namespaces
+    ```
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
-```
-# Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f k8s-scripts/dev-namespace.json 
-#
-# List the namespaces
-$ kubectl get namespaces
-```
+    ```
+    # Make sure you are in the *k8s-springboot-data-rest* directory.
+    $ kubectl create -f k8s-scripts/dev-namespace.json 
+    #
+    # List the namespaces
+    $ kubectl get namespaces
+    ```
 
 6.  Create a new Kubernetes context and associate it with the **development** namespace.  We will be deploying all our application artifacts into this namespace in subsequent steps.
-```
-# Create the 'dev' context
-$ kubectl config set-context dev --cluster=akscluster --user=clusterUser_myResourceGroup_akscluster --namespace=development
-#
-# Switch the current context to 'dev'
-$ kubectl config use-context dev
-#
-# Check your current context (should list 'dev' in the output)
-$ kubectl config current-context
-```
+    ```
+    # Create the 'dev' context
+    $ kubectl config set-context dev --cluster=akscluster --user=clusterUser_myResourceGroup_akscluster --namespace=development
+    #
+    # Switch the current context to 'dev'
+    $ kubectl config use-context dev
+    #
+    # Check your current context (should list 'dev' in the output)
+    $ kubectl config current-context
+    ```
 
-7.  Configure Kubernetes to use the ACR (configured in step [B]) to pull our application container images and deploy containers.
-When creating deployments, replica sets or pods, AKS (Kubernetes) will try to use docker images already stored locally (on nodes) or pull them from the public docker hub.  To change this, we need to specify the ACR as part of Kubernetes object configuration (yaml or json).  Instead of specifying this directly in the configuration, we will use Kubernetes **Secrets**.  By using secrets, we tell the Kubernetes runtime to use the info. contained in the secret to authenticate against ACR and push/pull images.  In the Kubernetes object (pod definition), we reference the secret by it's name only.
+7.  Configure Kubernetes to pull application container images from ACR (configured in step [B]).  When AKS cluster is created, Azure also creates a 'Service Principal' (SP) to support cluster operability with other Azure resources.  This auto-generated service principal can be used to authenticate against the ACR.  To do so, we need to create an Azure AD role assignment that grants the cluster's SP access to the Azure Container Registry.  In a Linux terminal window, update the shell script *k8s-scripts/acr-auth.sh* by providing correct values for the following variables.
 
-kubectl parameter | Value to substitute
------------------ | -------------------
-SERVICE_PRINCIPAL_ID | 'appId' value from step [B]
-YOUR_PASSWORD | 'password' value from step [B]
+    Variable | Description
+    ----------------- | -------------------
+    AKS_RESOURCE_GROUP | Name of the AKS resource group
+    AKS_CLUSTER_NAME | Name of the AKS cluster instance
+    ACR_RESOURCE_GROUP | Name of the ACR resource group
+    ACR_Name | Name of ACR instance
 
-```
-# Create a secret containing credentials to authenticate against ACR.  Substitute values for REGISTRY_NAME, YOUR_MAIL, SERVICE_PRINCIPAL ID and YOUR_PASSWORD.
-$ kubectl create secret docker-registry acr-registry --docker-server <REGISTRY_NAME>.azurecr.io --docker-email <YOUR_MAIL> --docker-username=<SERVICE_PRINCIPAL_ID> --docker-password <YOUR_PASSWORD>
-#
-# List the secrets
-$ kubectl get secrets
-```
+    ```
+    # chmod 700 ./k8s-scripts/acr-auth.sh
+    #
+    # Update the shell script and then run it
+    $ ./k8s-scripts/acr-auth.sh
+    #
+    ```
 
-At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster within VSTS.  To do this, in your Terminal, `cat` the kube config file:
-```
-cat ~/.kube/config
-```
+    At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster within VSTS.  To do this, in your Terminal, `cat` the kube config file:
+    ```
+    cat ~/.kube/config
+    ```
 
-It should appear similar to this
+    It should appear similar to this
 
-```
-apiVersion: v1
-clusters:
-- cluster:
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJU---------UZJQ0FURS0tLS0tCg==
-    server: https://YOURREGISTRY.hcp.centralus.azmk8s.io:443
-  name: akscluster
-contexts:
-- context:
-    cluster: akscluster
-    namespace: development
-    user: clusterUser_atsAKS2_akscluster
-  name: akscluster
-- context:
-    cluster: akscluster
-    namespace: development
-    user: clusterUser_myResourceGroup_akscluster
-  name: dev
-current-context: akscluster
-kind: Config
-preferences: {}
-users:
-- name: clusterUser_atsAKS2_akscluster
-  user:
-    client-certificate-data: LS0tLS1CRUdJT---------lGSUNBVEUtLS0tLQo=
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJV-------------UgS0VZLS0tLS0K
-    token: 3----------------a
-```
+    ```
+    apiVersion: v1
+    clusters:
+    - cluster:
+      certificate-authority-data: LS0tLS1CRUdJTiBDRVJU---------UZJQ0FURS0tLS0tCg==
+      server: https://YOURREGISTRY.hcp.centralus.azmk8s.io:443
+    name: akscluster
+    contexts:
+    - context:
+      cluster: akscluster
+      namespace: development
+      user: clusterUser_atsAKS2_akscluster
+    name: akscluster
+    - context:
+      cluster: akscluster
+      namespace: development
+      user: clusterUser_myResourceGroup_akscluster
+    name: dev
+    current-context: akscluster
+    kind: Config
+    preferences: {}
+    users:
+    - name: clusterUser_atsAKS2_akscluster
+      user:
+        client-certificate-data: LS0tLS1CRUdJT---------lGSUNBVEUtLS0tLQo=
+        client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJV-------------UgS0VZLS0tLS0K
+        token: 3----------------a
+    ```
 
 8.  Update the **k8s-scripts/app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
-![alt tag](./images/D-01.PNG)
+    ![alt tag](./images/D-01.PNG)
 
 9.  Deploy the **MySQL** database container.
-```
-# Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f k8s-scripts/mysql-deploy.yaml
-#
-# List pods.  You can specify the '-w' switch to watch the status of pod change.
-$ kubectl get pods
-```
-The status of the mysql pod should change to *Running*.  See screenshot below.
+    ```
+    # Make sure you are in the *k8s-springboot-data-rest* directory.
+    $ kubectl create -f k8s-scripts/mysql-deploy.yaml
+    #
+    # List pods.  You can specify the '-w' switch to watch the status of pod change.
+    $ kubectl get pods
+    ```
+    The status of the mysql pod should change to *Running*.  See screenshot below.
 
-![alt tag](./images/D-02.png)
+    ![alt tag](./images/D-02.png)
 
-(Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID (Value under 'Name' column listed in the previous command output).  The password for the 'mysql' user is 'password'.
-```
-$ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
-```
+    (Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID (Value under 'Name' column listed in the previous command output).  The password for the 'mysql' user is 'password'.
+    ```
+    $ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
+    ```
 
 10.  Deploy the **po-service** microservice container.
-```
-# Make sure you are in the *k8s-springboot-data-rest* directory.
-$ kubectl create -f k8s-scripts/app-deploy.yaml
-#
-# List pods.  You can specify the '-w' switch to watch the status of pod change.
-$ kubectl get pods
-```
-The status of the mysql pod should change to *Running*.  See screenshot below.
+    ```
+    # Make sure you are in the *k8s-springboot-data-rest* directory.
+    $ kubectl create -f k8s-scripts/app-deploy.yaml
+    #
+    # List pods.  You can specify the '-w' switch to watch the status of pod change.
+    $ kubectl get pods
+    ```
+    The status of the po-service pod should change to *Running*.  See screenshot below.
 
-![alt tag](./images/D-03.png)
+    ![alt tag](./images/D-03.png)
 
 11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets auto-provisioned and configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
 
-![alt tag](./images/D-04.png)
+     ![alt tag](./images/D-04.png)
 
 ### Accessing the Purchase Order Microservice REST API 
 
