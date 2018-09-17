@@ -339,7 +339,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     $ kubectl config current-context
     ```
 
-7.  Configure Kubernetes to pull application container images from ACR (configured in step [B]).  When AKS cluster is created, Azure also creates a 'Service Principal' (SP) to support cluster operability with other Azure resources.  This auto-generated service principal can be used to authenticate against the ACR.  To do so, we need to create an Azure AD role assignment that grants the cluster's SP access to the Azure Container Registry.  In a Linux terminal window, update the shell script *k8s-scripts/acr-auth.sh* by providing correct values for the following variables.
+7.  Configure Kubernetes to pull application container images from ACR (configured in step [B]).  When AKS cluster is created, Azure also creates a 'Service Principal' (SP) to support cluster operability with other Azure resources.  This auto-generated service principal can be used to authenticate against the ACR.  To do so, we need to create an Azure AD role assignment that grants the cluster's SP access to the Azure Container Registry.  In a Linux terminal window, update the shell script `k8s-scripts/acr-auth.sh` with correct values for the following variables.
 
     Variable | Description
     ----------------- | -------------------
@@ -347,6 +347,8 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     AKS_CLUSTER_NAME | Name of the AKS cluster instance
     ACR_RESOURCE_GROUP | Name of the ACR resource group
     ACR_Name | Name of ACR instance
+
+    Then execute this shell script.  See below.
 
     ```
     # chmod 700 ./k8s-scripts/acr-auth.sh
