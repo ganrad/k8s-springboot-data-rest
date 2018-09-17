@@ -222,7 +222,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
     ![alt tag](./images/A-82.PNG)
 
-9.  Go back to your build definition and click on the plus symbol beside **Phase 1**.  Search by text **replace tokens** and then select the extension **Replace Tokens** which you just installed in the previous step.  Click **Add**.
+9.  Go back to your build definition and click on the plus symbol beside **Agent job 1**.  Search by text **replace tokens** and then select the extension **Replace Tokens** which you just installed in the previous step.  Click **Add**.
 
     ![alt tag](./images/A-09.png)
 
@@ -230,7 +230,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
      ![alt tag](./images/A-10.png)
 
-11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.  When the build pipeline runs, it replaces the value of the variable **svc.name.k8s.namespace* with **mysql.development** in file *src/main/resources/application.properties*.  This allows us to modify the connection settings for MySQL service in the PO microservice application without having to change any line of code.  As such, the MySQL service could be deployed in any Kubernetes namespace and we can easily connect to that instance by setting this variable at build time.
+11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes MySQL service name and namespace name as shown in the screenshot below.  When the build pipeline runs, it replaces the value of the variable *svc.name.k8s.namespace* with **mysql.development** in file *src/main/resources/application.properties*.  This allows us to modify the connection settings for MySQL service in the PO microservice application without having to change any line of code.  As such, the MySQL service could be deployed in any Kubernetes namespace and we can easily connect to that instance by setting this variable at build time.
 
      Variable Name | Value
      ------------- | ------
@@ -242,11 +242,11 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
      ![alt tag](./images/A-12.png)
 
-13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.  In **Copy Files...** task, you will need to add `**/*.yaml` to the contents.
+13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.  In **Copy Files...** task, you will need to add `**/*.yaml` to the **Contents** field. See screenshot below.
    
      ![alt tag](./images/A-20.PNG)
 
-14.  Next, we will package our application binary within a container.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol besides *Agent job 1* to add a new task. Search for task *Docker Compose* and click **Add**.
+14.  Next, we will package our application binary within a container image.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol besides *Agent job 1* to add a new task. Search for task *Docker Compose* and click **Add**.
 
      ![alt tag](./images/A-14.png)
 
