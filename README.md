@@ -416,16 +416,16 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ```
 
 10.  Deploy the **po-service** microservice container.
-    ```
-    # Make sure you are in the *k8s-springboot-data-rest* directory.
-    $ kubectl create -f k8s-scripts/app-deploy.yaml
-    #
-    # List pods.  You can specify the '-w' switch to watch the status of pod change.
-    $ kubectl get pods
-    ```
-    The status of the po-service pod should change to *Running*.  See screenshot below.
+     ```
+     # Make sure you are in the *k8s-springboot-data-rest* directory.
+     $ kubectl create -f k8s-scripts/app-deploy.yaml
+     #
+     # List pods.  You can specify the '-w' switch to watch the status of pod change.
+     $ kubectl get pods
+     ```
+     The status of the po-service pod should change to *Running*.  See screenshot below.
 
-    ![alt tag](./images/D-03.png)
+     ![alt tag](./images/D-03.png)
 
 11.  (Optional) As part of deploying the *po-service* Kubernetes service object, an Azure cloud load balancer gets auto-provisioned and configured. The load balancer accepts HTTP requests for our microservice and re-directes all calls to the service endpoint (port 8080).  Take a look at the Azure load balancer.
 
