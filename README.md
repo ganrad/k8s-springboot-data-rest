@@ -62,6 +62,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     ```
 
 4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the Windows Sub-System for Linux (Windows 10) to login into the VM.
+
     **NOTE:** Use of Cloud Shell to SSH into the VM is not recommended.
     ```
     # SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
@@ -115,7 +116,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     $ sudo usermod -aG docker labuser
     ```
 
-    LOGOUT AND RESTART YOUR LINUX VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, log back in to the Linux VM via SSH.  Run the command below to make **docker** engine is running.
+    LOGOUT AND RESTART YOUR LINUX VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, log back in to the Linux VM via SSH.  Run the command below to verify **docker** engine is running.
 
     ```
     $ docker info
@@ -147,24 +148,25 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
 1.  Login to your Azure portal account.  Then click on **Container registries** in the navigational panel on the left.  If you don't see this option in the nav. panel then click on **All services**, scroll down to the **COMPUTE** section and click on the star beside **Container registries**.  This will add the **Container registries** option to the service list in the navigational panel.  Now click on the **Container registries** option.  You will see a page as displayed below.
 
-![alt tag](./images/B-01.png)
+    ![alt tag](./images/B-01.png)
 
 2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and leave the location as-is.  The location should default to the location assigned to the resource group.  Select the **Basic** pricing tier.  Click **Create** when you are done.
 
-![alt tag](./images/B-02.png)
+    ![alt tag](./images/B-02.png)
 
 3.  From the Linux terminal window connected to the Bastion host, create a **Service Principal** and grant relevant permissions (role) to this principal.  This is required to allow our AKS cluster to pull container images from this ACR registry.
-```
-# List your Azure subscriptions.  Note down the subscription ID.  We will need it in the next step.
-$ az account list
-#
-# (Optional) Select and use the appropriate subscription ID (value of 'id' from previous step) 
-$ az account set --subscription <SUBSCRIPTION_ID>
-#
-# Create the Azure service principal.  Substitute values for SUBSCRIPTION_ID, RG_GROUP, REGISTRY_NAME & SERVICE_PRINCIPAL_NAME.  Specify a meaningful name for the service principal.
-$ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RG_NAME>/providers/Microsoft.ContainerRegistry/registries/<REGISTRY_NAME> --role Contributor --name <SERVICE_PRINCIPAL_NAME>
-```
-**NOTE:** From the `JSON` output of the previous command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
+    ```
+    # List your Azure subscriptions.  Note down the subscription ID.  We will need it in the next step.
+    $ az account list
+    #
+    # This step is optional. If you have multiple Azure subscriptions, then configure the appropriate subscription ID (value of 'id' from previous step) 
+    $ az account set --subscription <SUBSCRIPTION_ID>
+    #
+    # Create the Azure service principal.  Substitute values for SUBSCRIPTION_ID, RG_GROUP, REGISTRY_NAME & SERVICE_PRINCIPAL_NAME.  Specify a meaningful name for the service principal.
+    $ az ad sp create-for-rbac --scopes /subscriptions/<SUBSCRIPTION_ID>/resourcegroups/<RG_NAME>/providers/Microsoft.ContainerRegistry/registries/<REGISTRY_NAME> --role Contributor --name <SERVICE_PRINCIPAL_NAME>
+    ```
+
+    **NOTE:** From the `JSON` output of the previous command, copy and save the values for **appId** and **password**.  We will need these values in step [D] when we deploy this application to AKS.
 
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
@@ -173,97 +175,98 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
 1.  Fork this [GitHub repository](https://github.com/ganrad/k8s-springboot-data-rest) to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  You must be signed in to your GitHub account in order to fork this repository.
 
-![alt tag](./images/A-01.png)
+    ![alt tag](./images/A-01.png)
 
-From the terminal window connected to the Bastion host, clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
-```
-# Switch to home directory
-$ cd
-# Clone your GitHub repository.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
-$ git clone https://github.com/<YOUR-GITHUB-ACCOUNT>/k8s-springboot-data-rest.git
-#
-# Switch to the 'k8s-springboot-data-rest' directory
-$ cd k8s-springboot-data-rest
-```
+    From the terminal window connected to the Bastion host, clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
+    ```
+    # Switch to home directory
+    $ cd
+    # Clone your GitHub repository.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
+    $ git clone https://github.com/<YOUR-GITHUB-ACCOUNT>/k8s-springboot-data-rest.git
+    #
+    # Switch to the 'k8s-springboot-data-rest' directory
+    $ cd k8s-springboot-data-rest
+    ```
 
-2.  If you haven't already done so, login to [VSTS](https://www.visualstudio.com/team-services/) using your Microsoft Live ID (or Azure AD ID) and create an *Account*.  Give the Account a meaningful name (eg., Your initials-AzureLab) and then create a new VSTS project. Give a name to your VSTS project.
+2.  If you haven't already done so, login to [VSTS](https://www.visualstudio.com/team-services/) using your Microsoft Live ID (or Azure AD ID) and create an *Organization*.  Give the Organization a meaningful name (eg., Your initials-AzureLab) and then create a new DevOps project. Give a name to your project.
 
-![alt tag](./images/A-02.png)
+    ![alt tag](./images/A-02.png)
 
-**NOTE:** At this point, you may need to create an Azure **Service Principal** using the Azure CLI and then use the generated key and password to define a **Service Endpoint** in VSTS.  If you are not familiar with this process, please ask a lab procter to assist you!
+    **NOTE:** At this point, you may need to create an Azure **Service Principal** in VSTS.  If you are not familiar with this process, please ask a lab procter to assist you!
 
-3.  We will now create a **Build** definition and define tasks which will execute as part of the application build process.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition**
+3.  We will now create a **Build** definition and define tasks which will execute as part of the application build process.  Click on **Build and Release** in the top menu and then click on *Builds*.  Click on **New definition/pipeline**
 
-![alt tag](./images/A-03.png)
+    ![alt tag](./images/A-03.png)
 
 4.  In the **Select a source** page, select *GitHub* as the source repository. Give your connection a *name* and then select *Authorize using OAuth* link.  Optionally, you can use a GitHub *personal access token* instead of OAuth.  When prompted, sign in to your **GitHub account**.  Then select *Authorize* to grant access to your VSTS account.
 
 5.  Once authorized, select the **GitHub Repo** which you forked in step [1] above.  Make sure you replace the account name in the **GitHub URL** with your account name.  Then hit continue.
 
-![alt tag](./images/A-05.png)
+    ![alt tag](./images/A-05.png)
 
 6.  Search for text *Maven* in the **Select a template** field and then select *Maven* build.  Then click apply.
 
-![alt tag](./images/A-06.png)
+    ![alt tag](./images/A-06.png)
 
 7.  Select *Default* in the **Agent Queue** field.  The VSTS build agent which you deployed in step [A] connects to this *queue* and listens for build requests.
 
-![alt tag](./images/A-07.png)
+    ![alt tag](./images/A-07.png)
 
-8.  On the top extensions menu in VSTS, click on **Browse Markplace** and then search for text **replace tokens**.  In the results list below, click on **Colin's ALM Corner Build and Release Tools** (circled in yellow in the screenshot).  Then click on **Get it free** to install this extension in your VSTS account.
+8.  On the top extensions menu in VSTS, click on **Browse Markplace** (Bag icon).  Save your build pipeline before proceeding.  Then search for text **replace tokens**.  In the results list below, click on **Colin's ALM Corner Build and Release Tools** (circled in yellow in the screenshot).  Then click on **Get it free** to install this extension in your VSTS account.
 
-![alt tag](./images/A-08.PNG)
+    ![alt tag](./images/A-08.PNG)
 
-Next, search for text **Release Management Utility Tasks** extension provided by Microsoft DevLabs.  This extension includes the **Tokenizer utility** which we will be using in a continuous deployment (CD) step later on in this project.  Click on **Get it free** to install this extension in your VSTS account.  See screenshot below.
+    Next, search for text **Release Management Utility Tasks** extension provided by Microsoft DevLabs.  This extension includes the **Tokenizer utility** which we will be using in a continuous deployment (CD) step later on in this project.  Click on **Get it free** to install this extension in your VSTS account.  See screenshot below.
 
-![alt tag](./images/A-81.PNG)
+    ![alt tag](./images/A-81.PNG)
 
-![alt tag](./images/A-82.PNG)
+    ![alt tag](./images/A-82.PNG)
 
 9.  Go back to your build definition and click on the plus symbol beside **Phase 1**.  Search by text **replace tokens** and then select the extension **Replace Tokens** which you just installed in the previous step.  Click **Add**.
 
-![alt tag](./images/A-09.png)
+    ![alt tag](./images/A-09.png)
 
-10.  Click on the **Replace Tokens** task and drag it to the top of the task list.  In the **Source Path** field, select *src/main/resources* and specify `*.properties` in the **Target File Pattern** field.  In the **Token Regex** field, specify `__(\w+[.\w+]*)__` as shown in the screenshot below.  In the next step, we will use this task to specify the target kubernetes service name and namespace name.
+10.  Click on the **Replace Tokens** task and drag it to the top of the task list.  In the **Display name** field, specify *Replace MySql service name and k8s namespace in Springboot config file*.  In the **Source Path** field, select *src/main/resources* and specify `*.properties` in the **Target File Pattern** field.  Click on **Advanced** and in the **Token Regex** field, specify `__(\w+[.\w+]*)__` as shown in the screenshot below.  In the next step, we will use this task to specify the target service name and Kubernetes namespace name for MySQL. (Ask a proctor if you have any questions).
 
-![alt tag](./images/A-10.png)
+     ![alt tag](./images/A-10.png)
 
-11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.
+11.  Click on the **Variables** tab and add a new variable to specify the Kubernetes service name and namespace name as shown in the screenshot below.  When the build pipeline runs, it replaces the value of the variable **svc.name.k8s.namespace* with **mysql.development** in file *src/main/resources/application.properties*.  This allows us to modify the connection settings for MySQL service in the PO microservice application without having to change any line of code.  As such, the MySQL service could be deployed in any Kubernetes namespace and we can easily connect to that instance by setting this variable at build time.
 
-Variable Name | Value
-------------- | ------
-svc.name.k8s.namespace | mysql.development
+     Variable Name | Value
+     ------------- | ------
+     svc.name.k8s.namespace | mysql.development
 
-![alt tag](./images/A-11.png)
+     ![alt tag](./images/A-11.png)
 
 12.  Switch back to the **Tasks** tab and click on the **Maven** task.  Specify values for fields **Goal(s)**, **Options** as shown in the screen shot below.  Ensure **Publish to TFS/Team Services** checkbox is enabled.
 
-![alt tag](./images/A-12.png)
+     ![alt tag](./images/A-12.png)
 
-13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.
-13a. In **Copy Files...** you will need to add `**/*.yaml` to the contents
+13.  Go thru the **Copy Files...** and **Publish Artifact:...** tasks.  These tasks copy the application binary artifacts (*.jar) to the **drop** location on the VSTS server.  In **Copy Files...** task, you will need to add `**/*.yaml` to the contents.
+   
+     ![alt tag](./images/A-20.PNG)
 
-14.  Next, we will package our application binary within a container.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol to add a new task. Search for task *Docker Compose* and click **Add**.
+14.  Next, we will package our application binary within a container.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol besides *Agent job 1* to add a new task. Search for task *Docker Compose* and click **Add**.
 
-![alt tag](./images/A-14.png)
+     ![alt tag](./images/A-14.png)
 
-15.  Click on the *Docker Compose ...* task on the left panel.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and specify *$(Build.BuildNumber)* for field **Additional Image Tags**.  Also enable **Include Latest Tag** checkbox.  See screenshot below.
+15.  Click on the *Docker Compose ...* task on the left panel.  Specify *Build container image* for **Display name** field and *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  Click on **Authorize**.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Build service images* and specify *$(Build.BuildNumber)* for field **Additional Image Tags**.  Also enable **Include Latest Tag** checkbox.  See screenshot below.
 
-![alt tag](./images/A-15.PNG)
+     ![alt tag](./images/A-15.PNG)
 
 16.  Once our application container image has been built, we will push it into the ACR.  Let's add another task to publish the container image built in the previous step to ACR.  Similar to step [15], search for task *Docker Compose* and click **Add**.
 
-17.  Click on the *Docker Compose ...* task on the left.  Specify *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription.  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Push service images* and specify *$(Build.BuildNumber)* for field **Additional Image Tags**.  Also enable **Include Latest Tag** checkbox.  See screenshot below.
+17.  Click on the *Docker Compose ...* task on the left.  Specify *Push container image to ACR* for field **Display name** and *Azure Container Registry* for **Container Registry Type**.  In the **Azure Subscription** field, select your Azure subscription (Under Available Azure service connections).  In the **Azure Container Registry** field, select the ACR which you created in step [B] above.  Check to make sure the **Docker Compose File** field is set to `**/docker-compose.yml`.  Enable **Qualify Image Names** checkbox.  In the **Action** field, select *Push service images* and specify *$(Build.BuildNumber)* for field **Additional Image Tags**.  Also enable **Include Latest Tag** checkbox.  See screenshot below.
 
-![alt tag](./images/A-17.PNG)
+     ![alt tag](./images/A-17.PNG)
 
 18.  Click **Save and Queue** to save the build definition and queue it for execution. Wait for the build process to finish.  When all build tasks complete OK and the build process finishes, you will see the screen below.
 
-![alt tag](./images/A-18.png)
+     ![alt tag](./images/A-18.png)
 
-In the VSTS build agent terminal window, you will notice that a build request was received from VSTS and processed successfully. See below.
+     In the VSTS build agent terminal window, you will notice that a build request was received from VSTS and processed successfully. See below.
 
-![alt tag](./images/A-19.png)
+     ![alt tag](./images/A-19.png)
 
 ### D] Create an Azure Kubernetes Service (AKS) cluster and deploy Springboot microservice
 In this step, we will first deploy an AKS cluster on Azure.  The Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  Kubernetes resources (object definitions) are usually specified in manifest files (yaml/json) and then submitted to the API Server.  The API server is responsible for instantiating corresponding objects and bringing the state of the system to the desired state.
