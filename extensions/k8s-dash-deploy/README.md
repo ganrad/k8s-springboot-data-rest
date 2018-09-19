@@ -115,7 +115,7 @@ YAML files for deploying all required Kubernetes objects (API resources) are pro
     AKS_RESOURCE_GROUP | Name of the AKS resource group
     AKS_CLUSTER_NAME | Name of the AKS cluster instance
     ACR_RESOURCE_GROUP | Name of the ACR resource group
-    ACR_Name | Name of ACR instance
+    ACR_NAME | Name of ACR instance
 
     Then execute this shell script.  See below.
 

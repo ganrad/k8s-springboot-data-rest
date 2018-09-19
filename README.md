@@ -388,7 +388,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     AKS_RESOURCE_GROUP | Name of the AKS resource group
     AKS_CLUSTER_NAME | Name of the AKS cluster instance
     ACR_RESOURCE_GROUP | Name of the ACR resource group
-    ACR_Name | Name of ACR instance
+    ACR_NAME | Name of ACR instance
 
     Then execute this shell script.  See below.
 
