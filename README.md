@@ -1,5 +1,10 @@
 #  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS)
 
+**Updates:**
+- **June 13th 2018:** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.
+- **Sep. 10th 2018:** Visual Studio Team Services has been renamed to [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/).
+
+**Description:**
 In a nutshell, you will work on the following tasks.
 1.  Define a **Build Pipeline** in VSTS (Visual Studio Team Services).  Execute the build pipeline to package a containerized Springboot Java Microservice Application (**po-service 1.0**) and push it to ACR (Azure Container Registry).  This task focuses on the **Continuous Integration** aspect of the DevOps process.  Complete Steps [A] thru [C].
 2.  Deploy an AKS (Azure Kubernetes Service) Kubernetes cluster and manually deploy the containerized microservice application on AKS.  Complete Step [D].
@@ -35,8 +40,6 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - Commands which are required to be issued on a Linux terminal window are prefixed with a `$` sign.  Lines that are prefixed with the `#` symbol are to be treated as comments.
 - This project requires **all** resources to be deployed to the same Azure **Resource Group**.
 - Make sure to specify either **eastus** or **centralus** as the *location* for the Azure *Resource Group* and the *AKS cluster*.  At the time of this writing, AKS is available in **Public Preview** in East US (eastus), Central US (centralus), Canada (canadaeast, canadacentral) and West Europe (westeurope) regions only.
-- **Update: June 13th 2018.** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.
-- **Update: Sep. 10th 2018.** Visual Studio Team Services has been renamed to **Azure DevOps**.
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 This Linux VM will be used for the following purposes
@@ -138,9 +141,43 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 
     In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
 
-9.  Use the command below to start the VSTS build container.  Substitute the correct value for **VSTS_ACCOUNT** and **VSTS_TOKEN** parameter, the value which you copied and saved in a file in the previous step.  The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".
+9.  In the Linux VM command window, use the command below to start the VSTS build container.  Refer to the table below to set the build container parameter values correctly.
+    -----------------
+    Parameter | Value
+    -----------------
+    VSTS_TOKEN | VSTS PAT Token.  This is the value which you copied and saved in a file in the previous step.
+    VSTS_ACCOUNT | VSTS Organization name.  An Org. is a container for DevOps projects in Azure DevOps (VSTS) platform.  It's usually the first part (Prefix) of the VSTS URL (eg., <Prefix>.visualstudio.com).  If you are using Azure DevOps URL, then it is the last part (Context Path) (eg., dev.azure.com/<Context Path>.
+
     ```
     $ docker run -e VSTS_ACCOUNT=<YOUR ACCOUNT> -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
+    ```
+    The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".  See below.
+    ```
+    Determining matching VSTS agent...
+    Downloading and installing VSTS agent...
+
+    >> End User License Agreements:
+
+    Building sources from a TFVC repository requires accepting the Team Explorer Everywhere End User License Agreement. This step is not required for building sources from Git repositories.
+
+    A copy of the Team Explorer Everywhere license agreement can be found at:
+      /vsts/agent/externals/tee/license.html
+
+
+    >> Connect:
+
+    Connecting to server ...
+
+    >> Register Agent:
+
+    Scanning for tool capabilities.
+    Connecting to the server.
+    Successfully added the agent
+    Testing agent connection.
+    2018-09-17 16:59:56Z: Settings Saved.
+    Scanning for tool capabilities.
+    Connecting to the server.
+    2018-09-17 16:59:59Z: Listening for Jobs
     ```
 
 ### B] Deploy Azure Container Registry (ACR)
