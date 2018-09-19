@@ -10,72 +10,78 @@ YAML files for deploying all required Kubernetes objects (API resources) are pro
 
 ### Provision the AKS cluster
 1.  Open a terminal window on the **Host** machine & use Azure CLI to login to your Azure account.  Next, install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
-```
-# (Optional) Login to your Azure account.  Substitute correct values for <Azure account id> and <password>.
-$ az login -u <Azure account id> -p <password>
-#
-# Switch to your home directory
-$ cd
-#
-# Create a new directory 'aztools' under home directory to store the kubectl binary
-$ mkdir aztools
-#
-# Install kubectl binary in the new directory
-$ az aks install-cli --install-location=./aztools/kubectl
-#
-# Add the location of 'kubectl' binary to your search path and export it.
-# Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your Host (VM) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you open a new terminal window.
-$ export PATH=$PATH:/home/labuser/aztools
-#
-# Check if kubectl is installed OK
-$ kubectl version -o yaml
-```
+    ```
+    # (Optional) Login to your Azure account.  Substitute correct values for <Azure account id> and <password>.
+    $ az login -u <Azure account id> -p <password>
+    #
+    # Switch to your home directory
+    $ cd
+    #
+    # Create a new directory 'aztools' under home directory to store the kubectl binary
+    $ mkdir aztools
+    #
+    # Install kubectl binary in the new directory
+    $ az aks install-cli --install-location=./aztools/kubectl
+    #
+    # Add the location of 'kubectl' binary to your search path and export it.
+    # Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your Host (VM) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you open a new terminal window.
+    $ export PATH=$PATH:/home/labuser/aztools
+    #
+    # Check if kubectl is installed OK
+    $ kubectl version -o yaml
+    ```
 
-2.  Using a web browser, login to the [Azure portal](https://portal.azure.com) using your account ID and password.  Verify that you have adequate permissions to register applications.  See screenshot below.
+2.  Using a web browser, login to the [Azure portal](https://portal.azure.com) using your account ID and password.  Access the **Azure Active Directory** blade and verify that you have adequate permissions to register applications.  See screenshot below.
 
-![alt tag](./images/Az-01.PNG)
+    ![alt tag](./images/Az-01.PNG)
 
-3.  Search for **Kubernetes services (PREVIEW)** PaaS service in **All services**. Click on the link to open up the blade (detail panel).  Then click on *Create Kubernetes service* button.
+3.  Search for **Kubernetes services** PaaS service in **All services**. Click on the link to open up the blade (detail panel).  Then click on *Create Kubernetes service* button (or ** + Add ** new cluster in case you have already deployed other clusters).
 
-![alt tag](./images/k8s-dash-deploy-01.PNG)
+    ![alt tag](./images/k8s-dash-deploy-01.PNG)
 
-In the *Basics* tab, leave the default value for **Service principal** and specify values for **Subscription**, **Resource group**, **Kubernetes cluster name** & **DNS name prefix** as shown in the screenshot below.  Also, change the value of field **Node count** to **1** or else AKS will deploy a 3-node cluster (default).  Click **Next:Networking**.
+    In the *Basics* tab, specify values for **Subscription**, **Resource group**, **Kubernetes cluster name** & **DNS name prefix** as shown in the screenshot below.  Also, change the value of field **Node count** to **1** or else AKS will deploy a 3-node cluster (default).  Click **Next:Authentication**.
 
-![alt tag](./images/k8s-dash-deploy-02.PNG)
+    ![alt tag](./images/k8s-dash-deploy-02.PNG)
 
-Leave all the default values as-is on the **Networking** tab.  Click **Next:Monitoring**.
+    In the *Authentication* tab, leave the default value for **Service principal** and click **Next:Networking**.
 
-![alt tag](./images/k8s-dash-deploy-03.PNG)
+    ![alt tag](./images/k8s-dash-deploy-021.PNG)
 
-Leave the default values on the **Monitoring** and **Tags** tabs and click on **Review + create** button.
+    Leave all the default values as-is on the **Networking** tab.  Click **Next:Monitoring**.
 
-![alt tag](./images/k8s-dash-deploy-04.PNG)
+    ![alt tag](./images/k8s-dash-deploy-03.PNG)
 
-In the summary page, review all the details and then click on **Create**.
+    Leave the default values on the **Monitoring** and **Tags** tabs and click on **Review + create** button.
 
-![alt tag](./images/k8s-dash-deploy-041.PNG)
+    ![alt tag](./images/k8s-dash-deploy-041.PNG)
 
-The AKS cluster will take a few minutes (5-10 mins) to get provisioned.  Once the cluster creation process finishes, the **akscluster** cluster will be displayed in the list as shown in the screenshot below.
+    ![alt tag](./images/k8s-dash-deploy-04.PNG)
 
-![alt tag](./images/k8s-dash-deploy-05.PNG)
+    In the summary page, review all the details and then click on **Create**.
+
+    ![alt tag](./images/k8s-dash-deploy-042.PNG)
+
+    The AKS cluster will take a few minutes (5-10 mins) to get provisioned.  Once the cluster creation process finishes, the **akscluster** cluster will be displayed in the list as shown in the screenshot below.
+
+    ![alt tag](./images/k8s-dash-deploy-05.PNG)
 
 4.  Switch back to the *Host* terminal window and start the Kubernetes Dashboard proxy using **one** of the options listed below
-- Use the Kubernetes proxy (kubectl) to connect to Kubernetes Dashboard
-```
-# Configure kubectl to connect to the AKS cluster
-$ az aks get-credentials --resource-group myResourceGroup --name akscluster
-#
-# Start the Kubernetes dashboard proxy
-$ kubectl proxy -p 8001
-```
-- Use Azure AKS CLI to connect to the Kubernetes Dashboard
-```
-# Configure kubectl to connect to the AKS cluster
-$ az aks get-credentials --resource-group myResourceGroup --name akscluster
-#
-# Start the Kubernetes dashboard by running the following command
-$ az aks browse --name akscluster --resource-group myResourceGroup
-```
+    - Use the Kubernetes proxy (kubectl) to connect to Kubernetes Dashboard
+    ```
+    # Configure kubectl to connect to the AKS cluster
+    $ az aks get-credentials --resource-group myResourceGroup --name akscluster
+    #
+    # Start the Kubernetes dashboard proxy
+    $ kubectl proxy -p 8001
+    ```
+    - Use Azure AKS CLI to connect to the Kubernetes Dashboard
+    ```
+    # Configure kubectl to connect to the AKS cluster
+    $ az aks get-credentials --resource-group myResourceGroup --name akscluster
+    #
+    # Start the Kubernetes dashboard by running the following command
+    $ az aks browse --name akscluster --resource-group myResourceGroup
+    ```
 
 5.  Open another browser tab and point your browser to the Kubernetes dashboard URL [http://localhost:8001/api/v1/namespaces/kube-system/services/http:kubernetes-dashboard:/proxy/](http://localhost:8001/api/v1/namespaces/kube-system/services/http:kubernetes-dashboard:/proxy/)
 
