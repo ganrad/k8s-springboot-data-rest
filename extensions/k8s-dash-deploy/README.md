@@ -97,7 +97,8 @@ YAML files for deploying all required Kubernetes objects (API resources) are pro
 
 8.  Switch back to the terminal window.  Create the **dev** Kubernetes context and make it the current context.  We will be deploying the **MySQL** and **po-service** application pods and all associated Kubernetes resources (objects) within this namespace.
     ```
-    # Create the 'dev' context
+    # Create the 'dev' context.  Remember to specify correct values for 'Resource Group' and 'AKS Cluster' names in the '--user' parameter.
+    # eg., --user=clusterUser_<Resource Group Name>_<AKS Cluster Name>
     $ kubectl config set-context dev --cluster=akscluster --user=clusterUser_myResourceGroup_akscluster --namespace=development
     #
     # Switch the current context to 'dev'
@@ -150,7 +151,7 @@ Alternatively, if you are new to Kubernetes then you may want to proceed with th
 
        ![alt tag](./images/k8s-dash-deploy-13.PNG)
 
-       You may have to refresh the web page to view the updates. 
+       You may have to refresh the web page to view the status of the Kubernetes API objects.
 
        ![alt tag](./images/k8s-dash-deploy-14.PNG)
 
@@ -183,7 +184,7 @@ Alternatively, if you are new to Kubernetes then you may want to proceed with th
 
        ![alt tag](./images/k8s-dash-deploy-22.PNG)
 
-       You may have to refresh the web page to view the updates. 
+       You may have to refresh the web page to view the status of the Kubernetes API objects.
 
        ![alt tag](./images/k8s-dash-deploy-23.PNG)
 
