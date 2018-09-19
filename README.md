@@ -125,7 +125,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     $ docker info
     ```
 
-7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image (~ 5.75GB).
+7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image (~ 10+ GB).
     ```
     $ docker pull microsoft/vsts-agent
     $ docker images
@@ -142,11 +142,11 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
 
 9.  In the Linux VM command window, use the command below to start the VSTS build container.  Refer to the table below to set the build container parameter values correctly.
-    -----------------
+
     Parameter | Value
-    -----------------
+    --------- | -----
     VSTS_TOKEN | VSTS PAT Token.  This is the value which you copied and saved in a file in the previous step.
-    VSTS_ACCOUNT | VSTS Organization name.  An Org. is a container for DevOps projects in Azure DevOps (VSTS) platform.  It's usually the first part (Prefix) of the VSTS URL (eg., <Prefix>.visualstudio.com).  If you are using Azure DevOps URL, then it is the last part (Context Path) (eg., dev.azure.com/<Context Path>.
+    VSTS_ACCOUNT | VSTS Organization name.  An Org. is a container for DevOps projects in Azure DevOps (VSTS) platform.  It's usually the first part (Prefix) of the VSTS URL (eg., <Prefix>.visualstudio.com).  If you are using Azure DevOps URL, then it is the last part (Context Path) of the URL (eg., dev.azure.com/<Context Path>).
 
     ```
     $ docker run -e VSTS_ACCOUNT=<YOUR ACCOUNT> -e VSTS_TOKEN=<xyz> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
