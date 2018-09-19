@@ -27,6 +27,10 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure DevOps (VSTS) Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 - [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
+**Steps:**
+
+![alt tag](./images/Steps.jpg)
+
 **PREREQUISITES:**
 1.  An active **Microsoft Azure Subscription**.  You can obtain a free Azure subscription by accessing the [Microsoft Azure](https://azure.microsoft.com/en-us/?v=18.12) website.  In order to execute all the labs in this project, either your *Azure subscription* or the *Resource Group* **must** have **Owner** Role assigned to it.
 2.  A **GitHub** Account to fork and clone this GitHub repository.
