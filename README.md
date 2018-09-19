@@ -556,10 +556,6 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     ![alt tag](./images/E-12.PNG)
 
-    Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.  See screenshot below.
-
-    ![alt tag](./images/E-13.PNG)
-
     Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.  Provide a comment and click **OK**.
 
     ![alt tag](./images/E-14.PNG)
@@ -576,7 +572,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
 3.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
 
-    Open a web browser tab and navigate to this project (your Fork) on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
+    Open a web browser tab and navigate to your forked project on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
 
     ![alt tag](./images/E-17.PNG)
 
