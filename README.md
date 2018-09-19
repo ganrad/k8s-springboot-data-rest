@@ -141,7 +141,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 
     In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
 
-9.  In the Linux VM command window, use the command below to start the VSTS build container.  Refer to the table below to set the build container parameter values correctly.
+9.  In the Linux VM terminal window, use the command below to start the VSTS build container.  Refer to the table below to set the build container parameter values correctly.
 
     Parameter | Value
     --------- | -----
@@ -506,91 +506,93 @@ Congrats!  You have just built and deployed a Java Springboot microservice on Az
 If you would like to learn how to implement **Continuous Deployment** in VSTS, continue with the next steps.  We will define a **Release Pipeline** in VSTS to perform automated application deployments next.
 
 ### E] Create a simple *Release Pipeline* in VSTS
-1.  Using a web browser, login to your VSTS account (if you haven't already) and select your project which you created in Step [C]. Click on *Build and Release* menu on the top panel and select *Releases*.  Next, click on the *+* icon on the *Releases* tab and select *Create release definition*.
+1.  Using a web browser, login to your VSTS account (if you haven't already) and select your project which you created in Step [C]. Click on *Build and Release* menu on the top panel and select *Releases*.  Next, click on *+ New pipeline*.
 
-![alt tag](./images/E-02.PNG)
+    ![alt tag](./images/E-02.PNG)
 
-In the *Select a Template* page, click on *Empty process*.  See screenshot below.
+    In the *Select a Template* page, click on *Empty job*.  See screenshot below.
 
-![alt tag](./images/E-03.PNG)
+    ![alt tag](./images/E-03.PNG)
 
-In the *Environment* page, specify *Staging-A* as the name for the environment.  Then click on *+Add* besides *Artifacts* (under *Pipeline* tab).
+    In the *Stage* page, specify *Staging-A* as the name for the environment.  Then click on *+Add* besides *Artifacts* (under *Pipeline* tab).
 
-![alt tag](./images/E-04.PNG)
+    ![alt tag](./images/E-04.PNG)
 
-In the *Add artifact* page, select *Build* for **Source type**, select your VSTS project from the **Project** drop down menu and select your *Build definition* in the drop down menu for **Source (Build definition)**.  Leave the remaining field values as is and click **Add**.  See screenshot below. 
+    In the *Add artifact* page, select *Build* for **Source type**, select your VSTS project from the **Project** drop down menu and select your *Build definition* in the drop down menu for **Source (Build definition)**.  Leave the remaining field values as is and click **Add**.  See screenshot below. 
 
-![alt tag](./images/E-05.PNG)
+    ![alt tag](./images/E-05.PNG)
 
-In the *Pipeline* tab, click on the *trigger* icon (highlighted in yellow) and enable **Continuous deployment trigger**.  See screenshot below.
+    In the *Pipeline* tab, click on the *trigger* icon (highlighted in yellow) and enable **Continuous deployment trigger**.  See screenshot below.
 
-![alt tag](./images/E-06.PNG)
+    ![alt tag](./images/E-06.PNG)
 
-Next, click on *1 phase, 0 task* in the **Environments** box under environment *Staging-A*.  Click on *Agent phase* under the *Tasks* tab and make sure **Agent queue** value is set to *Hosted VS2017*.  Leave the remaining field values as is.  See screenshot below.
+    Next, click on *1 job, 0 task* in the **Stages** box under environment *Staging-A*.  Click on *Agent job* under the *Tasks* tab and make sure **Agent queue** value is set to *Hosted VS2017*.  Leave the remaining field values as is.  See screenshots below.
 
-![alt tag](./images/E-07.PNG)
+    ![alt tag](./images/E-07.PNG)
 
-Recall that we had installed a **Tokenizer utility** extension in VSTS in Step [C].  We will now use this extension to update the container image *Tag value* in Kubernetes deployment manifest file *./k8s-scripts/app-update-deploy.yaml*.  Open/View the deployment manifest file in an editor (vi) and search for variable **__Build.BuildNumber__**.  When we re-run (execute) the *Build* pipeline, it will generate a new tag (Build number) for the *po-service* container image.  The *Tokenizer* extension will then substitute the latest tag value in the substitution variable.
+    ![alt tag](./images/E-071.PNG)
 
-Click on the ** + ** symbol beside **Agent phase** and search for text **Tokenize with** in the *Search* text box (besides **Add tasks**). Click on **Add**.  See screenshot below.
+    Recall that we had installed a **Tokenizer utility** extension in VSTS in Step [C].  We will now use this extension to update the container image *Tag value* in Kubernetes deployment manifest file *./k8s-scripts/app-update-deploy.yaml*.  Open/View the deployment manifest file in an editor (vi) and search for variable **__Build.BuildNumber__**.  When we re-run (execute) the *Build* pipeline, it will generate a new tag (Build number) for the *po-service* container image.  The *Tokenizer* extension will then substitute the latest tag value in the substitution variable.
 
-![alt tag](./images/E-08.PNG)
+    Click on the ** + ** symbol beside **Agent job** and search for text **Tokenize with** in the *Search* text box (besides **Add tasks**). Click on **Add**.  See screenshot below.
 
-Click on the **Tokenizer** task and click on the ellipsis (...) below field **Source filename**.  In the **Select File Or Folder** window, select the deployment manifest file from the respective folder as shown in the screenshots below. Click **OK**.
+    ![alt tag](./images/E-08.PNG)
 
-![alt tag](./images/E-09.PNG)
+    Click on the **Tokenizer** task and click on the ellipsis (...) besides field **Source filename**.  In the **Select File Or Folder** window, select the deployment manifest file from the respective folder as shown in the screenshots below. Click **OK**.
 
-![alt tag](./images/E-10.PNG)
+    ![alt tag](./images/E-09.PNG)
 
-Again, click on the ** + ** symbol beside **Agent phase** and search for text **Deploy to Kubernetes**, select this extension and click **Add*.  See screenshot below.
+    ![alt tag](./images/E-10.PNG)
 
-![alt tag](./images/E-11.PNG)
+    Again, click on the ** + ** symbol beside **Agent job** and search for text **Deploy to Kubernetes**, select this extension and click **Add*.  See screenshot below.
 
-Click on the **Deploy to Kubernetes** task on the left panel and fill out the details (numbered) as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
+    ![alt tag](./images/E-11.PNG)
 
-If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into VSTS for `Server URL`.
+    Click on the **Deploy to Kubernetes** task on the left panel and fill out the details (numbered) as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
 
-Additionally you will need your Kuberentes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
+    If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into VSTS for `Server URL`.
 
-![alt tag](./images/E-12.PNG)
+    Additionally you will need your Kuberentes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
 
-Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.  See screenshot below.
+    ![alt tag](./images/E-12.PNG)
 
-![alt tag](./images/E-13.PNG)
+    Expand the **Secrets** field panel and fill in the values as shown in the screenshot below.  Choose the correct value for **Azure subscription**.  See screenshot below.
 
-Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.  Provide a comment and click **OK**.
+    ![alt tag](./images/E-13.PNG)
 
-![alt tag](./images/E-14.PNG)
+    Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.  Provide a comment and click **OK**.
 
-We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
+    ![alt tag](./images/E-14.PNG)
+
+    We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
 
 2.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
 
-![alt tag](./images/E-15.PNG)
+    ![alt tag](./images/E-15.PNG)
 
-Click the checkbox for both **Enable continuous integration** and **Batch changes while a build is in progress**.  Leave other fields as is.  Click on **Save & queue** menu and select the **Save** option.
+    Click the checkbox for both **Enable continuous integration** and **Batch changes while a build is in progress**.  Leave other fields as is.  Click on **Save & queue** menu and select the **Save** option.
 
-![alt tag](./images/E-16.PNG)
+    ![alt tag](./images/E-16.PNG)
 
 3.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
 
-Open a web browser tab and navigate to this project (your Fork) on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
+    Open a web browser tab and navigate to this project (your Fork) on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
 
-![alt tag](./images/E-17.PNG)
+    ![alt tag](./images/E-17.PNG)
 
-Click on the pencil (Edit) icon on the top right of the code view panel (see below) to edit this file.
+    Click on the pencil (Edit) icon on the top right of the code view panel (see below) to edit this file.
 
-![alt tag](./images/E-18.PNG)
+    ![alt tag](./images/E-18.PNG)
 
-Uncomment lines 100 thru 108 (highlighted in yellow).
+    Uncomment lines 100 thru 108 (highlighted in yellow).
 
-![alt tag](./images/E-19.PNG)
+    ![alt tag](./images/E-19.PNG)
 
-Provide a comment and commit (save) the file.  The git commit will trigger a new build (**Continuous Integration**) for the **po-service** microservice in VSTS.  Upon successful completion of the build process, the updated container images will be pushed into the ACR and the release pipeline (**Continuous Deployment**) will be executed.   As part of the CD process, the Kubernetes deployment object for the **po-service** microservice will be updated with the newly built container image.  This action will trigger a **Rolling** deployment of **po-service** microservice in AKS.  As a result, the **po-service** containers (*Pods*) from the old deployment (version 1.0) will be deleted and a new deployment (version 2.0) will be instantiated in AKS.  The new deployment will use the latest container image from the ACR and spin up new containers (*Pods*).  During this deployment process, users of the **po-service** microservice will not experience any downtime as AKS will do a rolling deployment of containers.
+    Provide a comment and commit (save) the file.  The git commit will trigger a new build (**Continuous Integration**) for the **po-service** microservice in VSTS.  Upon successful completion of the build process, the updated container images will be pushed into the ACR and the release pipeline (**Continuous Deployment**) will be executed.   As part of the CD process, the Kubernetes deployment object for the **po-service** microservice will be updated with the newly built container image.  This action will trigger a **Rolling** deployment of **po-service** microservice in AKS.  As a result, the **po-service** containers (*Pods*) from the old deployment (version 1.0) will be deleted and a new deployment (version 2.0) will be instantiated in AKS.  The new deployment will use the latest container image from the ACR and spin up new containers (*Pods*).  During this deployment process, users of the **po-service** microservice will not experience any downtime as AKS will do a rolling deployment of containers.
 
 4.  Switch to a browser window and test the **po-Service** REST API.  Verify that the **po-service** API is returning two additional fields (*discountAmount* and *orderTotal*) in the JSON response.
 
-Congrats!  You have successfully used DevOps to automate the build and deployment of a containerized microservice application on Kubernetes.  
+    Congrats!  You have successfully used DevOps to automate the build and deployment of a containerized microservice application on Kubernetes.  
 
 In this project, we experienced how DevOps, Microservices and Containers can be used to build next generation applications.  These three technologies are changing the way we develop and deploy software applications and are at the forefront of fueling digital transformation in enterprises today!
 

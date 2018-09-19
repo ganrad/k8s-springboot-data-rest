@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: po-service
@@ -23,7 +23,7 @@ spec:
           secretName: mysql-secret
       containers:
       - name: po-service
-        image: mtcslabtest.azurecr.io/po-service:__Build.BuildNumber__
+        image: sep21taacr.azurecr.io/po-service:__Build.BuildNumber__
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -32,5 +32,3 @@ spec:
           mountPath: /etc/config
         - name: mysqlse
           mountPath: /etc/vol-secrets
-      imagePullSecrets:
-      - name: acr-registry
