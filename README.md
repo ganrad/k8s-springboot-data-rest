@@ -78,7 +78,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     ```
 
-5.  Install Azure CLI, Git client and Open JDK on this VM.
+5.  Install Azure CLI, K8s CLI, Git client, Open JDK, Jenkins and Maven on this VM.
     ```
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
@@ -111,6 +111,36 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     # Check JDK version
     $ java -version
+    #
+    # Install Jenkins 2.138.1
+    $ mkdir jenkins
+    $ cd jenkins
+    $ wget http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    #
+    # Switch back to home directory
+    $ cd
+    #
+    # Install Maven 3.5.4
+    $ mkdir maven
+    $ cd maven
+    $ wget http://www-eu.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz
+    $ tar -xzvf apache-maven-3.5.4-bin.tar.gz
+    #
+    # Switch back to home directory
+    $ cd
+    #
+    # Install Kubernetes CLI
+    # Create a new directory 'aztools' under home directory to store the kubectl binary
+    $ mkdir aztools
+    #
+    # Install kubectl binary in the new directory
+    $ az aks install-cli --install-location=./aztools/kubectl
+    #
+    # Finally, update '.bashrc' file and set the path to Maven and Kubectl binaries
+    $ KUBECLI=/home/labuser/aztools
+    $ MAVEN=/home/labuser/maven/apache-maven-3.5.4/bin
+    $ echo "export PATH=$MAVEN:$KUBECLI:${PATH}" >> .bashrc
+    #
     ```
 
 6.  Next, install **docker-ce** container runtime. Refer to the commands below.  You can also refer to the [Docker CE install docs for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
@@ -318,26 +348,12 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     az provider register -n Microsoft.ContainerService
     ```
 
-2.  Switch back to the Bastion host (Linux VM) terminal window where you have Azure CLI installed and make sure you are logged into to your Azure account.  We will install **kubectl** which is a command line tool for administering and managing a Kubernetes cluster.  Refer to the commands below in order to install *kubectl*.
+2.  At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the AKS cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
     ```
-    # Switch to your home directory
-    $ cd
-    #
-    # Create a new directory 'aztools' under home directory to store the kubectl binary
-    $ mkdir aztools
-    #
-    # Install kubectl binary in the new directory
-    $ az aks install-cli --install-location=./aztools/kubectl
-    #
-    # Add the location of 'kubectl' binary to your search path and export it.
-    # Alternatively, add the export command below to your '.bashrc' file in your home directory. Then logout of your VM (Bastion Host) from the terminal window and log back in for changes to take effect.  By including this command in your '.bashrc' file, you don't have to set the location of the 'kubectl' binary in the PATH environment variable and export it every time you logout and log in to this VM.
-    $ export PATH=$PATH:/home/labuser/aztools
     #
     # Check if kubectl is installed OK
     $ kubectl version -o yaml
     ```
-
-    **NOTE:** At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the AKS cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).  Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
     ```
