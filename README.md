@@ -350,7 +350,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
 
 2.  At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the AKS cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).
 
-    Alternatively, if you prefer Azure CLI for deploying and managing resources on Azure, proceed with the next steps.
+    Alternatively, if you prefer CLI for deploying and managing resources on Azure and Kubernetes, continue with the next steps. (If you haven't already) Open a terminal window and login to the Linux VM.
     ```
     #
     # Check if kubectl is installed OK
