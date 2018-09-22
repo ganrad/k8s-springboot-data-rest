@@ -236,7 +236,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
     ![alt tag](./images/A-01.png)
 
-    From the terminal window connected to the Bastion host, clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
+    From the terminal window connected to the Bastion host (Linux VM), clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
     ```
     # Switch to home directory
     $ cd
@@ -566,7 +566,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     ![alt tag](./images/E-08.PNG)
 
-    Click on the **Tokenizer** task and click on the ellipsis (...) besides field **Source filename**.  In the **Select File Or Folder** window, select the deployment manifest file from the respective folder as shown in the screenshots below. Click **OK**.
+    Click on the **Tokenizer** task and click on the ellipsis (...) besides field **Source filename**.  In the **Select File Or Folder** window, select the deployment manifest file **app-update-deploy.yaml** from the respective folder as shown in the screenshots below. Click **OK**.
 
     ![alt tag](./images/E-09.PNG)
 
@@ -590,7 +590,9 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
 
-2.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
+2.  You will need to update the **ACR Name** in the po-service deployment manifest file **./k8s-scripts/app-update-deploy.yaml** on your GitHub repository.  Search for the **image** attribute in this file and specify the correct **name** of your ACR repository (eg., ACR_NAME.azurecr.io).  You can make this change locally on your cloned repository (on the Linux VM) and then push (git push) the updates to your GitHub repository.  Alternatively, you can make this change directly in your GitHub repository (via web browser).
+
+3.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
 
     ![alt tag](./images/E-15.PNG)
 
@@ -598,7 +600,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     ![alt tag](./images/E-16.PNG)
 
-3.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
+4.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
 
     Open a web browser tab and navigate to your forked project on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
 
@@ -614,7 +616,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     Provide a comment and commit (save) the file.  The git commit will trigger a new build (**Continuous Integration**) for the **po-service** microservice in VSTS.  Upon successful completion of the build process, the updated container images will be pushed into the ACR and the release pipeline (**Continuous Deployment**) will be executed.   As part of the CD process, the Kubernetes deployment object for the **po-service** microservice will be updated with the newly built container image.  This action will trigger a **Rolling** deployment of **po-service** microservice in AKS.  As a result, the **po-service** containers (*Pods*) from the old deployment (version 1.0) will be deleted and a new deployment (version 2.0) will be instantiated in AKS.  The new deployment will use the latest container image from the ACR and spin up new containers (*Pods*).  During this deployment process, users of the **po-service** microservice will not experience any downtime as AKS will do a rolling deployment of containers.
 
-4.  Switch to a browser window and test the **po-Service** REST API.  Verify that the **po-service** API is returning two additional fields (*discountAmount* and *orderTotal*) in the JSON response.
+5.  Switch to a browser window and test the **po-Service** REST API.  Verify that the **po-service** API is returning two additional fields (*discountAmount* and *orderTotal*) in the JSON response.
 
     Congrats!  You have successfully used DevOps to automate the build and deployment of a containerized microservice application on Kubernetes.  
 
