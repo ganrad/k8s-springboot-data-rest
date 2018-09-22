@@ -459,7 +459,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
         token: 3----------------a
     ```
 
-8.  Update the **k8s-scripts/app-deploy.yaml** file.  The *image* attribute should point to your ACR.  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
+8.  Update the **k8s-scripts/app-deploy.yaml** file.  The *image* attribute should point to your ACR which you provisioned in Section [B].  This will ensure AKS pulls the application container image from the correct registry. Substitute the correct value for the *ACR registry name* in the *image* attribute (highlighted in yellow) in the pod spec as shown in the screenshot below.
 
     ![alt tag](./images/D-01.PNG)
 
