@@ -590,7 +590,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
 
-2.  You will need to update the **ACR Name** in the po-service deployment manifest file **./k8s-scripts/app-update-deploy.yaml** on your GitHub repository.  Search for the **image** attribute in this file and specify the correct **name** of your ACR repository (eg., ACR_NAME.azurecr.io).  You can make this change locally on your cloned repository (on the Linux VM) and then push (git push) the updates to your GitHub repository.  Alternatively, you can make this change directly in your GitHub repository (via web browser).
+2.  You will need to update the **ACR Name** in the po-service deployment manifest file **./k8s-scripts/app-update-deploy.yaml** on your GitHub repository.  Search for the **image** attribute in this file and specify the correct **name** of your ACR repository (eg., Replace ACR_NAME in **ACR_NAME.azurecr.io**).  You can make this change locally on your cloned repository (on the Linux VM) and then push (git push) the updates to your GitHub repository.  Alternatively, you can make this change directly in your GitHub repository (via web browser).
 
 3.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
 
