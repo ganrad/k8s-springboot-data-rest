@@ -13,7 +13,7 @@ node {
 		checkout scm
 	}
 
-	docker.image('maven:3-alpine').inside('-v /root/.m2:/root/.m2') {
+	docker.image('maven:3-alpine').inside('-v $HOME/.m2:/root/.m2') {
 		stage('Appl. Build') {
 			sh 'echo "Building application ..."'
 			sh 'mvn -DskipTests clean package'
