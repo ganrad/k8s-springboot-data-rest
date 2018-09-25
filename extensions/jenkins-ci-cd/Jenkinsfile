@@ -20,19 +20,19 @@ node {
 		}
 	}
 
-	stage('Logs ... ') {
+	stage('Print Data ... ') {
 		sh 'echo "Present working directory ..."'
 		sh 'pwd'
 	}
 
-	stage('Container Build') {
+	stage('Container Build & Tag') {
 		sh 'echo "Building application container image ..."'
-		app = docker.build("po-service:${env.BUILD_ID}", ". -f ./src/Dockerfile")
+		app = docker.build("mtcslabtest.azurecr.io/po-service:${env.BUILD_ID}", ". -f ./src/Dockerfile")
 	}
 
 	stage('Push Container Image To ACR') {
 		sh 'echo "Pushing container image to ACR ..."'
-		docker.withRegistry('https://azurecr.io','acr-credentials') {
+		docker.withRegistry('https://mtcslabtest.azurecr.io','acr-credentials') {
 			app.push()
 			app.push("latest")
 		}
