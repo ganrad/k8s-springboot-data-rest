@@ -27,7 +27,7 @@ node {
 
 	stage('Container Build') {
 		sh 'echo "Building application container image ..."'
-		app = docker.build("po-service:${env.BUILD_ID}", "./src")
+		app = docker.build("po-service:${env.BUILD_ID}", ".")
 	}
 
 	stage('Push Container Image To ACR') {
