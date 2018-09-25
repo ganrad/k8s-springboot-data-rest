@@ -20,6 +20,11 @@ node {
 		}
 	}
 
+	stage('Logs ... ') {
+		sh 'echo "Present working directory ..."'
+		sh 'pwd'
+	}
+
 	stage('Container Build') {
 		sh 'echo "Building application container image ..."'
 		app = docker.build("po-service:${env.BUILD_ID}", "./src")
