@@ -27,18 +27,20 @@ node {
 
 	stage('Container Build & Tag') {
 		sh 'echo "Building application container image ..."'
-		app = docker.build("${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}", ". -f ./src/Dockerfile")
+		sh 'WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"'
+		app = docker.build("${WEB_IMAGE_NAME}", ". -f ./src/Dockerfile")
 	}
 
 	stage('Push Container Image To ACR') {
 		sh 'echo "Pushing container image to ACR ..."'
-		docker.withRegistry('https://mtcslabtest.azurecr.io','acr-credentials') {
+		docker.withRegistry("https://${env.ACR_LOGINSERVER}",'acr-credentials') {
 			app.push()
 			app.push("latest")
 		}
 	}
 
 	stage('Deploy to AKS') {
-		sh 'echo "Using Helm to upgrade application (redeploy) on AKS"'
+		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
+		sh 'kubectl set image deployment/po-service po-service=${WEB_IMAGE_NAME}'
 	}
 }
