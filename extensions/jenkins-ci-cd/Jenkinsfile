@@ -27,8 +27,7 @@ node {
 
 	stage('Container Build & Tag') {
 		sh 'echo "Building application container image ..."'
-		sh 'WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"'
-		app = docker.build("${WEB_IMAGE_NAME}", ". -f ./src/Dockerfile")
+		app = docker.build("${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}",". -f ./src/Dockerfile")
 	}
 
 	stage('Push Container Image To ACR') {
@@ -41,6 +40,6 @@ node {
 
 	stage('Deploy to AKS') {
 		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
-		sh 'kubectl set image deployment/po-service po-service=${WEB_IMAGE_NAME}'
+		sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID} -n development"
 	}
 }
