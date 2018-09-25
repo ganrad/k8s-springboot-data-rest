@@ -31,7 +31,7 @@ node {
 
 	stage('Push Container Image To ACR') {
 		echo 'Pushing container image to ACR ...'
-		docker.withRegistry('https://azurecr.io','acr-id') {
+		docker.withRegistry('https://azurecr.io','acr-credentials') {
 			app.push()
 			app.push("latest")
 		}
