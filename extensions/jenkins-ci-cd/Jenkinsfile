@@ -1,0 +1,43 @@
+/*
+  Author: garadha@microsoft.com
+  Dated: 09-23-2018
+  Description:
+  This pipeline defines the stages and steps for building and deploying the 'po-service' application
+  to AKS.
+*/
+node {
+	def app
+
+	stage('Clone repository') {
+		echo 'Cloning GitHub repository ...'
+		checkout scm
+	}
+
+	stage('Appl. Build') {
+		echo 'Building application ...'
+		agent {
+			docker {
+				image 'maven:3-alpine'
+				args '-v /root/.m2:/root/.m2'
+			}
+		}
+		sh 'mvn -DskipTests clean package'
+	}
+
+	stage('Container Build') {
+		echo 'Building application container image ...'
+		app = docker.build("po-service:${env.BUILD_ID}", "./src")
+	}
+
+	stage('Push Container Image To ACR') {
+		echo 'Pushing container image to ACR ...'
+		docker.withRegistry('https://azurecr.io','acr-id') {
+			app.push()
+			app.push("latest")
+		}
+	}
+
+	stage('Deploy to AKS') {
+		echo 'Using Helm to upgrade application (redeploy) on AKS'
+	}
+}
