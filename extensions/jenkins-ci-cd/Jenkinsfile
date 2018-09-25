@@ -8,29 +8,25 @@
 node {
 	def app
 
-	agent any
-
 	stage('Clone repository') {
-		echo 'Cloning GitHub repository ...'
+		sh 'echo "Cloning GitHub repository ..."'
 		checkout scm
 	}
 
-	stage('Appl. Build') {
-		echo 'Building application ...'
-		docker {
-			image 'maven:3-alpine'
-			args '-v /root/.m2:/root/.m2'
+	docker.image('maven:3-alpine').inside('-v /root/.m2:/root/.m2') {
+		stage('Appl. Build') {
+			sh 'echo "Building application ..."'
+			sh 'mvn -DskipTests clean package'
 		}
-		sh 'mvn -DskipTests clean package'
 	}
 
 	stage('Container Build') {
-		echo 'Building application container image ...'
+		sh 'echo "Building application container image ..."'
 		app = docker.build("po-service:${env.BUILD_ID}", "./src")
 	}
 
 	stage('Push Container Image To ACR') {
-		echo 'Pushing container image to ACR ...'
+		sh 'echo "Pushing container image to ACR ..."'
 		docker.withRegistry('https://azurecr.io','acr-credentials') {
 			app.push()
 			app.push("latest")
@@ -38,6 +34,6 @@ node {
 	}
 
 	stage('Deploy to AKS') {
-		echo 'Using Helm to upgrade application (redeploy) on AKS'
+		sh 'echo "Using Helm to upgrade application (redeploy) on AKS"'
 	}
 }
