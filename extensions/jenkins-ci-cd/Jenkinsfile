@@ -8,6 +8,8 @@
 node {
 	def app
 
+	agent any
+
 	stage('Clone repository') {
 		echo 'Cloning GitHub repository ...'
 		checkout scm
@@ -15,11 +17,9 @@ node {
 
 	stage('Appl. Build') {
 		echo 'Building application ...'
-		agent {
-			docker {
-				image 'maven:3-alpine'
-				args '-v /root/.m2:/root/.m2'
-			}
+		docker {
+			image 'maven:3-alpine'
+			args '-v /root/.m2:/root/.m2'
 		}
 		sh 'mvn -DskipTests clean package'
 	}
