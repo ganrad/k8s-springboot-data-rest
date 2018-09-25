@@ -40,6 +40,6 @@ node {
 
 	stage('Deploy to AKS') {
 		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
-		sh 'kubectl set image deployment/po-service po-service="${env.ACR_LOGINSERVER/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}" -n development'
+		sh 'kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID} -n development'
 	}
 }
