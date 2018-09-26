@@ -7,7 +7,8 @@
   Before running a build, make sure the following pre-requisites are satisfied.
   1.  Make sure 'Build Timestamp' Jenkins Plug-in is installed
   2.  Define environment variables - ACR_LOGINSERVER & acr-credentials
-  3.  Kube context points to the correct k8s namespace
+  3.  Specify the correct MVN repository mount location (host path) for the Maven container
+  4.  Kube context points to the correct k8s namespace
 */
 node {
 	def app
@@ -29,10 +30,10 @@ node {
 		}
 	}
 
-	stage('Print Data ... ') {
+	/* stage('Print Data ... ') {
 		sh 'echo "Present working directory ..."'
 		sh 'pwd'
-	}
+	} */ 
 
 	stage('Container Build & Tag') {
 		sh 'echo "Building application container image ..."'
