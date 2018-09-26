@@ -28,7 +28,8 @@ node {
 	stage('Container Build & Tag') {
 		sh 'echo "Building application container image ..."'
 		app = docker.build("po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}",". -f ./src/Dockerfile")
-		sh "docker tag po-service:${env.Build_TIMESTAMP}.${env.BUILD_ID} ${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
+		// Don't need to tag image.  'docker.withRegistry' does it automatically!
+		// sh "docker tag po-service:${env.Build_TIMESTAMP}.${env.BUILD_ID} ${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
 	}
 
 	stage('Push Container Image To ACR') {
