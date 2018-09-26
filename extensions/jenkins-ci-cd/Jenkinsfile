@@ -35,7 +35,7 @@ node {
 		sh 'pwd'
 	} */ 
 
-	stage('Container Build & Tag') {
+	stage('Container Image Build') {
 		sh 'echo "Building application container image ..."'
 		app = docker.build("po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}",". -f ./src/Dockerfile")
 		// Don't need to tag image.  'docker.withRegistry' does it automatically!
@@ -50,7 +50,7 @@ node {
 		}
 	}
 
-	stage('Deploy to AKS') {
+	stage('Re-deploy Application Container to AKS') {
 		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
 		sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
 	}
