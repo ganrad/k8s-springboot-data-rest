@@ -17,6 +17,11 @@ node {
 		checkout scm
 	}
 
+	stage('Update MySQL SVC and Namespace') {
+		sh 'echo "Updating MySQL co-ordinates ..."'
+		sh 'sed -i "s/__svc.name.k8s.namespace__/mysql.development/g" ./src/main/resources/application.properties'
+	}
+
 	docker.image('maven:3-alpine').inside('-v $HOME/.m2:/root/.m2') {
 		stage('Appl. Build') {
 			sh 'echo "Building application ..."'
