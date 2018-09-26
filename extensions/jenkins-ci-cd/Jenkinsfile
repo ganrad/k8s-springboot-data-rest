@@ -4,6 +4,10 @@
   Description:
   This pipeline defines the stages and steps for building and deploying the 'po-service' application
   to AKS.
+  Before running a build, make sure the following pre-requisites are satisfied.
+  1.  Make sure 'Build Timestamp' Jenkins Plug-in is installed
+  2.  Define environment variables - ACR_LOGINSERVER & acr-credentials
+  3.  Kube context points to the correct k8s namespace
 */
 node {
 	def app
