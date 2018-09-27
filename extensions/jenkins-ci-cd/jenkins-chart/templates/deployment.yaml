@@ -30,7 +30,7 @@ spec:
             - name: jenkins-home
               mountPath: /var/jenkins_home
             - name: docker-socket
-              mouthPath: /var/run/docker.sock
+              mountPath: /var/run/docker.sock
           ports:
             - name: http-port
               containerPort: {{ .Values.service.targetPort }}
