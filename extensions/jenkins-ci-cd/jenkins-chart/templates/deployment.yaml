@@ -19,33 +19,22 @@ spec:
         app: {{ template "jenkins-chart.name" . }}
         release: {{ .Release.Name }}
     spec:
-      volumes:
-	- name: jenkins-home
-	  emptyDir: {}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-	  env:
-	    - name: JAVA_OPTS
-	      value: -Djenkins.install.runSetupWizard=false
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          env:
+            - name: JAVA_OPTS
+              value: -Djenkins.install.runSetupWizard=false
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-	  volumeMounts:
-	    - name: jenkins-home
-	      mountPath: /var/jenkins_home
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
           ports:
             - name: http-port
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-	    - name: jnlp-port
-	      containerPort: 50000
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            - name: jnlp-port
+              containerPort: 50000
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
@@ -60,3 +49,6 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      volumes:
+      - name: jenkins-home
+        emptyDir: {}
