@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  jenkins:
+    image: jenkins-gr
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080"
