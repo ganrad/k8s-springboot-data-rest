@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: jenkins/jenkins
-  tag: lts
+  repository: mtcslabtest.azurecr.io/jenkins-gr
+  tag: latest
   pullPolicy: Always
 
 service:
