@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "jenkins-chart.fullname" . }}
+  labels:
+    app: {{ template "jenkins-chart.name" . }}
+    chart: {{ template "jenkins-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "jenkins-chart.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "jenkins-chart.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+	- name: jenkins-home
+	  emptyDir: {}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+	  env:
+	    - name: JAVA_OPTS
+	      value: -Djenkins.install.runSetupWizard=false
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+	  volumeMounts:
+	    - name: jenkins-home
+	      mountPath: /var/jenkins_home
+          ports:
+            - name: http-port
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+	    - name: jnlp-port
+	      containerPort: 50000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
