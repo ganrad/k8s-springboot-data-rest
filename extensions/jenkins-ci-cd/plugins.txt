@@ -1,5 +1,4 @@
 build-timestamp:1.0.2
-credentials:1.625.3
 git:3.9.1
 git-client:2.7.3
 git-server:1.7
