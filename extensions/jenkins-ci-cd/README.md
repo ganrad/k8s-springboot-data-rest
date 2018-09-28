@@ -39,32 +39,32 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
 2. Click on *Manage Jenkins* on the left nav panel.  See image below.
   
-   ![alt tag](./images/A-01.jpg)
+   ![alt tag](./images/A-01.PNG)
   
    Then click on *Configure System*.  In the configuration web page, click on *Environment variables*.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the day.  See screenshot below.
 
-   ![alt tag](./images/A-02.jpg)
+   ![alt tag](./images/A-02.PNG)
 
    Click *Save*.
 
 3. Click on *Credentials* on the left nav panel.  See image below.  
 
-   ![alt tag](./images/A-03.jpg)
+   ![alt tag](./images/A-03.PNG)
 
    Click on *Jenkins* link under *Stored scoped to Jenkins* as shown in the image below.
 
-   ![alt tag](./images/A-04.jpg)
+   ![alt tag](./images/A-04.PNG)
 
    Click on *Global credentials (unrestricted)* link. Then click on *Add Credentials* link as shown in the image below.
 
-   ![alt tag](./images/A-05.jpg)
+   ![alt tag](./images/A-05.PNG)
 
    In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  For **ID**, specify the value *acr-credentials*.  These values are needed for pushing the built *po-service* container image into ACR.
 
-   ![alt tag](./images/A-06.jpg)
+   ![alt tag](./images/A-06.PNG)
 
    Click on the *Jenkins* link on the top nav panel as shown in the image below.
 
-   ![alt tag](./images/A-07.jpg)
+   ![alt tag](./images/A-07.PNG)
 
 4. We will create a Jenkins CD Pipeline next.
