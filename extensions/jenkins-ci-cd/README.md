@@ -28,34 +28,34 @@ For easy and quick reference, readers can refer to the following on-line resourc
 ### B] Implement a Continuous Delivery (CD) pipeline for *po-service* microservice in Jenkins
 **Time to complete:**
 
-1. Open a terminal window and connect to the Bastion host (Linux VM) via SSH.  Use the command below to ascertain the IP address of the **Jenkins** service.
+1. Open a terminal window and connect to the Bastion host (Linux VM) via SSH.  Use the command below to ascertain the IP address of the **Jenkins** service.  The value under column *EXTERNAL-IP* is the host IP.
    ```
    gradhakr@garadha-surface:~/git-repos/k8s-springboot-data-rest/extensions/jenkins-ci-cd$ kubectl get svc -n jenkins
    NAME                              TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
    amber-nightingale-jenkins-chart   LoadBalancer   10.0.115.162   104.42.121.82   80:31573/TCP   11h
    ```
-   Use to web browser to access the Jenkins UI.  The value under column *EXTERNAL-IP* is the host IP.
+   Use to web browser to access the Jenkins UI.  
    **NOTE:** For the purposes of this lab, security in Jenkins has been disabled.
 
-2. Click on *Manage Jenkins* on the left nav panel.  See image below.
+2. Click on **Manage Jenkins** on the left nav panel.  See image below.
   
    ![alt tag](./images/A-01.PNG)
   
-   Then click on *Configure System*.  In the configuration web page, click on *Environment variables*.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the day.  See screenshot below.
+   Then click on **Configure System**.  In the configuration web page, click on **Environment variables**.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the day.  See screenshot below.
 
    ![alt tag](./images/A-02.PNG)
 
-   Click *Save*.
+   Click **Save**.
 
-3. Click on *Credentials* on the left nav panel.  See image below.  
+3. Click on **Credentials** on the left nav panel.  See image below.  
 
    ![alt tag](./images/A-03.PNG)
 
-   Click on *Jenkins* link under *Stored scoped to Jenkins* as shown in the image below.
+   Click on **Jenkins** link under *Stored scoped to Jenkins* as shown in the image below.
 
    ![alt tag](./images/A-04.PNG)
 
-   Click on *Global credentials (unrestricted)* link. Then click on *Add Credentials* link as shown in the image below.
+   Click on **Global credentials (unrestricted)** link. Then click on **Add Credentials** link as shown in the image below.
 
    ![alt tag](./images/A-05.PNG)
 
@@ -63,8 +63,28 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-06.PNG)
 
-   Click on the *Jenkins* link on the top nav panel as shown in the image below.
+   Click on the **Jenkins** link on the top nav panel as shown in the image below.
 
    ![alt tag](./images/A-07.PNG)
 
-4. We will create a Jenkins CD Pipeline next.
+4. Next, create a Jenkins CD Pipeline.  Click on **New Item** in the left nav panel or click on **create new jobs** link.
+
+   ![alt tag](./images/A-08.PNG)
+
+   Give the CD pipeline a meaningful name and select the **Pipeline** project as shown in the image below.
+
+   ![alt tag](./images/A-09.PNG)
+
+   Click **OK**.  On the configuration web page and in the **Description** field, provide a brief description for this pipeline.  In the **General** section, select the checkbox besides **GitHub Project** and specify the URL for the GitHub project which you forked in the parent project.  Make sure the URL is the URL for your forked GitHub repository.  See screenshot below.
+
+   ![alt tag](./images/A-10.PNG)
+
+   Under **Build Triggers**, click the checkbox besides **GitHub hook trigger for GITScm polling**.
+
+   ![alt tag](./images/A-11.PNG)
+
+   Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify the GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value *extensions/jenkins-ci-cd/Jenkinsfile*.  Leave other field values as is.  Click *Save* when you are done.  See screenshot below.
+
+   ![alt tag](./images/A-12.PNG)
+
+5. In the next page, click **Build Now** in the left nav panel.
