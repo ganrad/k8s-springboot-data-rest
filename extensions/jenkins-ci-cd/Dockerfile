@@ -8,8 +8,8 @@ MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
-# Install docker client on Jenkins container
 USER root
+# Install docker client on Jenkins container
 RUN apt-get update && \
     apt-get -y install apt-transport-https \
      ca-certificates \
@@ -23,5 +23,9 @@ add-apt-repository \
    stable" && \
 apt-get update && \
 apt-get -y install docker-ce
+
+# Add 'jenkins' user to 'docker' group
 RUN usermod -aG docker jenkins
+
 USER jenkins
+

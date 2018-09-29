@@ -88,3 +88,5 @@ For easy and quick reference, readers can refer to the following on-line resourc
    ![alt tag](./images/A-12.PNG)
 
 5. In the next page, click **Build Now** in the left nav panel.
+
+   ![alt tag](./images/A-13.PNG)

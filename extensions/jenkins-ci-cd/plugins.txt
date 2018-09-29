@@ -8,3 +8,5 @@ github-oauth:0.29
 github-api:1.92
 pipeline-model-definition:1.3.2
 pipeline-model-api:1.3.2
+pipeline-stage-view:2.10
+kubernetes-cli:1.2.0

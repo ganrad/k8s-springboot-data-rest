@@ -8,8 +8,8 @@
   1.  Make sure 'Build Timestamp' Jenkins Plug-in is installed
   2.  Define environment variable - ACR_LOGINSERVER
   3.  Define a credential with Jenkins provider - acr-credentials
+  4.  Define a k8s KubeConfig credential with Plain Credentials provider - k8s-credentials
   4.  Specify the correct MVN repository mount location (host path) for the Maven container
-  5.  Kube context points to the correct k8s namespace
 */
 node {
 	def app
@@ -54,5 +54,6 @@ node {
 	stage('Re-deploy Application Container to AKS') {
 		// sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
 		// sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
+
 	}
 }

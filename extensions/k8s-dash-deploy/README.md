@@ -195,7 +195,7 @@ You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/
 
     ![alt tag](./../../images/D-01.PNG)
 
-2.  Use the Kubernetes Dashboard (Web UI) to deploy the Springboot application resources on Kubernetes.  In the **Overview** page of the Kubernetes Dashboard UI, click on **CREATE** link on the top.  Cut and paste the contents of file *./k8s-scripts/deploy-app.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file and create the Configmap API object.
+2.  Use the Kubernetes Dashboard (Web UI) to deploy the Springboot application resources on Kubernetes.  In the **Overview** page of the Kubernetes Dashboard UI, click on **CREATE** link on the top.  Cut and paste the contents of file *./k8s-scripts/deploy-app.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file.  The Kubernetes runtime will create all the API objects and deploy the *po-service* Springboot microservice & *MySQL* database service containers.
 
     ![alt tag](./images/k8s-dash-deploy-25.PNG)
 
