@@ -1,15 +1,17 @@
-# Custom Jenkins Image with Git, Pipeline, Maven and Build Timestamp plugins
+# Build custom Jenkins Image with Git, Pipeline, Maven, Build Timestamp & other plugins.  Image also includes Docker client and Kube CLI.
 # Dated: 09-27-2018
+# Author: Ganesh Radhakrishnan
 # Image name: jenkins-gr
 FROM jenkins/jenkins:lts
 MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 
-# Install plugins
+# Install Jenkins plugins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 USER root
-# Install docker client on Jenkins container
+
+# Install docker client
 RUN apt-get update && \
     apt-get -y install apt-transport-https \
      ca-certificates \
@@ -24,7 +26,14 @@ add-apt-repository \
 apt-get update && \
 apt-get -y install docker-ce
 
-# Add 'jenkins' user to 'docker' group
+# Install kubectl CLI
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+    && touch /etc/apt/sources.list.d/kubernetes.list \
+    && echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list \
+    && apt-get update \
+    && apt-get install -y kubectl
+
+# Add jenkins user to docker group
 RUN usermod -aG docker jenkins
 
 USER jenkins
