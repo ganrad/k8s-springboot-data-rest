@@ -37,7 +37,9 @@ For easy and quick reference, readers can refer to the following on-line resourc
    Use to web browser to access the Jenkins UI.  
    **NOTE:** For the purposes of this lab, security in Jenkins has been disabled.
 
-2. Click on **Manage Jenkins** on the left nav panel.  See image below.
+2. In this step, add a global variable *ACR_LOGINSERVER' which will be used in the CD pipeline.
+
+   Click on **Manage Jenkins** on the left nav panel.  See image below.
   
    ![alt tag](./images/A-01.PNG)
   
@@ -47,7 +49,11 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    Click **Save**.
 
-3. Click on **Credentials** on the left nav panel.  See image below.  
+3. Store the ACR SP credentials (created in parent project) in Jenkins Credential vault.
+
+   This credential will be used to access ACR in the CD pipeline.
+
+   Click on **Credentials** on the left nav panel.  See image below.  
 
    ![alt tag](./images/A-03.PNG)
 
@@ -63,11 +69,23 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-06.PNG)
 
-   Click on the **Jenkins** link on the top nav panel as shown in the image below.
+   Click **OK**.
+
+4. Store the AKS credentials (Kube Config) in Jenkins Credential vault.
+
+   This credential will be used to deploy the *po-service* microservice on AKS in the CD pipeline.
+
+   Click on **Add Credentials** link again.  Provide the values as shown in the image below.  In the dropdown box for **Kind**, select value *Secret file*.  Click on **Choose File** and select the *Kubernetes Config* file which you saved in the parent project labs.  Specify value *aks-credentials* for field **ID** and enter a short description for this credential in the **Description** field.
+
+   ![alt tag](./images/A-14.PNG)
+
+   Click **OK**.  Then click on the **Jenkins** link on the top nav panel as shown in the image below.
 
    ![alt tag](./images/A-07.PNG)
 
-4. Next, create a Jenkins CD Pipeline.  Click on **New Item** in the left nav panel or click on **create new jobs** link.
+5. Next, define a CD Pipeline.
+
+   Click on **New Item** in the left nav panel or click on **create new jobs** link.
 
    ![alt tag](./images/A-08.PNG)
 
@@ -83,7 +101,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-11.PNG)
 
-   Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify the GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value *extensions/jenkins-ci-cd/Jenkinsfile*.  Leave other field values as is.  Click *Save* when you are done.  See screenshot below.
+   Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify this GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value *extensions/jenkins-ci-cd/Jenkinsfile*.  Leave other field values as is.  Click *Save* when you are done.  See screenshot below.
 
    ![alt tag](./images/A-12.PNG)
 

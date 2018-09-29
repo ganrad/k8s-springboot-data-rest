@@ -9,7 +9,7 @@
   2.  Define environment variable - ACR_LOGINSERVER
   3.  Define a credential with Jenkins provider - acr-credentials
   4.  Define a k8s KubeConfig credential with Plain Credentials provider - k8s-credentials
-  4.  Specify the correct MVN repository mount location (host path) for the Maven container
+  5.  Specify the correct MVN repository mount location (host path) for the Maven container
 */
 node {
 	def app
@@ -52,8 +52,13 @@ node {
 	}
 
 	stage('Re-deploy Application Container to AKS') {
-		// sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
-		// sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
-
+		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
+		withKubeConfig(
+			caCertificate: '',
+			contextName: 'dev',
+			credentialsId: 'aks-credentials',
+			serverUrl: 'https://akscluster-cicd-9974af20.hcp.westus.azmk8s.io:443') {
+			sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
+		}
 	}
 }
