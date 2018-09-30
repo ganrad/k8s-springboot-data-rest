@@ -119,7 +119,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-16.PNG)
     
-   To review the pipeline execution log and/or troubleshoot problems when any of the pipeline stages fail, click on the build # under **Build History** and then click on **Console Output**.  Alternatively, you can also click on **Pipeline Steps** to review the details (log output) of each step executed during each stage.
+   To review the pipeline execution log and/or troubleshoot problems when any of the pipeline stages fail, click on the **Build #** under **Build History** and then click on **Console Output**.  Alternatively, you can also click on **Pipeline Steps** to review the details (log output) of each step executed during each stage.
 
    ![alt tag](./images/A-17.PNG)
 
@@ -127,6 +127,6 @@ For easy and quick reference, readers can refer to the following on-line resourc
    You have successfully completed this lab.  Congrats!
 
    To recap, during this lab you completed the following steps -
-   - Defined a build (CI) and release (CD) pipeline in *Azure DevOps* to build a custom Jenkins container image and then deployed Jenkins on *Azure Kubernetes Service*
+   - Defined a **Build (CI)** and **Release (CD)** pipeline in *Azure DevOps* to build a custom Jenkins container image and then deployed Jenkins on *Azure Kubernetes Service*
    - Defined and executed a **Continuous Delivery** pipeline in Jenkins and re-deployed the *po-service* microservice on *Azure Kubernetes Service*.
 
