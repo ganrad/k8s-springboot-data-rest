@@ -65,7 +65,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-05.PNG)
 
-   In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  For **ID**, specify the value *acr-credentials*.  These values are needed for pushing the built *po-service* container image into ACR.
+   In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  For **ID**, specify the value `acr-credentials`.  These values are needed for pushing the built *po-service* container image into ACR.
 
    ![alt tag](./images/A-06.PNG)
 
@@ -75,7 +75,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    This credential will be used to deploy the *po-service* microservice on AKS in the CD pipeline.
 
-   Click on **Add Credentials** link again.  Provide the values as shown in the image below.  In the dropdown box for **Kind**, select value *Secret file*.  Click on **Choose File** and select the *Kubernetes Config* file which you saved in the parent project labs.  Specify value *aks-credentials* for field **ID** and enter a short description for this credential in the **Description** field.
+   Click on **Add Credentials** link again.  Provide the values as shown in the image below.  In the dropdown box for **Kind**, select value `Secret file`.  Click on **Choose File** and select the *Kubernetes Config* file which you saved in the parent project labs.  Specify value `aks-credentials` for field **ID** and enter a short description for this credential in the **Description** field.
 
    ![alt tag](./images/A-14.PNG)
 
@@ -85,7 +85,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
 5. Next, define a CD Pipeline.
 
-   Click on **New Item** in the left nav panel or click on **create new jobs** link.
+   Click on **New Item** in the left nav panel OR click on **create new jobs** link.
 
    ![alt tag](./images/A-08.PNG)
 
@@ -101,10 +101,32 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    ![alt tag](./images/A-11.PNG)
 
-   Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify this GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value *extensions/jenkins-ci-cd/Jenkinsfile*.  Leave other field values as is.  Click *Save* when you are done.  See screenshot below.
+   Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify this GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value `extensions/jenkins-ci-cd/Jenkinsfile`.  Leave other field values as is.  Click **Save** when you are done.  See screenshot below.
 
    ![alt tag](./images/A-12.PNG)
 
 5. In the next page, click **Build Now** in the left nav panel.
 
    ![alt tag](./images/A-13.PNG)
+
+   The *Pipeline Stage View* plugin will display the progress of the pipeline execution.  See below.
+
+   ![alt tag](./images/A-15.PNG)
+
+   While waiting for the pipeline execution to finish, open `./Jenkinsfile` and go thru the *Pipeline* stages and steps.
+
+   All the pipeline stages should complete OK (green box) as shown in the image below.
+
+   ![alt tag](./images/A-16.PNG)
+    
+   To review the pipeline execution log and/or troubleshoot problems when any of the pipeline stages fail, click on the build # under **Build History** and then click on **Console Output**.  Alternatively, you can also click on **Pipeline Steps** to review the details (log output) of each step executed during each stage.
+
+   ![alt tag](./images/A-17.PNG)
+
+
+   You have successfully completed this lab.  Congrats!
+
+   To recap, during this lab you completed the following steps -
+   - Defined a build (CI) and release (CD) pipeline in *Azure DevOps* to build a custom Jenkins container image and then deployed Jenkins on *Azure Kubernetes Service*
+   - Defined and executed a **Continuous Delivery** pipeline in Jenkins and re-deployed the *po-service* microservice on *Azure Kubernetes Service*.
+
