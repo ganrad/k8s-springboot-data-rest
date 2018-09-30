@@ -7,10 +7,10 @@
 
 **Description:**
 In a nutshell, you will work on the following tasks.
-1. Implement a Azure DevOps Build and Release Pipeline to deploy Jenkins CI/CD on AKS (Section [A])
+1. Implement a *Azure DevOps Build and Release Pipeline* to deploy Jenkins CI/CD on AKS (Section [A])
 
    **Result:** A Jenkins CI/CD cluster (1-executor) deployed on Azure Kubernetes Service (AKS)
-2. Implement a Continuous Delivery Pipeline in Jenkins to build and re-deploy *po-service* Springboot Java microservice on AKS (Section [B])
+2. Implement a *Continuous Delivery Pipeline* in Jenkins to build and re-deploy *po-service* Springboot Java microservice on AKS (Section [B])
 
    **Result:** A **Continuous Delivery** pipeline deployed in Jenkins which will be used to re-deploy the *po-service* microservice on AKS (previously deployed to AKS in the parent project).
 
