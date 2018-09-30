@@ -124,7 +124,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
    ![alt tag](./images/A-17.PNG)
 
 
-   You have successfully completed this lab.  Congrats!
+   You have now successfully completed this lab.  Congrats!
 
    To recap, during this lab you completed the following steps -
    - Defined a **Build (CI)** and **Release (CD)** pipeline in *Azure DevOps* to build a custom Jenkins container image and then deployed Jenkins on *Azure Kubernetes Service*
