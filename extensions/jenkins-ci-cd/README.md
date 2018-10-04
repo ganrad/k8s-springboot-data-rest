@@ -39,7 +39,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/A-02.PNG)
 
-   In the **Select a source** page, select **GitHub**, specify a **Connection name** and use your credentials to authenticate to GitHub. You can use OAuth or a PAT Token to authenticate respectively.  Then select this GitHub repository (your forked repo.) and click on **Continue**.  See image below.
+   In the **Select a source** page, select **GitHub**, specify a **Connection name** and use your credentials to authenticate to GitHub. You can use OAuth or a PAT Token to authenticate to GitHub.  Then select this GitHub repository (your forked repo.) and click on **Continue**.  See image below.
 
    ![alt tag](./images/A-03.PNG)
 
@@ -47,7 +47,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/A-04.PNG)
 
-   Under **Add tasks**, search for text *Task* **Docker Compose** and add it to the CI pipeline.  This task will be used to build a *Custom* Jenkins image with Jenkins Plugins, Docker client and Kubernetes CLI installed on it.  Review the **Dockerfile** in the GitHub repository to understand what binaries will be built into to the container image (contents of the image).
+   Under **Add tasks**, search for text **Docker Compose** and add this task to the CI pipeline.  This task will be used to build a *Custom* Jenkins container image containing Jenkins Plugins, Docker client and Kubernetes CLI installed on it.  Review the **Dockerfile** in the GitHub repository to view which binaries will be installed in the container image once it is built.
 
    ![alt tag](./images/A-05.PNG)
 
@@ -55,15 +55,19 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/A-06.PNG)
 
-   Add another **Docker Compose** task to the CI pipeline.  This task will be used to push the built custom Jenkins image to the ACR (Azure Container Repository) which was provisioned in the parent project labs.  Click on this task in the left panel and update all field values marked with a **blue** checkmark as shown in the screenshot below.
+   Add another **Docker Compose** task to the CI pipeline.  This task will be used to push the built custom Jenkins container image into the ACR (Azure Container Repository).   This ACR should have been provisioned in the parent project labs.  Click on this task in the left panel and update all field values marked with a **blue** checkmark as shown in the screenshot below.
 
    ![alt tag](./images/A-07.PNG)
 
-   Search for task **Copy files** and add it to the CI pipeline. Configure this task as shown in the screenshot below.
+   Search for task **Copy files** and add it to the CI pipeline.  This task will be used to copy the Helm chart folder to a staging directory.
+
+   Configure this task as shown in the screenshot below.
 
    ![alt tag](./images/A-19.PNG)
 
-   Search for task **Publish Build Artifacts**, add it to the CI pipeline and configure the task as shown in the images below.
+   Search for task **Publish Build Artifacts** and add it to the CI pipeline.  This task will be used to publish the Helm chart folder from the staging directory to a **drop** location which would be accessible in the CD (Release) pipeline.
+
+   Configure the task as shown in the images below.
 
    ![alt tag](./images/A-20.PNG)
 
@@ -99,11 +103,11 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    With this configuration, the CD pipeline will be triggered and executed when the CI pipeline completes OK.
 
-   Under **Stages**, click on **1 job, 0 task**.  Then click on **Agent job** and make sure the **Agent pool* which was created in the parent project lab is selected as shown in the image below.
+   Under **Stages**, click on **1 job, 0 task**.  Then click on **Agent job** and make sure the **Agent pool** which was created in the parent project lab (Default) is selected as shown in the image below.
 
    ![alt tag](./images/A-12.PNG)
 
-   Click on ** + ** besides **Agent job** to add a new release *Task*. Search for text **Helm** in the search field besides **Add tasks**.  And **Add** the **Helm tool installer** task.
+   Click on the + sign besides **Agent job** to add a new release *Task*. Search for text **Helm** in the search field besides **Add tasks**.  And **Add** the **Helm tool installer** task.
 
    ![alt tag](./images/A-14.PNG)
 
@@ -111,11 +115,11 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/A-15.PNG)
 
-   Click on ** + ** besides **Agent job** and search for text **Helm** again.  Add the task named **Package and deploy Helm charts** to the release pipeline.  See screenshot below.
+   Click on the + sign besides **Agent job** and search for text **Helm** again.  Add the task named **Package and deploy Helm charts** to the release pipeline.  See screenshot below.
 
    ![alt tag](./images/A-16.PNG)
 
-   Click on the **Helm** task you just added and configure values as shown in the screenshot below.  Provide correct values for all fields marked with a blue tick mark.
+   Click on the **Helm** task you just added and configure values as shown in the screenshots below.  Provide correct values for all fields marked with a blue tick mark.
 
    ![alt tag](./images/A-22.PNG)
 
@@ -123,7 +127,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    After updating all values, click on **Save**.  You can now run the CD pipeline by creating a new **Release** and deploying it or by re-running the **CI** (Build) pipeline.
 
-   Proceed with the Section B when the CD pipeline completes OK.  See screenshot below.
+   Proceed with Section [B] when the CD pipeline completes OK.  See screenshot below.
 
    ![alt tag](./images/A-24.PNG)
 
