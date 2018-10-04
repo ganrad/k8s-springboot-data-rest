@@ -41,11 +41,11 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    Click on **Manage Jenkins** on the left nav panel.  See image below.
   
-   ![alt tag](./images/A-01.PNG)
+   ![alt tag](./images/B-01.PNG)
   
    Then click on **Configure System**.  In the configuration web page, click on **Environment variables**.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the day.  See screenshot below.
 
-   ![alt tag](./images/A-02.PNG)
+   ![alt tag](./images/B-02.PNG)
 
    Click **Save**.
 
@@ -55,19 +55,19 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    Click on **Credentials** on the left nav panel.  See image below.  
 
-   ![alt tag](./images/A-03.PNG)
+   ![alt tag](./images/B-03.PNG)
 
    Click on **Jenkins** link under *Stored scoped to Jenkins* as shown in the image below.
 
-   ![alt tag](./images/A-04.PNG)
+   ![alt tag](./images/B-04.PNG)
 
    Click on **Global credentials (unrestricted)** link. Then click on **Add Credentials** link as shown in the image below.
 
-   ![alt tag](./images/A-05.PNG)
+   ![alt tag](./images/B-05.PNG)
 
    In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  For **ID**, specify the value `acr-credentials`.  These values are needed for pushing the built *po-service* container image into ACR.
 
-   ![alt tag](./images/A-06.PNG)
+   ![alt tag](./images/B-06.PNG)
 
    Click **OK**.
 
@@ -77,51 +77,51 @@ For easy and quick reference, readers can refer to the following on-line resourc
 
    Click on **Add Credentials** link again.  Provide the values as shown in the image below.  In the dropdown box for **Kind**, select value `Secret file`.  Click on **Choose File** and select the *Kubernetes Config* file which you saved in the parent project labs.  Specify value `aks-credentials` for field **ID** and enter a short description for this credential in the **Description** field.
 
-   ![alt tag](./images/A-14.PNG)
+   ![alt tag](./images/B-14.PNG)
 
    Click **OK**.  Then click on the **Jenkins** link on the top nav panel as shown in the image below.
 
-   ![alt tag](./images/A-07.PNG)
+   ![alt tag](./images/B-07.PNG)
 
 5. Next, define a CD Pipeline.
 
    Click on **New Item** in the left nav panel OR click on **create new jobs** link.
 
-   ![alt tag](./images/A-08.PNG)
+   ![alt tag](./images/B-08.PNG)
 
    Give the CD pipeline a meaningful name and select the **Pipeline** project as shown in the image below.
 
-   ![alt tag](./images/A-09.PNG)
+   ![alt tag](./images/B-09.PNG)
 
    Click **OK**.  On the configuration web page and in the **Description** field, provide a brief description for this pipeline.  In the **General** section, select the checkbox besides **GitHub Project** and specify the URL for the GitHub project which you forked in the parent project.  Make sure the URL is the URL for your forked GitHub repository.  See screenshot below.
 
-   ![alt tag](./images/A-10.PNG)
+   ![alt tag](./images/B-10.PNG)
 
    Under **Build Triggers**, click the checkbox besides **GitHub hook trigger for GITScm polling**.
 
-   ![alt tag](./images/A-11.PNG)
+   ![alt tag](./images/B-11.PNG)
 
    Under **Pipeline**, besides **Definition** select *Pipeline script from SCM*.  In the drop down box for **SCM**, select *Git* and specify this GitHub URL (Your forked repo.) for field **Repository URL**.  For field **Script Path**, specify value `extensions/jenkins-ci-cd/Jenkinsfile`.  Leave other field values as is.  Click **Save** when you are done.  See screenshot below.
 
-   ![alt tag](./images/A-12.PNG)
+   ![alt tag](./images/B-12.PNG)
 
 5. In the next page, click **Build Now** in the left nav panel.
 
-   ![alt tag](./images/A-13.PNG)
+   ![alt tag](./images/B-13.PNG)
 
    The *Pipeline Stage View* plugin will display the progress of the pipeline execution.  See below.
 
-   ![alt tag](./images/A-15.PNG)
+   ![alt tag](./images/B-15.PNG)
 
    While waiting for the pipeline execution to finish, open `./Jenkinsfile` and go thru the *Pipeline* stages and steps.
 
    All the pipeline stages should complete OK (green box) as shown in the image below.
 
-   ![alt tag](./images/A-16.PNG)
+   ![alt tag](./images/B-16.PNG)
     
    To review the pipeline execution log and/or troubleshoot problems when any of the pipeline stages fail, click on the **Build #** under **Build History** and then click on **Console Output**.  Alternatively, you can also click on **Pipeline Steps** to review the details (log output) of each step executed during each stage.
 
-   ![alt tag](./images/A-17.PNG)
+   ![alt tag](./images/B-17.PNG)
 
 
    You have now successfully completed this lab.  Congrats!
