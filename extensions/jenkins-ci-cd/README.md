@@ -1,11 +1,12 @@
 ## Use Azure DevOps to deploy Jenkins CI/CD on AKS and implement a Jenkins *Continuous Delivery* pipeline
 
 **Prerequisites:**
-1.  Before working on the hands-on labs in this project, readers are required to complete all hands-on labs in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
+1.  Before working on the hands-on labs in this project, readers are required to complete all hands-on labs (Sections) in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
 2.  Readers are required to be familiar with basic Linux commands.  Experience working in Linux environments will definitely be helpful.
-3.  Readers are assumed to have prior exposure to DevOps tools such as Azure DevOps (VSTS) and/or Jenkins CI/CD.
+3.  In this hands-on lab, readers will be working with two of the commonly used and popular **DevOps** tools - *Azure DevOps (VSTS)* and *Jenkins*. Hence readers are assumed to have some level of exposure to these tools.
 
 **Description:**
+
 In a nutshell, you will work on the following tasks.
 1. Implement a *Azure DevOps Build and Release Pipeline* to deploy Jenkins CI/CD on AKS (Section [A])
 
@@ -15,6 +16,7 @@ In a nutshell, you will work on the following tasks.
    **Result:** A **Continuous Delivery** pipeline deployed in Jenkins which will be used to re-deploy the *po-service* microservice on AKS (previously deployed to AKS in the parent project).
 
 **Workflow:**
+
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=vsts)
 - [Jenkins](https://jenkins.io/doc/)
@@ -23,7 +25,107 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - Keep in mind that this is an **Advanced** lab targeted towards experienced Kubernetes users who are familiar with CLI (`kubectl`) and the API model.
 
 ### A] Implement Azure DevOps pipelines to deploy Jenkins CI/CD on AKS
-**Time to complete:**
+**Approx. time to complete: 1 Hour**
+
+In this section, we will implement a CI and CD pipeline in *Azure DevOps* in order to build and deploy *Jenkins* on the AKS cluster deployed in the parent project labs.
+
+1. In this step we will implement a CI pipeline in Azure DevOps to build and push a custom *Jenkins* container image into ACR.
+
+   Log into your Azure DevOps account and create a new project.  Give a meaningful name to the project. Click **Create**.  See screenshot below.
+
+   ![alt tag](./images/A-01.PNG)
+
+   Click on **Pipelines** on the top menu and then select **Builds**.  If you have turned on **Preview Features** in your account, the top menu will appear in the left navigational panel.  Then click on **New pipeline**.  See screenshot below.
+
+   ![alt tag](./images/A-02.PNG)
+
+   In the **Select a source** page, select **GitHub**, specify a **Connection name** and use your credentials to authenticate to GitHub. You can use OAuth or a PAT Token to authenticate respectively.  Then select this GitHub repository (your forked repo.) and click on **Continue**.  See image below.
+
+   ![alt tag](./images/A-03.PNG)
+
+   In the **Select a template** page, click on **Empty Job**.  Next, select the **Default** *Agent pool* or other agent pool which you might have created in the parent project labs.  Then click on the **+** symbol besides **Agent job 1**.  See screenshot below.
+
+   ![alt tag](./images/A-04.PNG)
+
+   Under **Add tasks**, search for text *Task* **Docker Compose** and add it to the CI pipeline.  This task will be used to build a *Custom* Jenkins image with Jenkins Plugins, Docker client and Kubernetes CLI installed on it.  Review the **Dockerfile** in the GitHub repository to understand what binaries will be built into to the container image (contents of the image).
+
+   ![alt tag](./images/A-05.PNG)
+
+   Click on **Docker Compose** task in the left panel and update all field values marked with a **blue** checkmark as shown in the screenshot below.
+
+   ![alt tag](./images/A-06.PNG)
+
+   Add another **Docker Compose** task to the CI pipeline.  This task will be used to push the built custom Jenkins image to the ACR (Azure Container Repository) which was provisioned in the parent project labs.  Click on this task in the left panel and update all field values marked with a **blue** checkmark as shown in the screenshot below.
+
+   ![alt tag](./images/A-07.PNG)
+
+   Search for task **Copy files** and add it to the CI pipeline. Configure this task as shown in the screenshot below.
+
+   ![alt tag](./images/A-19.PNG)
+
+   Search for task **Publish Build Artifacts**, add it to the CI pipeline and configure the task as shown in the images below.
+
+   ![alt tag](./images/A-20.PNG)
+
+   ![alt tag](./images/A-21.PNG)
+
+   Click on **Save** in the tab panel (on top).  Then run a build by clicking on **Queue** in the tab panel on top as shown in the image below.
+
+   ![alt tag](./images/A-17.PNG)
+
+   The build will take approx. 10-15 mins to finish.  Proceed with the next step when the build finishes Ok.
+
+   ![alt tag](./images/A-18.PNG)
+
+2. In this step we will implement the CD (Continuous Deployment) pipeline in Azure DevOps to deploy Jenkins on AKS.
+
+   We will use the new Azure DevOps UI for completing this step.  Click on your account name in the top panel then select *Preview features* in the drop down menu and enable the features as shown in the screenshots below.
+
+   ![alt tag](./images/A-08.PNG)
+
+   ![alt tag](./images/A-09.PNG)
+
+   Click on **Releases** in the left panel and then click on **New Pipeline**.  Select an **Empty job** in the **Select a template** panel.  In the field **Stage name**, specify a meaningful value (eg., AKS-Dev-Deploy) and click on the *X* to clear the panel.  See screenshot below.
+
+   ![alt tag](./images/A-10.PNG)
+
+   Change the name of the CD pipeline as shown in the image below.
+
+   ![alt tag](./images/A-13.PNG)
+
+   Under **Artifacts**, click on **Add an artifact** and select **Build** as the **Source type**.  Specify values as shown in the image below.  Remember to select the build pipeline which was implemented in the previous step in field **Source**.  Click on **Add**.
+
+   ![alt tag](./images/A-11.PNG)
+
+   With this configuration, the CD pipeline will be triggered and executed when the CI pipeline completes OK.
+
+   Under **Stages**, click on **1 job, 0 task**.  Then click on **Agent job** and make sure the **Agent pool* which was created in the parent project lab is selected as shown in the image below.
+
+   ![alt tag](./images/A-12.PNG)
+
+   Click on ** + ** besides **Agent job** to add a new release *Task*. Search for text **Helm** in the search field besides **Add tasks**.  And **Add** the **Helm tool installer** task.
+
+   ![alt tag](./images/A-14.PNG)
+
+   In the task configuration panel, uncheck checkboxes for **Check for latest version of Helm** and **Install Kubectl** as shown below.
+
+   ![alt tag](./images/A-15.PNG)
+
+   Click on ** + ** besides **Agent job** and search for text **Helm** again.  Add the task named **Package and deploy Helm charts** to the release pipeline.  See screenshot below.
+
+   ![alt tag](./images/A-16.PNG)
+
+   Click on the **Helm** task you just added and configure values as shown in the screenshot below.  Provide correct values for all fields marked with a blue tick mark.
+
+   ![alt tag](./images/A-22.PNG)
+
+   ![alt tag](./images/A-23.PNG)
+
+   After updating all values, click on **Save**.  You can now run the CD pipeline by creating a new **Release** and deploying it or by re-running the **CI** (Build) pipeline.
+
+   Proceed with the Section B when the CD pipeline completes OK.  See screenshot below.
+
+   ![alt tag](./images/A-24.PNG)
 
 ### B] Implement a Continuous Delivery (CD) pipeline for *po-service* microservice in Jenkins
 **Time to complete:**
