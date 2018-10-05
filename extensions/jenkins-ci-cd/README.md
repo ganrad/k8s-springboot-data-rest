@@ -153,7 +153,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
   
    ![alt tag](./images/B-01.PNG)
   
-   Then click on **Configure System**.  In the configuration web page, click on **Environment variables**.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the day.  See screenshot below.
+   Then click on **Configure System**.  In the configuration web page, check the box for **Environment variables** under **Global properties**.  Add an environment variable named **ACR_LOGINSERVER**.  Specify the variable value to be the name of your ACR which you deployed in the parent project.  It should be of the form **xxxx**.azurecr.io, where *xxxx* is the name of your registry.  Also, under *Build Timestamp*, change the value of *Pattern* to only include the year, month and day (yyyy-MM-dd).  See screenshot below.
 
    ![alt tag](./images/B-02.PNG)
 
@@ -167,7 +167,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/B-03.PNG)
 
-   Click on **Jenkins** link under *Stored scoped to Jenkins* as shown in the image below.
+   Click on **Jenkins** link under **Stored scoped to Jenkins** as shown in the image below.
 
    ![alt tag](./images/B-04.PNG)
 
