@@ -20,9 +20,11 @@ In a nutshell, you will work on the following tasks.
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=vsts)
 - [Jenkins](https://jenkins.io/doc/)
+- [Helm](https://docs.helm.sh/)
 
 **Important Notes:**
 - Keep in mind that this is an **Advanced** lab targeted towards experienced Kubernetes users who are familiar with CLI (`kubectl`) and the API model.
+- For deploying the Jenkins container on AKS, we will be using **Helm** in the Azure DevOps release (CD) pipeline.  Helm is a package manager for Kubernetes and has become the de-facto tool for managing the lifecycle of containerized applications on Kubernetes.  With Helm, Kubernetes resources for a given application are packaged within a *Chart*.  When a Chart is deployed to Kubernetes, Helm creates a new release.  A given Chart can be updated and deployed multiple times.  Each deployment creates a new *Revision* for the release.  A specific deployment can also be rolled back to a previous revision and/or deleted.  A Chart can also be deployed multiple times (multiple releases).  We won't be going into the details of Helm and it's internals as it is beyond the scope of this project.  Refer to the Helm documentation (links provided above) for details.
 
 ### A] Implement Azure DevOps pipelines to deploy Jenkins CI/CD on AKS
 **Approx. time to complete: 1 Hour**
@@ -82,6 +84,8 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
    ![alt tag](./images/A-18.PNG)
 
 2. In this step we will implement the CD (Continuous Deployment) pipeline in Azure DevOps to deploy Jenkins on AKS.
+
+   Before proceeding, review the Helm Chart artifacts in directory `./jenkins-chart`.
 
    We will use the new Azure DevOps UI for completing this step.  Click on your account name in the top panel then select *Preview features* in the drop down menu and enable the features as shown in the screenshots below.
 
