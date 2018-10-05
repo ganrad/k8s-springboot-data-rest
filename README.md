@@ -152,7 +152,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     $ KUBECLI=/home/labuser/aztools
     $ MAVEN=/home/labuser/maven/apache-maven-3.5.4/bin
     $ HELM=/home/labuser/helm/linux-amd64
-    $ echo "export PATH=$MAVEN:$KUBECLI:$HELM:${PATH}" >> .bashrc
+    $ echo "export PATH=$MAVEN:$KUBECLI:$HELM:${PATH}" >> ~/.bashrc
     #
     ```
 
@@ -423,7 +423,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     $ kubectl config current-context
     ```
 
-7.  Configure Kubernetes to pull application container images from ACR (configured in step [B]).  When AKS cluster is created, Azure also creates a 'Service Principal' (SP) to support cluster operability with other Azure resources.  This auto-generated service principal can be used to authenticate against the ACR.  To do so, we need to create an Azure AD role assignment that grants the cluster's SP access to the Azure Container Registry.  In a Linux terminal window, update the shell script `k8s-scripts/acr-auth.sh` with correct values for the following variables.
+7.  Configure Kubernetes to pull application container images from ACR (configured in step [B]).  When AKS cluster is created, Azure also creates a 'Service Principal' (SP) to support cluster operability with other Azure resources.  This auto-generated service principal can be used to authenticate against the ACR.  To do so, we need to create an Azure AD role assignment that grants the cluster's SP access to the Azure Container Registry.  In a Linux terminal window, update the shell script `shell-scripts/acr-auth.sh` with correct values for the following variables.
 
     Variable | Description
     ----------------- | -------------------
@@ -435,10 +435,10 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     Then execute this shell script.  See below.
 
     ```
-    # chmod 700 ./k8s-scripts/acr-auth.sh
+    # chmod 700 ./shell-scripts/acr-auth.sh
     #
     # Update the shell script and then run it
-    $ ./k8s-scripts/acr-auth.sh
+    $ ./shell-scripts/acr-auth.sh
     #
     ```
 
@@ -546,7 +546,7 @@ You can access the Purchase Order REST API from your Web browser, e.g.:
 - http://<Azure_load_balancer_ip>/orders
 - http://<Azure_load_balancer_ip>/orders/1
 
-Use the sample scripts in the **./scripts** folder to test this microservice.
+Use the sample scripts in the **./test-scripts** folder to test this microservice.
 
 Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
 
