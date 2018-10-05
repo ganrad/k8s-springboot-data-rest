@@ -47,6 +47,8 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - Specify either **eastus**, **westus**, **westus2** or **centralus** as the *location* for the Azure *Resource Group* and the *AKS cluster*.
 
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
+**Approx. time to complete this section: 45 minutes**
+
 This Linux VM will be used for the following purposes
 - Running a VSTS build agent (docker container) which will be used for running application and container builds.
 - Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources including the AKS cluster resources.
@@ -78,7 +80,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     ```
 
-5.  Install Azure CLI, K8s CLI, Git client, Open JDK, Jenkins and Maven on this VM.
+5.  Install Azure CLI, K8s CLI, Helm, Git client, Open JDK, Jenkins and Maven on this VM.
     ```
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
@@ -129,6 +131,16 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     # Switch back to home directory
     $ cd
     #
+    # Install Helm v2.9.1
+    # Create a new directory 'Helm' under home directory to store the helm binary
+    $ mkdir helm
+    $ cd helm
+    $ wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+    $ tar -xzvf helm-v2.9.1-linux-amd64.tar.gz
+    #
+    # Switch back to home directory
+    $ cd
+    #
     # Install Kubernetes CLI
     # Create a new directory 'aztools' under home directory to store the kubectl binary
     $ mkdir aztools
@@ -136,10 +148,11 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     # Install kubectl binary in the new directory
     $ az aks install-cli --install-location=./aztools/kubectl
     #
-    # Finally, update '.bashrc' file and set the path to Maven and Kubectl binaries
+    # Finally, update '.bashrc' file and set the path to Maven, Helm and Kubectl binaries
     $ KUBECLI=/home/labuser/aztools
     $ MAVEN=/home/labuser/maven/apache-maven-3.5.4/bin
-    $ echo "export PATH=$MAVEN:$KUBECLI:${PATH}" >> .bashrc
+    $ HELM=/home/labuser/helm/linux-amd64
+    $ echo "export PATH=$MAVEN:$KUBECLI:$HELM:${PATH}" >> .bashrc
     #
     ```
 
@@ -217,6 +230,8 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     Minimize this terminal window for now as you will only be using it to view the results of a VSTS build.  Before proceeding, open another terminal (WSL Ubuntu/Putty) window and login (SSH) into the Linux VM.
 
 ### B] Deploy Azure Container Registry (ACR)
+**Approx. time to complete this section: 10 minutes**
+
 In this step, we will deploy an instance of Azure Container Registry to store container images which we will build in later steps.  A container registry such as ACR allows us to store multiple versions of application container images in one centralized repository and consume them from multiple nodes (VMs/Servers) where our applications are deployed.
 
 1.  Login to your Azure portal account.  Then click on **Container registries** in the navigational panel on the left.  If you don't see this option in the nav. panel then click on **All services**, scroll down to the **COMPUTE** section and click on the star beside **Container registries**.  This will add the **Container registries** option to the service list in the navigational panel.  Now click on the **Container registries** option.  You will see a page as displayed below.
@@ -228,6 +243,8 @@ In this step, we will deploy an instance of Azure Container Registry to store co
     ![alt tag](./images/B-02.png)
 
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
+**Approx. time to complete this section: 1 Hour**
+
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
 Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous integration (CI) can be easily implemented using VSTS.
@@ -328,6 +345,8 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
      ![alt tag](./images/A-19.png)
 
 ### D] Create an Azure Kubernetes Service (AKS) cluster and deploy Springboot microservice
+**Approx. time to complete this section: 1 - 1.5 Hours**
+
 In this step, we will first deploy an AKS cluster on Azure.  The Springboot **Purchase Order** microservice application reads/writes purchase order data from/to a relational (MySQL) database.  So we will deploy a **MySQL** database container (ephemeral) first and then deploy our Springboot Java application.  Kubernetes resources (object definitions) are usually specified in manifest files (yaml/json) and then submitted to the API Server.  The API server is responsible for instantiating corresponding objects and bringing the state of the system to the desired state.
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in this GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
@@ -423,7 +442,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     #
     ```
 
-    At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster within VSTS.  To do this, in your Terminal, `cat` the kube config file:
+    At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster in a subsequent lab.  To do this, in your Terminal, `cat` the kube config file and cut and paste it's contents into another file. Save this config file to a directory location on you local workstation/PC.
     ```
     cat ~/.kube/config
     ```
@@ -531,9 +550,11 @@ Use the sample scripts in the **./scripts** folder to test this microservice.
 
 Congrats!  You have just built and deployed a Java Springboot microservice on Azure Kubernetes Service!!
 
-If you would like to learn how to implement **Continuous Deployment** in VSTS, continue with the next steps.  We will define a **Release Pipeline** in VSTS to perform automated application deployments next.
+We will define a **Release Pipeline** in Azure DevOps to perform automated application deployments to AKS next.
 
 ### E] Create a simple *Release Pipeline* in VSTS
+**Approx. time to complete this section: 1 Hour**
+
 1.  Using a web browser, login to your VSTS account (if you haven't already) and select your project which you created in Step [C]. Click on *Build and Release* menu on the top panel and select *Releases*.  Next, click on *+ New pipeline*.
 
     ![alt tag](./images/E-02.PNG)
@@ -580,7 +601,7 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
 
     If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into VSTS for `Server URL`.
 
-    Additionally you will need your Kuberentes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
+    Additionally you will need your Kubernetes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
 
     ![alt tag](./images/E-12.PNG)
 
@@ -621,6 +642,8 @@ If you would like to learn how to implement **Continuous Deployment** in VSTS, c
     Congrats!  You have successfully used DevOps to automate the build and deployment of a containerized microservice application on Kubernetes.  
 
 In this project, we experienced how DevOps, Microservices and Containers can be used to build next generation applications.  These three technologies are changing the way we develop and deploy software applications and are at the forefront of fueling digital transformation in enterprises today!
+
+Next, proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in Jenkins to build and release the *po-service* microservice to AKS.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.

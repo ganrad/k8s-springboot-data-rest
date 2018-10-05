@@ -27,7 +27,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - For deploying the Jenkins container on AKS, we will be using **Helm** in the Azure DevOps release (CD) pipeline.  Helm is a package manager for Kubernetes and has become the de-facto tool for managing the lifecycle of containerized applications on Kubernetes.  With Helm, Kubernetes resources for a given application are packaged within a *Chart*.  When a Chart is deployed to Kubernetes, Helm creates a new release.  A given Chart can be updated and deployed multiple times.  Each deployment creates a new *Revision* for the release.  A specific deployment can also be rolled back to a previous revision and/or deleted.  A Chart can also be deployed multiple times (multiple releases).  We won't be going into the details of Helm and it's internals as it is beyond the scope of this project.  Refer to the Helm documentation (links provided above) for details.
 
 ### A] Implement Azure DevOps pipelines to deploy Jenkins CI/CD on AKS
-**Approx. time to complete: 1 Hour**
+**Approx. time to complete this section: 1 Hour**
 
 In this section, we will implement a CI and CD pipeline in *Azure DevOps* in order to build and deploy *Jenkins* on the AKS cluster deployed in the parent project labs.
 
@@ -75,7 +75,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/A-21.PNG)
 
-   Click on **Save** in the tab panel (on top).  Then run a build by clicking on **Queue** in the tab panel on top as shown in the image below.
+   Click on **Save** in the tab panel (on top) to save the build definition.  Then run a build by clicking on **Queue** in the tab panel on top as shown in the image below.  Alternatively, click **Save and Queue** in the tab panel to save the build definition and queue it for execution on the build agent.
 
    ![alt tag](./images/A-17.PNG)
 
@@ -136,7 +136,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
    ![alt tag](./images/A-24.PNG)
 
 ### B] Implement a Continuous Delivery (CD) pipeline for *po-service* microservice in Jenkins
-**Time to complete:**
+**Approx. time to complete this section: 1 Hour**
 
 1. Open a terminal window and connect to the Bastion host (Linux VM) via SSH.  Use the command below to ascertain the IP address of the **Jenkins** service.  The value under column *EXTERNAL-IP* is the host IP.
    ```
