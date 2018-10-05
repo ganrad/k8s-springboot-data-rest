@@ -643,7 +643,7 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
 
 In this project, we experienced how DevOps, Microservices and Containers can be used to build next generation applications.  These three technologies are changing the way we develop and deploy software applications and are at the forefront of fueling digital transformation in enterprises today!
 
-Next, proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in Jenkins to build and release the *po-service* microservice to AKS.
+Next, proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in **Jenkins** to build and release the *po-service* microservice to AKS.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
