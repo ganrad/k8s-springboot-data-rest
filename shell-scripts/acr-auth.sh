@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Specify correct values for the following 4 variables
+# Before running this script, specify correct values for the following 4 variables !!!!
 AKS_RESOURCE_GROUP=MTC-TA-Sep21-RG
 AKS_CLUSTER_NAME=tacluster
 ACR_RESOURCE_GROUP=MTC-TA-Sep21-RG

@@ -238,16 +238,28 @@ In this step, we will deploy an instance of Azure Container Registry to store co
 
     ![alt tag](./images/B-01.png)
 
-2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry, select an Azure subscription, select the **Resource group** which you created in step [A] and leave the location as-is.  The location should default to the location assigned to the resource group.  Select the **Basic** pricing tier.  Click **Create** when you are done.
+2.  Click on **Add** to create a new ACR instance.  Give a meaningful name to your registry and make a note of it.  Select an Azure **Subscription**, select the **Resource group** which you created in step [A] and leave the **Location** field as-is.  The location should default to the location assigned to the resource group.  Select the **Basic** pricing tier.  Click **Create** when you are done.
 
     ![alt tag](./images/B-02.png)
+
+3.  Create an Azure Service Principal (SP) with *Contributor* role access to the resource group ('myResourceGroup').  This SP will be used in a subsequent lab (Jenkins-CI-CD) to pull the *po-service* container image from ACR and re-deploy the microservice to AKS.
+    Execute the shell script `./shell-scripts/jenkins-acr-auth.sh` in the Linux VM (Bastion Host) terminal window.  The command output will be displayed on the console and also saved to a file (SP_ACR.txt) in the current directory.  Before running the shell script, open it in 'vi' editor (or 'nano') and specify the correct values for variables 'ACR_RESOURCE_GROUP' and 'ACR_NAME'. 
+    ```
+    # Enable execute permission for this script
+    $ chmod 700 ./shell-scripts/jenkins-acr-auth.sh
+    #
+    # Specify the correct values for `ACR_RESOURCE_GROUP` and `ACR_NAME` in this shell script before running it
+    $ ./shell-scripts/jenkins-acr-auth.sh 
+    # Make sure the 'SP_ACR.txt' file got created in the current working directory
+    $ cat SP_ACR.txt
+    ```
 
 ### C] Create a new Build definition in VSTS to deploy the Springboot microservice
 **Approx. time to complete this section: 1 Hour**
 
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
 
-Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous integration (CI) can be easily implemented using VSTS.
+Before proceeding with the next steps, feel free to inspect the dockerfile and source files in the GitHub repository (under src/...).  This will give you a better understanding of how continuous integration (CI) can be easily implemented using Azure DevOps.
 
 1.  Fork this [GitHub repository](https://github.com/ganrad/k8s-springboot-data-rest) to **your** GitHub account.  In the browser window, click on **Fork** in the upper right hand corner to get a separate copy of this project added to your GitHub account.  You must be signed in to your GitHub account in order to fork this repository.
 
