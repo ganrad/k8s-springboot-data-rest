@@ -175,7 +175,7 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
 
    ![alt tag](./images/B-05.PNG)
 
-   In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  For **ID**, specify the value `acr-credentials`.  These values are needed for pushing the built *po-service* container image into ACR.
+   In the next web page, provide the details as shown in the image below.  For **Username**, specify the Azure Service Principal (SP) **appId** value and for **Password** specify the SP **password**.  Recall that you created a SP for ACR in the parent lab (Section [B], Step 3) and the SP **appId** and **password** should have been saved in a file **SP_ACR.txt** in the project directory.  For **ID**, specify the value `acr-credentials`.  These values are needed for pushing the built *po-service* container image into ACR.
 
    ![alt tag](./images/B-06.PNG)
 
