@@ -17,6 +17,8 @@ In a nutshell, you will work on the following tasks.
 
 **Workflow:**
 
+![alt tag](./images/Jenkins-cicd-workflow.jpg)
+
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=vsts)
 - [Jenkins](https://jenkins.io/doc/)
