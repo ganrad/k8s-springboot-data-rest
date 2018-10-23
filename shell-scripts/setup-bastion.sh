@@ -86,6 +86,13 @@ mkdir aztools
 echo "Installing Kubectl"
 az aks install-cli --install-location=./aztools/kubectl
 #
+# Install Kubernetes Service Catalog 'svcat' binary in 'aztools' directory
+echo "Installing Kubernetes Service Catalog"
+$ cd aztools
+$ curl -sLO https://servicecatalogcli.blob.core.windows.net/cli/latest/$(uname -s)/$(uname -m)/svcat
+$ chmod +x ./svcat
+# Switch back to home directory
+$ cd
 # Finally, update '.bashrc' file and set the path to Maven, Helm and Kubectl binaries
 echo "Configuring PATH ..."
 cd
