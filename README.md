@@ -57,7 +57,7 @@ The following tools (binaries) will be installed on this VM.
 - Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
 - OpenJDK, Maven and Jenkins.  If you would like to learn how to build and deploy this SpringBoot microservice to AKS using Jenkins CI/CD, then you will also need to install Java run-time (OpenJDK), Maven and Jenkins.
 - Kubernetes CLI (`kubectl`).  This binary will be used for managing resources on Kubernetes (AKS).
-- Helm CLI (`helm`).  Helm is a package manager for Kubernetes and is used for automating the deployment of applications comprised of multiple microservices to Kubernetes.
+- Helm CLI (`helm`).  Helm is a package manager for Kubernetes and is used for automating the deployment of applications comprised of multiple microservices on Kubernetes.
 - [Kubernetes Service Catalog](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/). Service Catalog will be used for dynamically provisioning PaaS services on Azure.
 
 Follow the steps below to create the Bastion host (Linux VM), install pre-requisite software (CLI) on this VM, and run the VSTS build agent.
