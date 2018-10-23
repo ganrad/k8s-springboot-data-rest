@@ -51,14 +51,14 @@ For easy and quick reference, readers can refer to the following on-line resourc
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 **Approx. time to complete this section: 45 minutes**
 
-This Linux VM will be used for the following purposes
-- Running a VSTS build agent (docker container) which will be used for running application and container builds.
-- Installing Azure CLI 2.0 client.  This will allow us to administer and manage all Azure resources including the AKS cluster resources.
-- Installing Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
-- Installing Maven and Jenkins.  If you would like to learn how to build and deploy this SpringBoot microservice to AKS using Jenkins CI/CD, then you will also need to install Java run-time (OpenJDK), Maven and Jenkins.
-- Installing Kubernetes CLI (`kubectl`) which is used for deploying resources to Kubernetes.
-- Installing Helm CLI (`helm`).  Helm is a package manager for Kubernetes and is used for automating the deployment of applications comprised of multiple microservices to Kubernetes.
-- Installing [Kubernetes Service Catalog](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/) for dynamically provisioning PaaS services in Azure.
+The following tools (binaries) will be installed on this VM.
+- VSTS build agent (docker container). This build container will be used for running application and container builds.
+- Azure CLI 2.0 client.  Azure CLI will be used to administer and manage all Azure resources including the AKS cluster resources.
+- Git client.  We will be cloning this repository to make changes to the Kubernetes resources before deploying them to the AKS cluster.
+- OpenJDK, Maven and Jenkins.  If you would like to learn how to build and deploy this SpringBoot microservice to AKS using Jenkins CI/CD, then you will also need to install Java run-time (OpenJDK), Maven and Jenkins.
+- Kubernetes CLI (`kubectl`).  This binary will be used for managing resources on Kubernetes (AKS).
+- Helm CLI (`helm`).  Helm is a package manager for Kubernetes and is used for automating the deployment of applications comprised of multiple microservices to Kubernetes.
+- [Kubernetes Service Catalog](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/). Service Catalog will be used for dynamically provisioning PaaS services on Azure.
 
 Follow the steps below to create the Bastion host (Linux VM), install pre-requisite software (CLI) on this VM, and run the VSTS build agent.
 
