@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: po-service-svcat
+  namespace: dev-svcat
+  labels:
+    app: po-service-svcat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: po-service-svcat
+  template:
+    metadata:
+      labels:
+        app: po-service-svcat
+    spec:
+      containers:
+      - name: po-service-svcat
+        image: mtcslabtest.azurecr.io/po-service:latest
+        volumeMounts:
+        - name: mysqlse
+          mountPath: "/etc/vol-secrets"
+        - name: mysqlcm
+          mountPath: "/etc/config"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: host
+          - name: DB_HOST_PORT
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: port
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: database
+          - name: DB_SSL_REQ
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: sslRequired
+          - name: SPRING_DATASOURCE_URL
+            value: "jdbc:mysql://$(DB_HOST):$(DB_HOST_PORT)/$(DB_NAME)?useSSL=true&requireSSL=$(DB_SSL_REQ)"
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: username
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: password
+      volumes:
+      - name: mysqlse
+        secret:
+          secretName: mysql-secret
+          items:
+          - key: username
+            path: username.properties
+            mode: 511
+          - key: password
+            path: password.properties
+            mode: 511
+      - name: mysqlcm
+        secret:
+          secretName: mysql-secret
+          items:
+          - key: database
+            path: mysqldb.properties
+            mode: 511

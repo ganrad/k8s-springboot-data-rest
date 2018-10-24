@@ -1,0 +1,10 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: po-service-mysql-database-instance
+  namespace: dev-svcat
+spec:
+  clusterServiceClassExternalName: azure-mysql-5-7-database
+  clusterServicePlanExternalName: database
+  parameters:
+    parentAlias: 71b6b6c4-5271-47d3-8188-51e69fba914e

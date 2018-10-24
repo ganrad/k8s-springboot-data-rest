@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: po-service-svcat
+  namespace: dev-svcat
+spec:
+  type: LoadBalancer
+  selector:
+    app: po-service-svcat
+  ports:
+  - name: 80-tcp
+    protocol: TCP
+    port: 80
+    targetPort: 8080

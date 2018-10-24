@@ -1,0 +1,9 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: po-service-mysql-database-binding
+  namespace: dev-svcat
+spec:
+  instanceRef:
+    name: po-service-mysql-database-instance
+  secretName: mysql-secret
