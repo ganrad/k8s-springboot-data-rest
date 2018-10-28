@@ -26,15 +26,16 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Helm](https://docs.helm.sh/)
 - [Open Service Broker API](https://www.openservicebrokerapi.org/)
 - [Install Service Catalog CLI](https://svc-cat.io/docs/install/#installing-the-service-catalog-cli)
-- [Azure Service Catalog CLI Documentation] (https://github.com/Azure/service-catalog-cli)
+- [Azure Service Catalog CLI Documentation](https://github.com/Azure/service-catalog-cli)
 
 **Important Notes:**
-- Keep in mind that this is an **Advanced** lab targeted towards experienced Kubernetes users who are familiar with CLI (`kubectl`) and the API model.
+- Keep in mind that this is an **Advanced** lab for experienced Kubernetes users who are familiar with CLI (`kubectl`) and the API model.
 
 ### A] Install *Service Catalog* and *Open Service Broker for Azure (OSBA)* on AKS
 **Approx. time to complete this section: 1 Hour**
 
-In this section, we will implement a CI and CD pipeline in *Azure DevOps* in order to build and deploy *Jenkins* on the AKS cluster deployed in the parent project labs.
+Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which you provisioned on Azure in the parent project.
+
 
 ### B] Deploy the *Azure Database for MySQL* instance
 **Approx. time to complete this section: 1 Hour**
