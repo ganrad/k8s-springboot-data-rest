@@ -127,11 +127,14 @@ YAML files for deploying all required Kubernetes objects (API resources) are pro
     #
     ```
 
-If you are familiar with Kubernetes API/Object model then you can skip to [Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects).  This will deploy all application artifacts to AKS.
+If you are familiar with Kubernetes API/Object model, you can skip to [Deploy All Kubernetes API Objects](#deploy-all-kubernetes-api-objects).
 
-Alternatively, if you are new to Kubernetes then you may want to proceed with the next steps.  This will give you the opportunity to study/deploy each API object individually and help you understand the relationships between the objects (Kubernetes API/Object Model), how everything ties together.  
+If you are new to Kubernetes, proceed with the next step.
 
 ### Deploy Kubernetes API Objects Step By Step
+
+In this section, you will deploy all Kubernetes API objects step by step. This will help you understand the relationships between the objects (Kubernetes API/Object Model), how everything ties together.  
+
 1.  Use the Kubernetes Dashboard (Web UI) to deploy the **MySQL** database resources on Kubernetes.
     -  Create the MySQL Secret API object.  Click on *Secrets* link on the left navigational panel and then click on *Create* link on the top.  Cut and paste the contents of file *./k8s-scripts/mysql-secret.yaml* into the editor and click *UPLOAD*.  Alternatively, you can also use the *Create From File* option to upload the contents of this file and create the Secret API object.
 
@@ -191,6 +194,13 @@ Alternatively, if you are new to Kubernetes then you may want to proceed with th
 You can now go back to the [k8s-springboot-data-rest](https://github.com/ganrad/k8s-springboot-data-rest#accessing-the-purchase-order-microservice-rest-api) GitHub project and follow the instructions for testing the **po-service** microservice application.
 
 ### Deploy All Kubernetes API Objects
+
+In this section, you will use the Kubernetes Dashboard UI to deploy all Kubernetes API objects to AKS.   A single Kubernetes manifest file will be used to deploy all application artifacts.
+
+**NOTE:** The **k8s-scripts/deploy-app.yaml** file deploys a **ephemeral** MySQL database server container on AKS.  This implies, when the Kubernetes **deployment** object corresponding to the MySQL application is deleted (Pod is terminated/deleted), the storage space used by the MySQL container will also be deleted and the data stored in MySQL database will be lost.
+
+If you want to deploy a **persistent** MySQL database server container, review and then update the file **k8s-scripts/deploy-app-persistent.yaml** instead of **k8s-scripts/deploy-app.yaml**.The persistent MySQL container uses an Azure **Disk** to persist the MySQL databases.  Essentially, all data stored within the MySQL databases will be persisted in a disk and will not be lost when the MySQL **deployment** object is deleted.  The data will only be deleted when the corresponding **Persistent Volume Claim** object is deleted.
+
 1.  Update the file **k8s-scripts/deploy-app.yaml**.  The *image* attribute should point to **your** ACR instance.  This will ensure AKS pulls the application container image from the correct registry.  Substitute the correct value for the ACR *registry name* in the *image* attribute (highlighted in yellow) within the deployment API object (*containers section*) as shown in the screenshot below.
 
     ![alt tag](./../../images/D-01.PNG)

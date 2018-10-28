@@ -1,0 +1,163 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: managed-dev-mysql
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: managed
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-mgd-dsk-mysql
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: managed-dev-mysql
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql
+type: Opaque
+data:
+  database-name: c2FtcGxlZGI=
+  database-password: cGFzc3dvcmQ=
+  database-root-password: cGFzc3dvcmQ=
+  database-user: bXlzcWw=
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql-persistent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql/mysql-server:5.7.22
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: data-volume
+          subPath: mysql
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: database-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: database-password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: database-root-password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: database-name
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: azure-mgd-dsk-mysql
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-db-name
+data:
+  mysqldb.properties: |
+    mysql.dbname=sampledb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  username.properties: bXlzcWwudXNlcj1teXNxbAo=
+  password.properties: bXlzcWwucGFzc3dvcmQ9cGFzc3dvcmQK
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: po-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: po-service
+  ports:
+  - name: 80-tcp
+    protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: po-service
+  labels:
+    app: po-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: po-service
+  template:
+    metadata:
+      labels:
+        app: po-service
+    spec:
+      volumes:
+      - name: mysqlcm
+        configMap:
+          name: mysql-db-name
+      - name: mysqlse
+        secret:
+          secretName: mysql-secret
+      containers:
+      - name: po-service
+        image: mtcslabtest.azurecr.io/po-service:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: mysqlcm
+          mountPath: /etc/config
+        - name: mysqlse
+          mountPath: /etc/vol-secrets
+---
