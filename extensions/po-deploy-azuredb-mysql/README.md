@@ -10,13 +10,13 @@ In this project, we will first deploy a managed MySQL database instance on Azure
 **Description:**
 
 In a nutshell, you will work on the following tasks.
-A. Install **Service Catalog** and **Open Service Broker for Azure (OSBA)** on AKS
+1. Install **Service Catalog** and **Open Service Broker for Azure (OSBA)** on AKS (Section [A])
    These components will be used to deploy managed PaaS services on Azure.
 
-B. Deploy the **Azure Database for MySQL** instance
+2. Deploy the **Azure Database for MySQL** instance (Section [B])
    The Service Catalog CLI will be used to provision a managed instance of MySQL on Azure.  The CLI will communicate with the OSBA API server on AKS to provision the managed PaaS service (MySQL) on Azure.
 
-C. Redeploy the **po-service** microservice using Helm package manager
+3. Redeploy the **po-service** microservice using Helm package manager (Section [C])
    The microservice will use the managed MySQL instance on Azure to persist *Purchase Orders*.
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
