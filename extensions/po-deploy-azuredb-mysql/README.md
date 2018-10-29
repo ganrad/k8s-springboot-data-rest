@@ -29,7 +29,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure Service Catalog CLI Documentation](https://github.com/Azure/service-catalog-cli)
 
 **Important Notes:**
-- Keep in mind that this is an **Advanced** lab for experienced Kubernetes users.  Please complete all sections in the parent project before working on this lab/project.
+- Keep in mind that this is an **Advanced** lab for experienced Kubernetes users.  Before working on this project (labs), make sure you have completed all sections in the parent project.
 
 ### A] Install *Service Catalog* and *Open Service Broker for Azure* (OSBA) on AKS
 **Approx. time to complete this section: 45 mins to an hour**
@@ -147,6 +147,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     # List the namespaces
     $ kubectl get namespaces
+    #
     ```
     
 2.  Install an instance of **Azure Database for MySQL** using Kubernetes CLI.
@@ -159,6 +160,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ kubectl create -f ./k8s-resources/mysql-dbms-instance.yaml
     # List the deployed service instances
     $ svcat get instances -n dev-azure-mysql
+    #
     ```
     Note that for this project, we will be provisioning the managed MySQL server in a **basic** service plan (a.k.a Pricing Tier).  The **Basic** service plan supports a maximum of 2 vCPUs, 1TB of storage and up to 35 days of data retention.  You can view the available service plans for all Azure managed services exposed by OSBA using `svcat` CLI.   You can also use the **Azure Portal** to view the various plans supported by Azure Database for MySQL PaaS service.
 
@@ -170,9 +172,22 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ kubectl create -f ./k8s-resources/mysql-database-instance.yaml
     # List the deployed service instances.  This command should show both the service instances which we have provisioned using OSBA.
     $ svcat get instances -n dev-azure-mysql
+    #
     ```
 
-    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL instance on Azure including the database URI, name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
+    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
+
+    Use Kubernetes CLI to create the database service binding (Secret) as shown in the command snippet below.
+    ```
+    # Create the 'ServiceBinding' API object.  This will create the 'mysql-secret' Secret object containing the MySQL database connection information.
+    $ kubectl create -f ./k8s-resources/mysql-database-binding.yaml
+    # List the secrets in the 'dev-azure-mysql' namespace
+    $ kubectl get secrets -n dev-azure-mysql
+    #
+    # View the data stored in the 'mysql-secret' Secret object
+    $ kubectl describe secret mysql-secret -n dev-azure-mysql
+    #
+    ```
 
 ### C] Redeploy the *po-service* microservice using Helm package manager
 **Approx. time to complete this section: 1 Hour**
