@@ -2,7 +2,7 @@ apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceBinding
 metadata:
   name: po-service-mysql-database-binding
-  namespace: dev-svcat
+  namespace: dev-azure-mysql
 spec:
   instanceRef:
     name: po-service-mysql-database-instance

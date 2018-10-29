@@ -1,4 +1,4 @@
-## Use Azure Database for MySQL (PaaS) as the persistent data store for the po-service microservice application.
+## Use *Azure Database for MySQL* (PaaS) as the persistent data store for the po-service microservice application.
 
 In this project, we will first deploy a managed MySQL database instance on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure the MySQL instance as the backend data store for the **po-service** microservice.
 
@@ -40,14 +40,14 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     $ helm repo add svc-cat https://svc-catalog-charts.storage.googleapis.com
     ```
-    Install Service Catalog with the Helm chart.  The command below assumes the AKS cluster is not RBAC-enabled.  If your cluster is RBAC enabled, do not specify the *rbacEnable* flag.
+    Run Helm to install **Service Catalog** containers on AKS.  The command below assumes the AKS cluster is not RBAC-enabled.  If your cluster is RBAC enabled, do not specify the *rbacEnable* flag when running the command.
     ```
     # If your cluster is not RBAC-enabled, run this command.
     $ helm install svc-cat/catalog --name catalog --namespace catalog --set rbacEnable=false --set controllerManager.healthcheck.enabled=false
     # If your cluster is RBAC-enabled, use the command below.
     # helm install svc-cat/catalog --name catalog --namespace catalog --set controllerManager.healthcheck.enabled=false
     ```
-    The Service Catalog containers will be deployed in the **catalog** namespace on AKS.  Use the command below to verify the catalog API service is installed.
+    The Service Catalog containers (Pods) will be deployed in the **catalog** namespace on AKS.  Use the command below to verify the catalog API service is installed.
     ```
     $ kubectl get apiservice
     ```
@@ -74,7 +74,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     $ ./shell-scripts/create-sp-sub.sh
     ```
-    The shell script should output a JSON and also save the output in a txt file *SP_SUB.txt* in the current directory.  Next, set the following environment variables by substituting the correct values from the JSON output of the SP creation command.
+    The shell script should output a JSON and also save the output in a txt file *SP_SUB.txt* in the current directory.  Next, set environment variables by substituting the correct values as output by the SP creation command and run Helm to install the **Open Service Broker for Azure** containers on AKS.
     ```
     # Replace correct values for all environment variables before running this shell script !!!!
     #
@@ -101,6 +101,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
       --set azure.clientSecret=$AZURE_CLIENT_SECRET
     #
     ```
+    The Open Service Broker for Azure containers (Pods) will be deployed in the **osba** namespace on AKS.
 
 3.  List the Pods for *Service Catalog* and *Open Service Broker for Azure* services (containers).  Ensure all *Pods* have a status of `Running` before proceeding with the next step.
     ```
@@ -139,6 +140,39 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 ### B] Deploy the *Azure Database for MySQL* instance
 **Approx. time to complete this section: 30 mins**
 
+1.  Create a new namespace **dev-azure-mysql** using Kubernetes CLI.  This namespace will be used to deploy another instance of **po-service** microservice.  The important thing to bear in mind here is that this microservice instance will use a managed instance of MySQL running on Azure to persist Purchase Orders.  
+    ```
+    # Create a new namespace to deploy the 'po-service' microservice
+    $ kubectl create namespace dev-azure-mysql
+    #
+    # List the namespaces
+    $ kubectl get namespaces
+    ```
+    
+2.  Install an instance of **Azure Database for MySQL** using Kubernetes CLI.
+
+    Edit the file `k8s-resources/mysql-dbms-instance.yaml` and review the **ServiceInstance** API object definition for the managed database server instance.  Ensure the **resourceGroup** attribute value in the API object specifies the name of the Azure *Resource Group* which you provisioned in the parent project.  Also, specify a unique value for attribute **alias**.  The deployment of the PaaS service will fail if this value is a duplicate of another service.
+
+    Use Kubernetes CLI to create the managed MySQL database server instance on Azure as shown in the command snippet below.
+    ```
+    # Provision the managed MySQL database server instance on Azure
+    $ kubectl create -f ./k8s-resources/mysql-dbms-instance.yaml
+    # List the deployed service instances
+    $ svcat get instances -n dev-azure-mysql
+    ```
+    Note that for this project, we will be provisioning the managed MySQL server in a **basic** service plan (a.k.a Pricing Tier).  The **Basic** service plan supports a maximum of 2 vCPUs, 1TB of storage and up to 35 days of data retention.  You can view the available service plans for all Azure managed services exposed by OSBA using `svcat` CLI.   You can also use the **Azure Portal** to view the various plans supported by Azure Database for MySQL PaaS service.
+
+    Edit the file `k8s-resources/mysql-database-instance.yaml` and review the **ServiceInstance** API object definition for the database instance.  In this file, update the value for *parentAlias* attribute by specifying the same value which you specified for *alias* attribute in the MySQL database server API definition.  The *alias* attribute value in the database server definition and *parentAlias* attribute value in the database definition should match and be the same.
+
+    Use Kubernetes CLI to create the database instance on the MySQL server as shown in the command snippet below.
+    ```
+    # Provision the database instance on the MySQL server
+    $ kubectl create -f ./k8s-resources/mysql-database-instance.yaml
+    # List the deployed service instances.  This command should show both the service instances which we have provisioned using OSBA.
+    $ svcat get instances -n dev-azure-mysql
+    ```
+
+    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL instance on Azure including the database URI, name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
 
 ### C] Redeploy the *po-service* microservice using Helm package manager
 **Approx. time to complete this section: 1 Hour**

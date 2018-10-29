@@ -2,13 +2,13 @@ apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
   name: po-service-mysql-dbms-instance
-  namespace: dev-svcat
+  namespace: dev-azure-mysql
 spec:
   clusterServiceClassExternalName: azure-mysql-5-7-dbms
   clusterServicePlanExternalName: basic
   parameters:
     location: westus
-    resourceGroup: mtcs-dev-grts-rg
+    resourceGroup: myResourceGroup
     alias: 71b6b6c4-5271-47d3-8188-51e69fba914e
     firewallRules:
     - startIPAddress: "0.0.0.0"
