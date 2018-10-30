@@ -205,20 +205,24 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     Save the DNS Zone name in a text file.  This name will be needed to deploy applications to AKS cluster in subsequent steps.
 
-3.  Update the files in Helm Chart directory **./po-service**.
+3.  Update the `./po-service/values.yaml` file in Helm Chart directory.
 
-    Edit file `./po-service/values.yaml` and specify correct values for **po-service** container image name (ACR_Name/Image/Tag) and ingress host name for the microservice.  See below.  Substitute correct values between the place holders denoted by `<<VALUE>>`.  (Do not include the angle brackets).
+    Specify correct value for container image repository (ACR Name).  This is the ACR which you deployed in the parent project.
+
+    Specify the correct value for the **Ingress and TLS host names**.  This the DNS Zone name which you retrieved in the previous step.
+
+    See below.  Substitute correct values between the place holders denoted by `<<VALUE>>`.  (Do not include the angle brackets).
     ```
     image:
-      repository: <<mtcslabtest.azurecr.io/po-service>>
+      repository: <<mtcslabtest.azurecr.io>>/po-service
     ...
     ingress:
       enabled: true
       ...
       hosts:
-        - <<po-service-java.033185fc7e8b483fae46.westus.aksapp.io>>
+        - po-service-java.<<033185fc7e8b483fae46.westus.aksapp.io>>
       tls:
         - secretName: po-ssh-secret
           hosts:
-            - <<po-service-java.033185fc7e8b483fae46.westus.aksapp.io>>
+            - po-service-java.<<033185fc7e8b483fae46.westus.aksapp.io>>
     ```
