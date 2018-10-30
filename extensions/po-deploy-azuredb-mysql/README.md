@@ -172,6 +172,12 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
+    Login to the Azure Portal and verify the MySQL database server instance got created OK.  See screenshot below.
+    ![alt tag](./images/B-01.PNG)
+
+    Also, verify the MySQL database got created.  The database name will be an arbitary name chosen by Azure.  See screenshot below.
+    ![alt tag](./images/B-02.PNG)
+
     Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
 
     Use Kubernetes CLI to create the database service binding (Secret) as shown in the command snippet below.
