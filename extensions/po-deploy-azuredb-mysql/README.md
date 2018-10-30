@@ -3,9 +3,7 @@
 The overall goal of this project (extension) is summarized below.
 - Demonstrate the use of **Open Service Broker for Azure** to provision and deploy a managed MySQL database server (instance) on Azure. OSBA is an implementation of **Open Service Broker API* specification and is used to expose public cloud services (PaaS) on container platforms such as AKS.  Applications deployed on container platforms can then seamlessly provision and consume public cloud (PaaS) services from DevOps pipelines.
 - Demonstrate the use of Helm (CLI) for deploying containerized applications on Kubernetes (AKS).  Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
-- Demonstrate how to secure a microservice (REST API end-point) using SSL/TLS (HTTPS transport)
-
-In this project, we will first deploy a managed MySQL database server on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure MySQL database as the backend data store for the **po-service** microservice.
+- Demonstrate how to secure a microservice (REST API) end-point using SSL/TLS (HTTPS transport) and expose it thru the AKS Ingress Controller.
 
 **Prerequisites:**
 1.  Before working on the hands-on labs in this project, readers are required to complete all hands-on labs (Sections) in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
@@ -13,6 +11,8 @@ In this project, we will first deploy a managed MySQL database server on Azure u
 3.  **Helm** CLI will be used to deploy the **Service Catalog**, **Open Service Broker for Azure** and the **po-service** microservice on AKS. Additionally, the **Service Catalog CLI** will be used to deploy a **Managed MySQL Database Server** on Azure.  Readers are advised to refer to the CLI documentation as needed.  Links to documentation are provided below.
 
 **Description:**
+
+In this project, we will first deploy a managed MySQL database server on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure MySQL database as the backend data store for the **po-service** microservice.
 
 In a nutshell, you will work on the following tasks.
 1. Install **Service Catalog** and **Open Service Broker for Azure (OSBA)** on AKS (Section [A])
@@ -34,7 +34,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure Service Catalog CLI Documentation](https://github.com/Azure/service-catalog-cli)
 
 **Important Notes:**
-- Keep in mind that this is an **Advanced** lab for experienced Kubernetes users.  Before working on this project (labs), make sure you have completed all sections in the parent project.
+- Keep in mind that this is an **Advanced** lab for experienced Kubernetes users.  Before starting to work on the hands-on labs in this project, complete all sections in the parent project.
 
 ### A] Install *Service Catalog* and *Open Service Broker for Azure* (OSBA) on AKS
 **Approx. time to complete this section: 45 mins to an hour**
@@ -244,7 +244,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     Generate a self-signed SSL key pair using `ssl-keygen` utility as shown in the command snippet below.
     ```
     # Before running this command, substitute the correct value for the Ingress Host Name !!
-    $ openssl req -x509 -nodes -days 365 -newKey rsa:2048 -keyout tls.key -out tls.crt -subj '/CN=po-service.<<xyz.westus.aksapp.io>>'
+    $ openssl req -x509 -nodes -days 365 -newKey rsa:2048 -keyout tls.key -out tls.crt -subj '/CN=<<po-service.xyz.westus.aksapp.io>>'
     # Print certificate and verify subject value; should point to the Ingress host name
     $ openssl x509 -in tls.crt -text -noout
     #
