@@ -220,9 +220,9 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
       enabled: true
       ...
       hosts:
-        - po-service-java.<<033185fc7e8b483fae46.westus.aksapp.io>>
+        - po-service-java.<<xyz.westus.aksapp.io>>
       tls:
         - secretName: po-ssh-secret
           hosts:
-            - po-service-java.<<033185fc7e8b483fae46.westus.aksapp.io>>
+            - po-service-java.<<xyz.westus.aksapp.io>>
     ```
