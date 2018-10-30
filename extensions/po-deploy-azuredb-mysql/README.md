@@ -87,11 +87,8 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     # Set the Azure AD tenant ID
     $ AZURE_TENANT_ID=<tenant>
     #
-    # Retrieve the user's subscription ID
-    $ az account show --query id --output tsv
-    #
-    # Set the Azure subscription ID
-    $ AZURE_SUBSCRIPTION_ID=<Your Azure Subscription ID output by the command above!>
+    # Retrieve and set the user's Azure subscription ID in a variable
+    $ AZURE_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
     #
     # Install the Open Service Broker for Azure components using Helm.
     $ helm install azure/open-service-broker-azure --name osba --namespace osba \
@@ -138,7 +135,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
 
 ### B] Deploy the *Azure Database for MySQL* instance
-**Approx. time to complete this section: 30 mins**
+**Approx. time to complete this section: 30-45 mins**
 
 1.  Create a new namespace **dev-azure-mysql** using Kubernetes CLI.  This namespace will be used to deploy another instance of **po-service** microservice.  The important thing to bear in mind here is that this microservice instance will use a managed instance of MySQL running on Azure to persist Purchase Orders.  
     ```
@@ -162,7 +159,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ svcat get instances -n dev-azure-mysql
     #
     ```
-    Note that for this project, we will be provisioning the managed MySQL server in a **basic** service plan (a.k.a Pricing Tier).  The **Basic** service plan supports a maximum of 2 vCPUs, 1TB of storage and up to 35 days of data retention.  You can view the available service plans for all Azure managed services exposed by OSBA using `svcat` CLI.   You can also use the **Azure Portal** to view the various plans supported by Azure Database for MySQL PaaS service.
+    Note that for this project, we will be provisioning the managed MySQL server in a **basic** service plan (a.k.a Pricing Tier).  The **Basic** service plan supports a maximum of 2 vCPUs, 1TB of storage and up to 35 days of data retention.  You can view the available service plans for all Azure managed services exposed by OSBA using `svcat` CLI.   You can also use the **Azure Portal** to view the various plans supported by *Azure Database for MySQL* PaaS service.
 
     Edit the file `k8s-resources/mysql-database-instance.yaml` and review the **ServiceInstance** API object definition for the database instance.  In this file, update the value for *parentAlias* attribute by specifying the same value which you specified for *alias* attribute in the MySQL database server API definition.  The *alias* attribute value in the database server definition and *parentAlias* attribute value in the database definition should match and be the same.
 
@@ -190,4 +187,38 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
 
 ### C] Redeploy the *po-service* microservice using Helm package manager
-**Approx. time to complete this section: 1 Hour**
+**Approx. time to complete this section: 1.5 Hour**
+
+1.  Enable **HTTP application routing** addon on the AKS cluster.
+
+    When a AKS cluster is created using the Azure Portal, **HTTP application routing** can be selected in the 'Networking' tab.  You can skip this step if you had enabled this option while creating the AKS cluster.
+    Use the command below to enable this addon on the AKS cluster.   Remember to specify correct values for the Azure resource group and AKS cluster names.
+    ```
+    # Specify correct values for RESOURCE GROUP name and AKS CLUSTER name !!!!
+    $ az aks enable-addons --resource-group myResourceGroup --name akscluster --addons http_application_routing
+    ```
+    NOTE:  This feature makes it easy to access web applications deployed in the AKS cluster by creating publicly accessible DNS names for application end-points.  Selecting this option, creates a DNS Zone in the Azure subscription.  This feature should NOT be used in a production AKS deployment!  For deploying ingress controllers in a production AKS cluster, refer to the [AKS documentation](https://docs.microsoft.com/en-us/azure/aks/ingress-tls).
+
+2.  Retrieve the DNS Zone name for the AKS cluster.
+    ```
+    $ az aks show -g myResourceGroup -n akscluster --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o table
+    ```
+    Save the DNS Zone name in a text file.  This name will be needed to deploy applications to AKS cluster in subsequent steps.
+
+3.  Update the files in Helm Chart directory **./po-service**.
+
+    Edit file `./po-service/values.yaml` and specify correct values for **po-service** container image name (ACR_Name/Image/Tag) and ingress host name for the microservice.  See below.  Substitute correct values between the place holders denoted by `<<VALUE>>`.  (Do not include the angle brackets).
+    ```
+    image:
+      repository: <<mtcslabtest.azurecr.io/po-service>>
+    ...
+    ingress:
+      enabled: true
+      ...
+      hosts:
+        - <<po-service-java.033185fc7e8b483fae46.westus.aksapp.io>>
+      tls:
+        - secretName: po-ssh-secret
+          hosts:
+            - <<po-service-java.033185fc7e8b483fae46.westus.aksapp.io>>
+    ```
