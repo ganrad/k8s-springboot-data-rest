@@ -26,11 +26,11 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - po-service-java.033185fc7e8b483fae46.westus.aksapp.io
+    - po-service.033185fc7e8b483fae46.westus.aksapp.io
   tls:
     - secretName: po-ssh-secret
       hosts:
-        - po-service-java.033185fc7e8b483fae46.westus.aksapp.io
+        - po-service.033185fc7e8b483fae46.westus.aksapp.io
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious

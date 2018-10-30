@@ -1,6 +1,11 @@
 ## Use *Azure Database for MySQL* (PaaS) as the persistent data store for the po-service microservice application.
 
-In this project, we will first deploy a managed MySQL database instance on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure the MySQL instance as the backend data store for the **po-service** microservice.
+The overall goal of this project (extension) is summarized below.
+- Demonstrate the use of **Open Service Broker for Azure** to provision and deploy a managed MySQL database server (instance) on Azure. OSBA is an implementation of **Open Service Broker API* specification and is used to expose public cloud services (PaaS) on container platforms such as AKS.  Applications deployed on container platforms can then seamlessly provision and consume public cloud (PaaS) services from DevOps pipelines.
+- Demonstrate the use of Helm (CLI) for deploying containerized applications on Kubernetes (AKS).  Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
+- Demonstrate how to secure a microservice (REST API end-point) using SSL/TLS (HTTPS transport)
+
+In this project, we will first deploy a managed MySQL database server on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure MySQL database as the backend data store for the **po-service** microservice.
 
 **Prerequisites:**
 1.  Before working on the hands-on labs in this project, readers are required to complete all hands-on labs (Sections) in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
@@ -215,7 +220,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     Specify correct value for container image repository (ACR Name).  This is the ACR which you deployed in the parent project.
 
-    Specify the correct value for the **Ingress and TLS host names**.  This the DNS Zone name which you retrieved in the previous step.
+    Specify the correct value for the **Ingress and TLS host names**.  This is the DNS Zone name which you retrieved in the previous step.
 
     See below.  Substitute correct values between the place holders denoted by `<<VALUE>>`.  (Do not include the angle brackets).
     ```
@@ -226,9 +231,31 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
       enabled: true
       ...
       hosts:
-        - po-service-java.<<xyz.westus.aksapp.io>>
+        - po-service.<<xyz.westus.aksapp.io>>
       tls:
         - secretName: po-ssh-secret
           hosts:
-            - po-service-java.<<xyz.westus.aksapp.io>>
+            - po-service.<<xyz.westus.aksapp.io>>
     ```
+    Make a note of the **Ingress Host Name** (value of **hosts** attribute) as we will need this value to generate the SSL Key pair.
+
+4.  Create an SSL key pair and store it in a **Secret**
+
+    Generate a self-signed SSL key pair using `ssl-keygen` utility as shown in the command snippet below.
+    ```
+    # Before running this command, substitute the correct value for the Ingress Host Name !!
+    $ openssl req -x509 -nodes -days 365 -newKey rsa:2048 -keyout tls.key -out tls.crt -subj '/CN=po-service.<<xyz.westus.aksapp.io>>'
+    # Print certificate and verify subject value; should point to the Ingress host name
+    $ openssl x509 -in tls.crt -text -noout
+    #
+    ```
+    Store the SSL keys in a Secret.  See command snippet below.
+    ```
+    # Create the secret 'po-ssh-secret' of Type = tls !!
+    $ kubectl create secret tls po-ssh-secret --key tls.key --cert tls.crt -n dev-azure-mysql
+    # Get the secret data
+    $ kubectl get secret po-ssh-secret -n dev-azure-mysql -o yaml
+    #
+    ```
+
+5.  Deploy the **po-service** microservice using Helm
