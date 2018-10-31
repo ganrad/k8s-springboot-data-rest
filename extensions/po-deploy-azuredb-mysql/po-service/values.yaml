@@ -19,7 +19,7 @@ secret:
 
 ingress:
   enabled: true
-  name: po-service-java
+  name: po-service
   annotations:
     kubernetes.io/ingress.class: addon-http-application-routing
     # kubernetes.io/ingress.class: nginx
