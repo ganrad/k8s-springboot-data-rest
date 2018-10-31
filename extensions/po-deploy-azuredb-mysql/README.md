@@ -160,10 +160,19 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     # Provision the managed MySQL database server instance on Azure
     $ kubectl create -f ./k8s-resources/mysql-dbms-instance.yaml
-    # List the deployed service instances
-    $ svcat get instances -n dev-azure-mysql
     #
     ```
+
+    Before proceeding, make sure the MySQL database server got provisioned and has a status of **Ready**.  Use the command below to check the status of the **Service Instance**.
+    ```
+    # List the deployed service instances. Verify the service is in 'Ready' state
+    $ svcat get instances -n dev-azure-mysql
+               NAME                   NAMESPACE             CLASS           PLAN    STATUS
++--------------------------------+-----------------+----------------------+-------+--------+
+  po-service-mysql-dbms-instance   dev-azure-mysql   azure-mysql-5-7-dbms   basic   Ready
+    #
+    ```
+
     Note that for this project, we will be provisioning the managed MySQL server in a **basic** service plan (a.k.a Pricing Tier).  The **Basic** service plan supports a maximum of 2 vCPUs, 1TB of storage and up to 35 days of data retention.  You can view the available service plans for all Azure managed services exposed by OSBA using `svcat` CLI.   You can also use the **Azure Portal** to view the various plans supported by *Azure Database for MySQL* PaaS service.
 
     Edit the file `k8s-resources/mysql-database-instance.yaml` and review the **ServiceInstance** API object definition for the database instance.  In this file, update the value for *parentAlias* attribute by specifying the same value which you specified for *alias* attribute in the MySQL database server API definition.  The *alias* attribute value in the database server definition and *parentAlias* attribute value in the database definition should match and be the same.
@@ -172,18 +181,31 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     # Provision the database instance on the MySQL server
     $ kubectl create -f ./k8s-resources/mysql-database-instance.yaml
+    #
+    ```
+
+    Initially, the *Service Instance* will have a status of **Provisioning** and it will take a few minutes for the database to get provisioned.  Before proceeding, make sure the MySQL database got provisioned and has a status of **Ready**.
+
+Use the command below to check the status.
+    ```
     # List the deployed service instances.  This command should show both the service instances which we have provisioned using OSBA.
     $ svcat get instances -n dev-azure-mysql
+                 NAME                     NAMESPACE               CLASS               PLAN     STATUS
++------------------------------------+-----------------+--------------------------+----------+--------+
+  po-service-mysql-database-instance   dev-azure-mysql   azure-mysql-5-7-database   database   Ready
+  po-service-mysql-dbms-instance       dev-azure-mysql   azure-mysql-5-7-dbms       basic      Ready
     #
     ```
 
     Login to the Azure Portal and verify the MySQL database server instance got created OK.  See screenshot below.
+
     ![alt tag](./images/B-01.PNG)
 
     Also, verify the MySQL database got created.  The database name will be an arbitary name chosen by Azure.  See screenshot below.
+
     ![alt tag](./images/B-02.PNG)
 
-    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
+    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL database instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, database name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
 
     Use Kubernetes CLI to create the database service binding (Secret) as shown in the command snippet below.
     ```
@@ -241,10 +263,10 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
 4.  Create an SSL key pair and store it in a **Secret**
 
-    Generate a self-signed SSL key pair using `ssl-keygen` utility as shown in the command snippet below.
+    Generate a self-signed SSL key pair using `openssl` utility as shown in the command snippet below.  Specify value of **Ingress Host Name** (the value which you noted in the previous step) in parameter **-subj**.
     ```
-    # Before running this command, substitute the correct value for the Ingress Host Name !!
-    $ openssl req -x509 -nodes -days 365 -newKey rsa:2048 -keyout tls.key -out tls.crt -subj '/CN=<<po-service.xyz.westus.aksapp.io>>'
+    # Before running this command, substitute the correct value for the 'Ingress Host Name' !!
+    $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj '/CN=<<Ingress Host Name>>'
     # Print certificate and verify subject value; should point to the Ingress host name
     $ openssl x509 -in tls.crt -text -noout
     #
@@ -255,6 +277,12 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ kubectl create secret tls po-ssh-secret --key tls.key --cert tls.crt -n dev-azure-mysql
     # Get the secret data
     $ kubectl get secret po-ssh-secret -n dev-azure-mysql -o yaml
+    #
+    $ kubectl get secrets -n dev-azure-mysql
+    NAME                  TYPE                                  DATA      AGE
+    default-token-x7l9r   kubernetes.io/service-account-token   3         2h
+    mysql-secret          Opaque                                8         2h
+    po-ssh-secret         kubernetes.io/tls                     2         13s
     #
     ```
 
