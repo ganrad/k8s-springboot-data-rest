@@ -380,4 +380,31 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     ![alt tag](./images/D-01.PNG)
   
+2.  Get the registry credentials.
 
+    Use the command below to get the container registry (ACR) login server and admin password.
+ 
+    ```
+    # Get the ACR login server.  Substitute correct value for ACR_NAME eg., mtcslabtest
+    $ az acr show --name <ACR_NAME> --query loginServer
+    #
+    # Get the container registry password.
+    $ az acr credential show --name <ACR_NAME> --query "passwords[0].value"
+    #
+    ```
+
+    Make a note of the ACR `login server` and admin `password`.  We will need to specify these values while creating the ACI instance in the next step.
+
+3.  Deploy the *po-service* microservice within an ACI container.
+
+    Use the command below to deploy *po-service* microservice within an ACI container.
+
+    ```
+    #
+    $ az container create --resource-group myResourceGroup --name po-service-aci --image <acrLoginServer>/po-service:latest --cpu 1 --memory 1 --registry-login-server <acrLoginServer> --registry-username <acrName> --registry-password <acrPassword> --dns-name-label po-service-demo --ports 80
+    # Check the deployment progress
+    $ az container show --resource-group myResourceGroup --name po-service-aci --query instanceView.state
+    #
+    ```
+
+You have now successfully completed all sections in this project.  Congrats!
