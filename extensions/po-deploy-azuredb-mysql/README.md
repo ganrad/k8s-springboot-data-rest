@@ -164,12 +164,13 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
 
     Before proceeding, make sure the MySQL database server got provisioned and has a status of **Ready**.  Use the command below to check the status of the **Service Instance**.
+
     ```
     # List the deployed service instances. Verify the service is in 'Ready' state
     $ svcat get instances -n dev-azure-mysql
                NAME                   NAMESPACE             CLASS           PLAN    STATUS
-+--------------------------------+-----------------+----------------------+-------+--------+
-  po-service-mysql-dbms-instance   dev-azure-mysql   azure-mysql-5-7-dbms   basic   Ready
+    +--------------------------------+-----------------+----------------------+-------+--------+
+    po-service-mysql-dbms-instance   dev-azure-mysql   azure-mysql-5-7-dbms   basic   Ready
     #
     ```
 
@@ -178,6 +179,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     Edit the file `k8s-resources/mysql-database-instance.yaml` and review the **ServiceInstance** API object definition for the database instance.  In this file, update the value for *parentAlias* attribute by specifying the same value which you specified for *alias* attribute in the MySQL database server API definition.  The *alias* attribute value in the database server definition and *parentAlias* attribute value in the database definition should match and be the same.
 
     Use Kubernetes CLI to create the database instance on the MySQL server as shown in the command snippet below.
+
     ```
     # Provision the database instance on the MySQL server
     $ kubectl create -f ./k8s-resources/mysql-database-instance.yaml
@@ -186,14 +188,15 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     Initially, the *Service Instance* will have a status of **Provisioning** and it will take a few minutes for the database to get provisioned.  Before proceeding, make sure the MySQL database got provisioned and has a status of **Ready**.
 
-Use the command below to check the status.
+    Use the command below to check the status.
+
     ```
     # List the deployed service instances.  This command should show both the service instances which we have provisioned using OSBA.
     $ svcat get instances -n dev-azure-mysql
                  NAME                     NAMESPACE               CLASS               PLAN     STATUS
-+------------------------------------+-----------------+--------------------------+----------+--------+
-  po-service-mysql-database-instance   dev-azure-mysql   azure-mysql-5-7-database   database   Ready
-  po-service-mysql-dbms-instance       dev-azure-mysql   azure-mysql-5-7-dbms       basic      Ready
+    +------------------------------------+-----------------+--------------------------+----------+--------+
+    po-service-mysql-database-instance   dev-azure-mysql   azure-mysql-5-7-database   database   Ready
+    po-service-mysql-dbms-instance       dev-azure-mysql   azure-mysql-5-7-dbms       basic      Ready
     #
     ```
 
@@ -208,6 +211,7 @@ Use the command below to check the status.
     Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL database instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, database name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
 
     Use Kubernetes CLI to create the database service binding (Secret) as shown in the command snippet below.
+
     ```
     # Create the 'ServiceBinding' API object.  This will create the 'mysql-secret' Secret object containing the MySQL database connection information.
     $ kubectl create -f ./k8s-resources/mysql-database-binding.yaml
