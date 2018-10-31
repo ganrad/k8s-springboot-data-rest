@@ -24,7 +24,7 @@ In a nutshell, you will work on the following tasks.
 
    The Service Catalog CLI will be used to provision a managed instance of MySQL on Azure.  The CLI will communicate with the OSBA API server on AKS to provision the managed PaaS service (MySQL) on Azure.
 
-3. Use Helm to deploy the *po-service* microservice on AKS (Section [C])
+3. Use **Helm** to deploy the *po-service* microservice on AKS (Section [C])
 
    The microservice will use the managed MySQL instance on Azure to persist *Purchase Orders*.
 
@@ -144,7 +144,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-### B] Use OSBA to deploy the **Azure Database for MySQL** instance
+### B] Use OSBA to deploy the *Azure Database for MySQL* instance
 **Approx. time to complete this section: 30-45 mins**
 
 1.  Create a new namespace **dev-azure-mysql** using Kubernetes CLI.  This namespace will be used to deploy another instance of *po-service* microservice.  The important thing to bear in mind here is that this microservice instance will use a managed instance of MySQL running on Azure to persist Purchase Orders.  
@@ -228,7 +228,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-### C] Use Helm to deploy the *po-service* microservice on AKS
+### C] Use *Helm* to deploy the *po-service* microservice on AKS
 **Approx. time to complete this section: 1.5 Hour**
 
 1.  Enable **HTTP application routing** addon on the AKS cluster.
@@ -371,7 +371,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ kubectl delete namespace dev-azure-mysql
     ```
 
-### D] Deploy the *po-service* microservice on **Azure Container Instance** (ACI)
+### D] Deploy the *po-service* microservice on *Azure Container Instance* (ACI)
 **Approx. time to complete this section: 30 Minutes**
 
 1.  Enable ACR admin user.
