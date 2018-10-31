@@ -1,29 +1,34 @@
 ## Use *Azure Database for MySQL* (PaaS) as the persistent data store for the po-service microservice application.
 
 The overall goal of this project (extension) is summarized below.
-- Demonstrate the use of **Open Service Broker for Azure** to provision and deploy a managed MySQL database server (instance) on Azure. OSBA is an implementation of **Open Service Broker API* specification and is used to expose public cloud services (PaaS) on container platforms such as AKS.  Applications deployed on container platforms can then seamlessly provision and consume public cloud (PaaS) services from DevOps pipelines.
+- Demonstrate the use of **Open Service Broker for Azure** to provision and deploy a managed MySQL database server (instance) on Azure. OSBA is an implementation of *Open Service Broker API* specification and is used to expose public cloud services (PaaS) on container platforms such as AKS.  Applications deployed on container platforms can then seamlessly provision and consume public cloud (PaaS) services from DevOps pipelines.
 - Demonstrate the use of **Helm** (CLI) for deploying containerized applications on Kubernetes (AKS).  Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
-- Demonstrate how to secure a microservice (REST API) end-point using **SSL/TLS** (HTTPS transport) and expose it thru the AKS Ingress Controller.
+- Demonstrate how to secure a microservice (REST API) end-point using SSL/TLS (HTTPS transport) and expose it thru the **Ingress Controller** addon on AKS.
+- Demonstrate the serverless container solution by deploying the *po-service* microservice on Azure Container Instances** (ACI).
 
 **Prerequisites:**
 1.  Before working on the hands-on labs in this project, readers are required to complete all hands-on labs (Sections) in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
-2.  Readers are required to be familiar with basic Linux commands.  Experience working in Linux environments will definitely be helpful.
-3.  **Helm** CLI will be used to deploy the **Service Catalog**, **Open Service Broker for Azure** and the **po-service** microservice on AKS. Additionally, the **Service Catalog CLI** will be used to deploy a **Managed MySQL Database Server** on Azure.  Readers are advised to refer to the CLI documentation as needed.  Links to documentation are provided below.
+2.  Readers are required to be familiar with basic Linux commands.
+3.  Readers are advised to refer to the CLI documentation for **kubectl**, **helm** & **svcat** as needed.  Links to documentation are provided below.
 
 **Description:**
 
-In this project, we will first deploy a managed MySQL database server on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure MySQL database as the backend data store for the **po-service** microservice.
+In this project, we will first deploy a managed MySQL database server on Azure using **Open Service Broker for Azure** (OSBA).  Following that, we will configure a MySQL database as the backend data store for the *po-service* microservice.
 
 In a nutshell, you will work on the following tasks.
 1. Install **Service Catalog** and **Open Service Broker for Azure (OSBA)** on AKS (Section [A])
 
    These components will be used to deploy managed PaaS services on Azure.
 
-2. Deploy the **Azure Database for MySQL** instance (Section [B])
+2. Use OSBA to deploy the **Azure Database for MySQL** instance (Section [B])
 
    The Service Catalog CLI will be used to provision a managed instance of MySQL on Azure.  The CLI will communicate with the OSBA API server on AKS to provision the managed PaaS service (MySQL) on Azure.
 
-3. Redeploy the **po-service** microservice using Helm package manager (Section [C])
+3. Use Helm to deploy the *po-service* microservice on AKS (Section [C])
+
+   The microservice will use the managed MySQL instance on Azure to persist *Purchase Orders*.
+
+4. Deploy the *po-service* microservice on **Azure Container Instance** (ACI) (Section [D])
 
    The microservice will use the managed MySQL instance on Azure to persist *Purchase Orders*.
 
@@ -139,10 +144,10 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-### B] Deploy the *Azure Database for MySQL* instance
+### B] Use OSBA to deploy the **Azure Database for MySQL** instance
 **Approx. time to complete this section: 30-45 mins**
 
-1.  Create a new namespace **dev-azure-mysql** using Kubernetes CLI.  This namespace will be used to deploy another instance of **po-service** microservice.  The important thing to bear in mind here is that this microservice instance will use a managed instance of MySQL running on Azure to persist Purchase Orders.  
+1.  Create a new namespace **dev-azure-mysql** using Kubernetes CLI.  This namespace will be used to deploy another instance of *po-service* microservice.  The important thing to bear in mind here is that this microservice instance will use a managed instance of MySQL running on Azure to persist Purchase Orders.  
     ```
     # Create a new namespace to deploy the 'po-service' microservice
     $ kubectl create namespace dev-azure-mysql
@@ -208,7 +213,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     ![alt tag](./images/B-02.PNG)
 
-    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL database instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, database name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the **po-service** microservice (next Section).
+    Open the file `k8s-resources/mysql-database-binding.yaml` and review the **ServiceBinding** API object definition.  A *Service Binding* creates a Kubernetes **Secret** object containing the connection details for the managed MySQL database instance on Azure.  The *Secret* object contains data tuples (name=value) for the database URI, database name, username, password & port information.  The MySQL database connection information will be injected as environment variables into the *po-service* microservice (next Section).
 
     Use Kubernetes CLI to create the database service binding (Secret) as shown in the command snippet below.
 
@@ -223,7 +228,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-### C] Redeploy the *po-service* microservice using Helm package manager
+### C] Use Helm to deploy the *po-service* microservice on AKS
 **Approx. time to complete this section: 1.5 Hour**
 
 1.  Enable **HTTP application routing** addon on the AKS cluster.
@@ -275,7 +280,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ openssl x509 -in tls.crt -text -noout
     #
     ```
-    Store the SSL keys in a Secret.  See command snippet below.
+    Create a *Secret* API object 'po-ssh-secret' and store the SSL keys in it.  See command snippet below.
     ```
     # Create the secret 'po-ssh-secret' of Type = tls !!
     $ kubectl create secret tls po-ssh-secret --key tls.key --cert tls.crt -n dev-azure-mysql
@@ -290,4 +295,81 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-5.  Deploy the **po-service** microservice using Helm
+5.  Deploy the *po-service* microservice using Helm
+
+    Use the command below to deploy the *po-service* microservice.
+    ```
+    $ helm upgrade po-service-azure-mysqldb ./po-service/ --install --namespace dev-azure-mysql
+    ```
+
+    The command output should list all the deployed Kubernetes resources and should print the URL of the microservice end-point.  See below.
+
+    ```
+    Release "po-service-azure-mysqldb" does not exist. Installing it now.
+    NAME:   po-service-azure-mysqldb
+    LAST DEPLOYED: Tue Oct 30 19:40:33 2018
+    NAMESPACE: dev-azure-mysql
+    STATUS: DEPLOYED
+
+    RESOURCES:
+    ==> v1/Service
+    NAME                      TYPE       CLUSTER-IP    EXTERNAL-IP  PORT(S)  AGE
+    po-service-azure-mysqldb  ClusterIP  10.0.169.161  <none>       80/TCP   0s
+
+    ==> v1/Deployment
+    NAME                      DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+    po-service-azure-mysqldb  1        1        1           0          0s
+
+    ==> v1beta1/Ingress
+    NAME                      HOSTS                                             ADDRESS  PORTS  AGE
+    po-service-azure-mysqldb  po-service.033185fc7e8b483fae46.westus.aksapp.io  80, 443  0s
+
+    ==> v1/Pod(related)
+    NAME                                       READY  STATUS   RESTARTS  AGE
+    po-service-azure-mysqldb-5548bbc9f6-mkw25  0/1    Pending  0         0s
+
+
+    NOTES:
+    1. Get the application URL by running these commands:
+      https://po-service.xxxxx.westus.aksapp.io/orders
+    ```
+
+    Use the command below to check the status of the *po-service* Pod.  The Pod should have a *Running* status.
+
+    ```
+    $ kubectl get pods -n dev-azure-mysql
+    ```
+
+6.  Access the *po-service* microservice end-point.
+
+    The microservice end-point address should be listed in the output of the `helm upgrade ...` command (previous step).  Use a web browser to access the REST API end-point.
+
+    ```
+    URI: https://<<Ingress Host Name>>/orders
+    ```
+
+7.  (Optional) Delete the microservice and managed MySQL instance on Azure.
+
+    Refer to the command snippet below to delete all resources on the AKS cluster.
+    ```
+    # Delete the 'po-service' microservice.  Deletes all Kubernetes resources!
+    $ helm delete --purge po-service-azure-mysqldb
+    #
+    # Delete the service binding for the MySQL instance.  This should also delete the secret 'mysql-secret'
+    $ kubectl delete servicebindings po-service-mysql-database-binding -n dev-azure-mysql
+    #
+    # Delete the service instance for the MySQL database
+    $ kubectl delete serviceinstance po-service-mysql-database-instance -n dev-azure-mysql
+    #
+    # Delete the service instance for the MySQL server
+    $ kubectl delete serviceinstance po-service-mysql-dbms-instance -n dev-azure-mysql
+    #
+    # List the service instances.  Should not list any resources!
+    $ svcat get instances -n dev-azure-mysql
+    #
+    # Lastly, delete the k8s namespace
+    $ kubectl delete namespace dev-azure-mysql
+    ```
+
+### D] Deploy the *po-service* microservice on **Azure Container Instance** (ACI)
+

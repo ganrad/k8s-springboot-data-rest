@@ -19,70 +19,70 @@ spec:
         app: {{ template "po-service.name" . }}
         release: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: mysqlcm
+          secret:
+            secretName: mysql-secret
+            items:
+            - key: database
+              path: mysqldb.properties
+              mode: {{ .Values.secret.mode }}
+        - name: mysqlse
+          secret:
+            secretName: mysql-secret
+            items:
+            - key: username
+              path: username.properties
+              mode: {{ .Values.secret.mode }}
+            - key: password
+              path: password.properties
+              mode: {{ .Values.secret.mode }}
       containers:
-        volumes:
-          - name: mysqlcm
-            secret:
-              secretName: mysql-secret
-              items:
-              - key: database
-                path: mysqldb.properties
-                mode: {{ .Values.secret.mode }}
-          - name: mysqlse
-            secret:
-              secretName: mysql-secret
-              items:
-              - key: username
-                path: username.properties
-                mode: {{ .Values.secret.mode }}
-              - key: password
-                path: password.properties
-                mode: {{ .Values.secret.mode }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.targetPort }}
-              protocol: TCP
-          env:
-          - name: DB_HOST
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: host
-          - name: DB_HOST_PORT
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: port
-          - name: DB_NAME
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: database
-          - name: DB_SSL_REQ
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: sslRequired
-          - name: SPRING_DATASOURCE_URL
-            value: "jdbc:mysql://$(DB_HOST):$(DB_HOST_PORT)/$(DB_NAME)?useSSL=true&requireSSL=$(DB_SSL_REQ)"
-          - name: SPRING_DATASOURCE_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: username
-          - name: SPRING_DATASOURCE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secret
-                key: password
           volumeMounts:
             - name: mysqlcm
               mountPath: /etc/config
             - name: mysqlse
               mountPath: /etc/vol-secrets
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: host
+            - name: DB_HOST_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: port
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: database
+            - name: DB_SSL_REQ
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: sslRequired
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://$(DB_HOST):$(DB_HOST_PORT)/$(DB_NAME)?useSSL=true&requireSSL=$(DB_SSL_REQ)"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
