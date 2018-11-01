@@ -23,7 +23,7 @@ spec:
           secretName: mysql-secret
       containers:
       - name: po-service
-        image: sep21taacr.azurecr.io/po-service:__Build.BuildNumber__
+        image: raagadmtcaccademy.azurecr.io/po-service:__Build.BuildNumber__
         ports:
         - containerPort: 8080
           protocol: TCP
