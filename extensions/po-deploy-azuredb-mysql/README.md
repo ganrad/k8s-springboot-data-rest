@@ -376,6 +376,10 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
 1.  Enable ACR admin user.
 
+    Save the name of the ACR.  We will need this value in subsequent steps.  See screenshot below.
+
+    ![alt tag](./images/D-02.PNG)
+
     Use the Azure Portal and enable admin user for the ACR.  See screenshot below.
 
     ![alt tag](./images/D-01.PNG)
@@ -430,7 +434,8 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
       type: Opaque
     #
     ```
-    In the command output, you will notice that all connection parameter (host, database...) values are `base64` encoded.  In order to pass the database connection parameter values to the ACI container we will first need to decode the values.  We will also need to base64 encode the values for database *Username* and *Password* before passing these values to the ACI container.  The command for `base64` encoding and decoding values is shown in the command snippet below.
+
+    In the command output (shown above), you will notice that all connection parameter (host, database...) values are `base64` encoded.  In order to pass the database connection parameter values to the ACI container we will first need to decode the values.  We will also need to base64 encode the values for database *Username* and *Password* before passing them to the ACI container.  The command to `base64` encode and decode values is shown in the command snippet below.
     ```
     # To base64 encode a value, use this command.  Output will be the encoded value.
     $ echo "Plain-text-value" | base64 -w 0
@@ -439,14 +444,57 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     $ echo "Encoded-value" | base64 --decode
     #
     ```
-    Use the command below to deploy *po-service* microservice within an ACI container.
 
+    Decode values for keys listed in the table below.  Write down the decoded values.
+
+    Secret (`mysql-secret`) Key | Decode Value
+    --------------------------- | ------------
+    host | Yes
+    database | Yes
+    username | Yes
+    password | Yes
+    port | Yes
+    sslRequired | Yes
+
+    In the table below, derive the `Parameter` values by refering to the `Description` column.  Only **encode** the entire paramter value if there is a `Yes` in the last column.
+
+    No. | Parameter | Description | Encode Value
+    --- | --------- | ----------- | -------------
+    1. | jdbc:mysql://host:port/database?useSSL=true&requireSSL=sslRequired | Substitute decoded values of `host`,`port`,`database` and `sslRequired` | No
+    2. | mysql.user=username | Substitute the decoded value of `username` | Yes
+    3. | mysql.password=password | Substitute the decoded value of `password` | Yes
+    4. | po-service-YourInitial | Substitute your short initial in place of `YourInitial` | No
+    5. | ACR_NAME | This is the ACR name, value which you saved in Step [1] | No
+    6. | ACR Login Server | ACR login server, value which you saved in Step [2] | No
+    7. | ACR Admin Password | ACR Admin password, value which you saved in Step [3] | No
+
+    Open the ACI manifest file `./k8s-resources/create-aci.yaml` and update the values as shown in the screenshot below.  Substitute the parameter values from the above table in the corresponding numbered placeholders in the manifest file.
+
+    ![alt tag](./images/D-03.PNG)
+
+    Use the command below to deploy *po-service* microservice within an ACI container.
     ```
     #
-    $ az container create --resource-group myResourceGroup --name po-service-aci --image <acrLoginServer>/po-service:latest --cpu 1 --memory 1 --registry-login-server <acrLoginServer> --registry-username <acrName> --registry-password <acrPassword> --dns-name-label po-service-demo --ports 80
-    # Check the deployment progress
-    $ az container show --resource-group myResourceGroup --name po-service-aci --query instanceView.state
+    $ az container create --resource-group myResourceGroup --name po-service-aci-group --file ./k8s-resources/create-aci.yaml
+    # Check the deployment status
+    $ az container show --resource-group myResourceGroup --name po-service-aci-group --query instanceView.state
+    #
+    # Check the ACI container logs
+    $ az container logs --resource-group myResourceGroup --name po-service-aci-group
     #
     ```
+
+4.  Use the Azure Portal to view the ACI status, logs etc..
+
+    See screenshots below.
+
+    ![alt tag](./images/D-04.PNG)
+
+
+    ![alt tag](./images/D-05.PNG)
+
+    Note down the FQDN.  Then click on *Containers*
+
+    ![alt tag](./images/D-06.PNG)
 
 You have now successfully completed all sections in this project.  Congrats!
