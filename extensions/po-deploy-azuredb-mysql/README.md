@@ -402,32 +402,32 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
     # Retrieve the MySQL database connection info. from the 'mysql-secret' object
     $ kubectl get secret mysql-secret -n dev-azure-mysql -o yaml
-    apiVersion: v1
-    data:
-      database: Znk1Z3RzYQ==
-      host: YjdlMGU5NZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbQ==
-      password: VHJXMk4ajRPOEJDNQ==
-      port: MzNg==
-      sslRequired: dHZQ==
-      tags: WyJteXNxbCJd
-      uri: 00MDdiLTg1YzktOGIwMjUyNjg1M2U5OlRyVzN1dTRZOGo0TzhCQzVAYjdlMGU5NjEtNTkzZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbTozMzA2L2Z5NWR5N2d0c2E/dXNlU1NMPXRydWUmcmVxdWlyZVNTTD10cnVl
-      username: ZTR5enc0NEBiN2UwZTk2MS01OTNkLTQwN2ItODVjOS04YjAyNTI2ODUzZTk=
-    kind: Secret
-    metadata:
-      creationTimestamp: 2018-10-30T21:48:06Z
-      name: mysql-secret
-      namespace: dev-azure-mysql
-      ownerReferences:
-      - apiVersion: servicecatalog.k8s.io/v1beta1
-        blockOwnerDeletion: true
-        controller: true
-        kind: ServiceBinding
-        name: po-service-mysql-database-binding
-        uid: 79ecf7d3-dc8d-11e8-b8ba-96e9d1fd95ae
-      resourceVersion: "3643958"
-      selfLink: /api/v1/namespaces/dev-azure-mysql/secrets/mysql-secret
-      uid: 7bd3855d-dc8d-11e8-9ccd-d6e34d2f004f
-    type: Opaque
+      apiVersion: v1
+      data:
+        database: Znk1Z3RzYQ==
+        host: YjdlMGU5NZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbQ==
+        password: VHJXMk4ajRPOEJDNQ==
+        port: MzNg==
+        sslRequired: dHZQ==
+        tags: WyJteXNxbCJd
+        uri: 00MDdiLTg1YzktOGIwMjUyNjg1M2U5OlRyVzN1dTRZOGo0TzhCQzVAYjdlMGU5NjEtNTkzZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbTozMzA2L2Z5NWR5N2d0c2E/dXNlU1NMPXRydWUmcmVxdWlyZVNTTD10cnVl
+        username: ZTR5enc0NEBiN2UwZTk2MS01OTNkLTQwN2ItODVjOS04YjAyNTI2ODUzZTk=
+      kind: Secret
+      metadata:
+        creationTimestamp: 2018-10-30T21:48:06Z
+        name: mysql-secret
+        namespace: dev-azure-mysql
+        ownerReferences:
+        - apiVersion: servicecatalog.k8s.io/v1beta1
+          blockOwnerDeletion: true
+          controller: true
+          kind: ServiceBinding
+          name: po-service-mysql-database-binding
+          uid: 79ecf7d3-dc8d-11e8-b8ba-96e9d1fd95ae
+        resourceVersion: "3643958"
+        selfLink: /api/v1/namespaces/dev-azure-mysql/secrets/mysql-secret
+        uid: 7bd3855d-dc8d-11e8-9ccd-d6e34d2f004f
+      type: Opaque
     #
     ```
     In the command output, you will notice that all connection parameter (host, database...) values are `base64` encoded.  In order to pass the database connection parameter values to the ACI container we will first need to decode the values.  We will also need to base64 encode the values for database *Username* and *Password* before passing these values to the ACI container.  The command for `base64` encoding and decoding values is shown in the command snippet below.
