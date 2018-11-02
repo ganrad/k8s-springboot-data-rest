@@ -466,7 +466,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     4  | po-service-YourInitial | Substitute your short initial in place of `YourInitial` | No
     5  | ACR_NAME | This is the ACR name, value which you saved in Step [1] | No
     6  | ACR Login Server | ACR login server, value which you saved in Step [2] | No
-    7  | ACR Admin Password | ACR Admin password, value which you saved in Step [3] | No
+    7  | ACR Admin Password | ACR Admin password, value which you saved in Step [2] | No
 
     Open the ACI manifest file `./k8s-resources/create-aci.yaml` and update the values as shown in the screenshot below.  Substitute the parameter values from the above table in the corresponding numbered placeholders in the manifest file.
 
