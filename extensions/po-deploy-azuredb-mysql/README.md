@@ -37,6 +37,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Open Service Broker API](https://www.openservicebrokerapi.org/)
 - [Install Service Catalog CLI](https://svc-cat.io/docs/install/#installing-the-service-catalog-cli)
 - [Azure Service Catalog CLI Documentation](https://github.com/Azure/service-catalog-cli)
+- [Azure Container Instances Documentation](https://docs.microsoft.com/en-us/azure/container-instances/)
 
 **Important Notes:**
 - Keep in mind that this is an **Advanced** lab for experienced Kubernetes users.  Before starting to work on the hands-on labs in this project, complete all sections in the parent project.
