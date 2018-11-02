@@ -372,7 +372,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     ```
 
 ### D] Deploy the *po-service* microservice on *Azure Container Instance* (ACI)
-**Approx. time to complete this section: 30 Minutes**
+**Approx. time to complete this section: 1.5 Hours**
 
 1.  Enable ACR admin user.
 
