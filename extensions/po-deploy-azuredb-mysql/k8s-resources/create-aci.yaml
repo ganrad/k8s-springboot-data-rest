@@ -8,7 +8,7 @@ properties:
       command:
       - /bin/bash
       - -c
-      - java -Dspring.datasource.url="jdbc:mysql://b7e0e961-593d-407b-85c9-8b02526853e9.mysql.database.azure.com:3306/fy5dy7gtsa?useSSL=true&requireSSL=true" -jar ./po-rest-service-1.0.jar
+      - java -Dspring.datasource.url="jdbc:mysql://hostname:3306/dbname?useSSL=true&requireSSL=true" -jar ./po-rest-service-1.0.jar
       image: mtcslabtest.azurecr.io/po-service:latest
       ports:
       - port: 8080
@@ -24,7 +24,7 @@ properties:
   osType: Linux
   restartPolicy: OnFailure
   ipAddress:
-    dnsNameLabel: po-service-demo
+    dnsNameLabel: po-service-MyInitial
     type: Public
     ports:
     - protocol: tcp
@@ -32,14 +32,14 @@ properties:
   volumes:
   - name: secretvolume1
     secret:
-      username.properties: 'bXlzcWwudXNlcj1lNHl5NmRqdzQ0QGI3ZTBlOTYxLTU5M2QtNDA3Yi04NWM5LThiMDI1MjY4NTNlOQo='
-      password.properties: 'bXlzcWwucGFzc3dvcmQ9VHJXM3V1NFk4ajRPOEJDNQo='
+      username.properties: 'Base64 encoded value of : mysql.user=value'
+      password.properties: 'Base64 encoded value of : mysql.password=value'
   - name: secretvolume2
     secret:
-      mysqldb.properties: 'eHl6Cg=='
+      mysqldb.properties: 'Any base64 encoded value. This value is not used'
   imageRegistryCredentials:
   - server: mtcslabtest.azurecr.io
     username: mtcslabtest
-    password: '2Sd0wycOwjc27lFgnm=YYRpfmKzlJsBl'
+    password: 'Substitute value of ACR password'
 tags: {}
 type: Microsoft.ContainerInstance/containerGroups
