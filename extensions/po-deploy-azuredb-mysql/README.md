@@ -510,4 +510,4 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     ![alt tag](./images/D-07.PNG)
 
-Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project]() to work on other sub-projects.
+Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project](https://github.com/ganrad/k8s-springboot-data-rest) to work on other sub-projects.
