@@ -1,0 +1,11 @@
+az container create -g myResourceGroup -n po-service-aci-group \
+   --image mtcslabtest.azurecr.io/po-service:latest \
+   --cpu 1 --memory 1 \
+   --registry-login-server mtcslabtest.azurecr.io \
+   --registry-username mtcslabtest \
+   --registry-password "xyz" \
+   --secrets username.properties="xyz" password.properties="abc" --secrets-mount-path /etc/vol-secrets \
+   --dns-name-label po-service-demo \
+   --command-line "/bin/bash -c 'java -Dspring.datasource.url=\"jdbc:mysql://host:3306/database?useSSL=true&requireSSL=true\" -Dspring.datasource.password=\"xyz\" -Dspring.datasource.username=\"xyz\" -jar ./po-rest-service-1.0.jar'" \
+   --restart-policy OnFailure \
+   --ports 8080

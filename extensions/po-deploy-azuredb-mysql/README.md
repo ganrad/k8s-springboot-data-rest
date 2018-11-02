@@ -1,6 +1,6 @@
 ## Use *Azure Database for MySQL* (PaaS) as the persistent data store for the po-service microservice application.
 
-The overall goal of this project (extension) is summarized below.
+The overall goal of this sub-project (extension) is summarized below.
 - Demonstrate the use of **Open Service Broker for Azure** to provision and deploy a managed MySQL database server (instance) on Azure. OSBA is an implementation of *Open Service Broker API* specification and is used to expose public cloud services (PaaS) on container platforms such as AKS.  Applications deployed on container platforms can then seamlessly provision and consume public cloud (PaaS) services from DevOps pipelines.
 - Demonstrate the use of **Helm** (CLI) for deploying containerized applications on Kubernetes (AKS).  Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
 - Demonstrate how to secure a microservice (REST API) end-point using SSL/TLS (HTTPS transport) and expose it thru the **Ingress Controller** addon on AKS.
@@ -382,10 +382,11 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
   
 2.  Get the registry credentials.
 
-    Use the command below to get the container registry (ACR) login server and admin password.
+    Use the commands shown below to retrieve the container registry (ACR) login server and admin password.
  
     ```
     # Get the ACR login server.  Substitute correct value for ACR_NAME eg., mtcslabtest
+    # ACR_NAME = Azure Container Registry name; doesn't include the 'azurecr.io' suffix
     $ az acr show --name <ACR_NAME> --query loginServer
     #
     # Get the container registry password.
@@ -397,6 +398,47 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
 3.  Deploy the *po-service* microservice within an ACI container.
 
+    First retrieve the Azure MySQL database connection parameter values from the Kubernetes *Secret* API object ('mysql-secret') using the command below.
+    ```
+    # Retrieve the MySQL database connection info. from the 'mysql-secret' object
+    $ kubectl get secret mysql-secret -n dev-azure-mysql -o yaml
+    apiVersion: v1
+    data:
+      database: Znk1Z3RzYQ==
+      host: YjdlMGU5NZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbQ==
+      password: VHJXMk4ajRPOEJDNQ==
+      port: MzNg==
+      sslRequired: dHZQ==
+      tags: WyJteXNxbCJd
+      uri: 00MDdiLTg1YzktOGIwMjUyNjg1M2U5OlRyVzN1dTRZOGo0TzhCQzVAYjdlMGU5NjEtNTkzZC00MDdiLTg1YzktOGIwMjUyNjg1M2U5Lm15c3FsLmRhdGFiYXNlLmF6dXJlLmNvbTozMzA2L2Z5NWR5N2d0c2E/dXNlU1NMPXRydWUmcmVxdWlyZVNTTD10cnVl
+      username: ZTR5enc0NEBiN2UwZTk2MS01OTNkLTQwN2ItODVjOS04YjAyNTI2ODUzZTk=
+    kind: Secret
+    metadata:
+      creationTimestamp: 2018-10-30T21:48:06Z
+      name: mysql-secret
+      namespace: dev-azure-mysql
+      ownerReferences:
+      - apiVersion: servicecatalog.k8s.io/v1beta1
+        blockOwnerDeletion: true
+        controller: true
+        kind: ServiceBinding
+        name: po-service-mysql-database-binding
+        uid: 79ecf7d3-dc8d-11e8-b8ba-96e9d1fd95ae
+      resourceVersion: "3643958"
+      selfLink: /api/v1/namespaces/dev-azure-mysql/secrets/mysql-secret
+      uid: 7bd3855d-dc8d-11e8-9ccd-d6e34d2f004f
+    type: Opaque
+    #
+    ```
+    In the command output, you will notice that all connection parameter (host, database...) values are `base64` encoded.  In order to pass the database connection parameter values to the ACI container we will first need to decode the values.  We will also need to base64 encode the values for database *Username* and *Password* before passing these values to the ACI container.  The command for `base64` encoding and decoding values is shown in the command snippet below.
+    ```
+    # To base64 encode a value, use this command.  Output will be the encoded value.
+    $ echo "Plain-text-value" | base64 -w 0
+    #
+    # To base64 decode a value, use this command. Output will be the decoded (plain-text) value.
+    $ echo "Encoded-value" | base64 --decode
+    #
+    ```
     Use the command below to deploy *po-service* microservice within an ACI container.
 
     ```

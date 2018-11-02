@@ -85,7 +85,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     ```
 
-5.  Install Azure CLI, K8s CLI, Helm, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
+5.  Install Azure CLI, K8s CLI, Helm CLI, Service Catalog CLI, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
     ```
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
