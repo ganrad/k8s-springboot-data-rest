@@ -376,7 +376,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
 1.  Enable ACR admin user.
 
-    Save the name of the ACR.  We will need this value in subsequent steps.  See screenshot below.
+    Note down the name of the ACR.  We will need this value (**'ACR_NAME'**) in subsequent steps.  See screenshot below.
 
     ![alt tag](./images/D-02.PNG)
 
@@ -398,7 +398,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     #
     ```
 
-    Make a note of the ACR `login server` and admin `password`.  We will need to specify these values while creating the ACI instance in the next step.
+    Make a note of the ACR `login server` and admin `password`.  We will need to specify these values while creating the ACI instance in a later step.
 
 3.  Deploy the *po-service* microservice within an ACI container.
 
@@ -460,10 +460,10 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     No. | Parameter | Description | Encode Value
     --- | --------- | ----------- | -------------
-    1  | jdbc:mysql://host:port/database?useSSL=true&requireSSL=sslRequired | Substitute decoded values of `host`,`port`,`database` and `sslRequired` | No
+    1  | jdbc:mysql://host:port/database?useSSL=true&requireSSL=sslRequired | Substitute decoded values of `host`,`port`,`database` and `sslRequired` in the `jdbc` URL | No
     2  | mysql.user=username | Substitute the decoded value of `username` | Yes
     3  | mysql.password=password | Substitute the decoded value of `password` | Yes
-    4  | po-service-YourInitial | Substitute your short initial in place of `YourInitial` | No
+    4  | po-service-YourInitial | Substitute your short initial in place of `YourInitial` (eg., GR) | No
     5  | ACR_NAME | This is the ACR name, value which you saved in Step [1] | No
     6  | ACR Login Server | ACR login server, value which you saved in Step [2] | No
     7  | ACR Admin Password | ACR Admin password, value which you saved in Step [2] | No
@@ -471,6 +471,8 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
     Open the ACI manifest file `./k8s-resources/create-aci.yaml` and update the values as shown in the screenshot below.  Substitute the parameter values from the above table in the corresponding numbered placeholders in the manifest file.
 
     ![alt tag](./images/D-03.PNG)
+
+    We could have passed in the MySQL database user name and password as a container command-line option (eg., java -Dspring.datasource.username= ...), however this would expose the values to users who have access to the container instance.  It's considered a best practice to encode all confidential data as **Secrets** and mount them into the container.  Secrets are stored in `tmpfs` filesystem on Linux which is a RAM backed storage and are never stored on a cluster node.
 
     Use the command below to deploy *po-service* microservice within an ACI container.
     ```
@@ -486,15 +488,26 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
 4.  Use the Azure Portal to view the ACI status, logs etc..
 
-    See screenshots below.
+    Access the *Container instances* blade in the Azure Portal.  See screenshot below.
 
     ![alt tag](./images/D-04.PNG)
 
+    On the **Overview** tab, check the ACI container status. It should display *Running*.  Make a note of the container's **FQDN**.  The FQDN is the microservice end-point (API end-point).
 
     ![alt tag](./images/D-05.PNG)
 
-    Note down the FQDN.  Then click on *Containers*
+    In the navigational panel on the left, click on **Containers**.  Review the *Events*, *Properties*, *Logs* and *Connect* tabs as shown in the screenshot below.
 
     ![alt tag](./images/D-06.PNG)
 
-You have now successfully completed all sections in this project.  Congrats!
+5.  Access the *po-service* microservice API end-point.
+
+    Use the FQDN to access the microservice.  Remember the microservice running within the ACI container exposes the *Purchase Order* API on port `8080`.
+
+    URI end-point : http://po-service-<YourInitial>.westus.azurecontainer.io:8080/orders
+
+    See the screenshot below.
+
+    ![alt tag](./images/D-07.PNG)
+
+Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project]() to work on other sub-projects.
