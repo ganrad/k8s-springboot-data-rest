@@ -669,7 +669,7 @@ In this project, we experienced how DevOps, Microservices and Containers can be 
 
 Next, continue to explore other container solutions available on Azure.  Use the links below.
 - Proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in **Jenkins** to build and release the *po-service* microservice to AKS.
-- Proceed to the sub-project [PaaS Container Solutions](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/po-deploy-azuredb-mysql) to learn how to build and deploy a containerized microservice application using only **Azure PaaS*.  Learn how to refactor the *po-service* microservice to persist *Purchase Order* data in a **Azure database for MySQL** (managed) server instance.  This sub-project will also detail the steps for deploying the *po-service* microservice on **Azure Container Instances**.
+- Proceed to the sub-project [PaaS Container Solutions](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/po-deploy-azuredb-mysql) to learn how to build and deploy a containerized microservice application using only **Azure PaaS**.  Learn how to refactor the *po-service* microservice to persist *Purchase Order* data in a **Azure database for MySQL** (managed) server instance.  This sub-project will also detail the steps for deploying the *po-service* microservice on **Azure Container Instances**.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
