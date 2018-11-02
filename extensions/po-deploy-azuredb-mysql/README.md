@@ -460,13 +460,13 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     No. | Parameter | Description | Encode Value
     --- | --------- | ----------- | -------------
-    1. | jdbc:mysql://host:port/database?useSSL=true&requireSSL=sslRequired | Substitute decoded values of `host`,`port`,`database` and `sslRequired` | No
-    2. | mysql.user=username | Substitute the decoded value of `username` | Yes
-    3. | mysql.password=password | Substitute the decoded value of `password` | Yes
-    4. | po-service-YourInitial | Substitute your short initial in place of `YourInitial` | No
-    5. | ACR_NAME | This is the ACR name, value which you saved in Step [1] | No
-    6. | ACR Login Server | ACR login server, value which you saved in Step [2] | No
-    7. | ACR Admin Password | ACR Admin password, value which you saved in Step [3] | No
+    1  | jdbc:mysql://host:port/database?useSSL=true&requireSSL=sslRequired | Substitute decoded values of `host`,`port`,`database` and `sslRequired` | No
+    2  | mysql.user=username | Substitute the decoded value of `username` | Yes
+    3  | mysql.password=password | Substitute the decoded value of `password` | Yes
+    4  | po-service-YourInitial | Substitute your short initial in place of `YourInitial` | No
+    5  | ACR_NAME | This is the ACR name, value which you saved in Step [1] | No
+    6  | ACR Login Server | ACR login server, value which you saved in Step [2] | No
+    7  | ACR Admin Password | ACR Admin password, value which you saved in Step [3] | No
 
     Open the ACI manifest file `./k8s-resources/create-aci.yaml` and update the values as shown in the screenshot below.  Substitute the parameter values from the above table in the corresponding numbered placeholders in the manifest file.
 
