@@ -338,7 +338,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
      ![alt tag](./images/A-11.png)
 
-12.  Switch back to the **Tasks** tab and click on the **Maven** task.  Specify values for fields **Goal(s)**, **Options** as shown in the screen shot below.  Ensure **Publish to TFS/Team Services** checkbox is enabled.
+12.  Switch back to the **Tasks** tab and click on the **Maven** task.  Specify values for fields **Goal(s)**: *package*, **Options**: *-DskipITs*.  Ensure **Publish to TFS/Team Services** checkbox is enabled.
 
      ![alt tag](./images/A-12.png)
 
