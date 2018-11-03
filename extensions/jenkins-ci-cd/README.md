@@ -242,3 +242,4 @@ In this section, we will implement a CI and CD pipeline in *Azure DevOps* in ord
    - Defined a **Build (CI)** and **Release (CD)** pipeline in *Azure DevOps* to build a custom Jenkins container image and then deployed Jenkins on *Azure Kubernetes Service*
    - Defined and executed a **Continuous Delivery** pipeline in Jenkins and re-deployed the *po-service* microservice on *Azure Kubernetes Service*.
 
+   You can return to the [parent project](https://github.com/ganrad/k8s-springboot-data-rest) to work on another sub-project.  Happy Kub'ing!
