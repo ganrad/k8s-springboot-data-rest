@@ -414,7 +414,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     $ az aks show -g myResourceGroup -n akscluster --output table
     ```
 
-4.  Connect to the AKS cluster.
+4.  Connect to the AKS cluster and initialize **Helm** package manager.
     ```
     # Configure kubectl to connect to the AKS cluster
     $ az aks get-credentials --resource-group myResourceGroup --name akscluster
@@ -424,6 +424,13 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     #
     # Check default namespaces in the cluster
     $ kubectl get namespaces
+    #
+    # Initialize Helm.  This will install 'Tiller' on AKS.  Wait for this command to complete!
+    $ helm init
+    #
+    # Check if Helm client is able to connect to Tiller on AKS.
+    # This command should list bothclient and server versions.
+    $ helm version
     ```
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
