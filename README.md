@@ -346,6 +346,8 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
    
      ![alt tag](./images/A-20.PNG)
 
+    In **Publish Artifact...** task,
+    
 14.  Next, we will package our application binary within a container image.  Review the **docker-compose.yml** and **Dockerfile** files in the source repository to understand how the application container image is built.  Click on the plus symbol besides *Agent job 1* to add a new task. Search for task *Docker Compose* and click **Add**.
 
      ![alt tag](./images/A-14.png)
