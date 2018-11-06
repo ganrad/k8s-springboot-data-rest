@@ -98,7 +98,7 @@ public class PurchaseOrder {
     }
 
 // Uncomment this method for retrieving order total !!
-/**push from rajesh*/
+/**push from rajesh on 11/5/2018*/
     public Float getDiscountAmount() {
 	return ( (this.price * this.quantity) * ( Float.parseFloat(this.dcode) / 100 ) );
     } 
