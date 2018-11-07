@@ -16,13 +16,15 @@ For easy and quick reference, readers can refer to the following on-line resourc
 **Important Notes:**
 
 ### A] Provision a new AKS cluster and configure advanced networking (Azure CNI)
-**Approx. time to complete this section: 30 Minutes**
+**Approx. time to complete this section: 45 Minutes**
 
 By default, AKS clusters use *Basic* networking which creates and configures a virtual network and subnet for the cluster nodes.  For this project, we will deploy an AKS cluster with *Advanced* networking option to allow us to configure APIM Service on the same subnet as the cluster.   The advanced networking option configures Azure CNI (Container networking interface) for the AKS cluster.  The end result is that Azure networking assigns IP addresses for all cluster nodes and pods.
 
 Login to [Azure Portal](https://portal.azure.com/).
 
-1. Create a */24* virtual network and subnet.  See screenshot below.
+1. Create a */24* virtual network *aks-cluster-vnet* and a */25* subnet *aks-cluster-subnet*.
+
+   The subnet *aks-cluster-subnet* will be used to allocate IP addressses for the AKS cluster nodes and pods.  See screenshot below.
 
    ![alt tag](./images/A-01.PNG)
 
@@ -30,42 +32,54 @@ Login to [Azure Portal](https://portal.azure.com/).
 
    ![alt tag](./images/A-02.PNG)
 
-2. Get the subnet resource ID.
+   Next, click on the VNET *aks-cluster-vnet* and create another */28* subnet *apim-subnet*.  This subnet will be used to allocate IP addresses for the APIM services.  See screenshots below.
 
-   The AKS cluster nodes will be deployed within the VNET and subnet created in the previous step. Login to the Linux VM (Bastion Host) for issuing all Azure CLI commands.
+   ![alt tag](./images/A-03.PNG)
+
+   ![alt tag](./images/A-04.PNG)
+
+   Click **OK**.  There should be two subnets in the *aks-cluster-vnet* VNET as shown in the figure below.
+
+   ![alt tag](./images/A-05.PNG)
+
+2. Get the resource ID for subnet *aks-cluster-subnet*
+
+   The AKS cluster nodes will be deployed within the subnet *aks-cluster-subnet*, created in the previous step.
+
+   Login to the Linux VM (Bastion Host) for issuing all Azure CLI commands.
 
    ```
    # Substitute correct values for 'Resource Group' and 'VNET' name
-   $ az network vnet subnet list --resource-group myResourceGroup --vnet-name aks-apim-vnet --query [].id --output tsv
+   $ az network vnet subnet list --resource-group myResourceGroup --vnet-name aks-cluster-vnet --query [].id --output tsv
    #
    ```
 
-   Save the subnet resource ID.  We will need it in the next step.
+   Save the resource ID for subnet **aks-cluster-subnet**.  We will need it in the next step.
 
 3. Create the AKS Cluster with *Advanced networking* (Azure CNI) option
 
-   Refer to the command snippet below to provision an AKS cluster.  Specify **azure** for the *--network-plugin* option to create an AKS cluster with advanced networking option (Azure CNI).  Also, make sure to specify the subnet resource ID value for parameter *--vnet-subnet-id*, the value which you saved in the previous step.
+   Refer to the command snippet below to provision an AKS cluster *aks-cluster-apim*.  Specify **azure** for the *--network-plugin* option to create an AKS cluster with advanced networking option (Azure CNI).  Also, make sure to specify the subnet resource ID value for parameter *--vnet-subnet-id*, the value which you saved in the previous step.
 
    ```
    # Retrieve k8s versions
    $ az aks get-versions
    #
    # Substitute correct values for 'Resource Group', 'Cluster Name' and '--vnet-subnet-id'.  Deploy ks8 v1.11.3 or specify another version.
-   $ az aks create --resource-group myResourceGroup --name aks-apim-cluster --network-plugin azure --vnet-subnet-id <subnet-id> --docker-bridge-address 172.17.0.1/16 --dns-service-ip 10.2.0.10 --service-cidr 10.2.0.0/24 --node-count 1 --kubernetes-version "1.11.3" --dns-name-prefix akslab2 --location westus --disable-rbac
+   $ az aks create --resource-group myResourceGroup --name aks-cluster-apim --network-plugin azure --vnet-subnet-id <subnet-id> --docker-bridge-address 172.17.0.1/16 --dns-service-ip 10.2.0.10 --service-cidr 10.2.0.0/24 --node-count 1 --kubernetes-version "1.11.3" --dns-name-prefix akslab2 --location westus --disable-rbac
    #
    ```
 
    The AKS cluster provisioning process will take approx. 5-10 minutes to complete.  Once the AKS cluster is up, there should be 1 node deployed within the cluster.  Use the command snippet below to connect and view the status of the cluster.
 
    ```
-   # Verify state of aks-apim-cluster
+   # Verify state of aks-cluster-apim AKS cluster
    $ az aks show -g myResourceGroup -n aks-apim-cluster --output table
      Name              Location    ResourceGroup     KubernetesVersion    ProvisioningState    Fqdn
      ----------------  ----------  ----------------  -------------------  -------------------  -------------------------------------
-     aks-apim-cluster  westus      mtcs-dev-grts-rg  1.11.3               Succeeded            akslab2-a70564cc.hcp.westus.azmk8s.io
+     aks-cluster-apim  westus      mtcs-dev-grts-rg  1.11.3               Succeeded            akslab2-a70564cc.hcp.westus.azmk8s.io
    #
    # Connect to the AKS cluster.  Substitute correct values for 'Resource Group' and 'AKS Cluster Name'
-   $ az aks get-credentials --resource-group myResourceGroup --name aks-apim-cluster
+   $ az aks get-credentials --resource-group myResourceGroup --name aks-cluster-apim
    #
    # Retrieve cluster info.
    $ kubectl cluster-info
@@ -94,17 +108,30 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    #
    # Verify 'Tiller' is running in the 'kube-system' namespace.  Output should list a pod ('tiller-deploy...') in 'RUNNING' state.
    $ kubectl get pods -n kube-system
+     NAME                                    READY     STATUS    RESTARTS   AGE
+     azure-cni-networkmonitor-wqv7r          1/1       Running   0          9m
+     heapster-7b74498c4b-ht69z               2/2       Running   0          5m
+     kube-dns-v20-54f74f4458-2zjjf           3/3       Running   0          14m
+     kube-dns-v20-54f74f4458-k9kfs           3/3       Running   0          14m
+     kube-proxy-wlg2d                        1/1       Running   0          9m
+     kube-svc-redirect-86xpd                 2/2       Running   0          9m
+     kubernetes-dashboard-5845b66748-gfmt2   1/1       Running   1          14m
+     metrics-server-76f76c6bfd-qrs7j         1/1       Running   1          14m
+     tiller-deploy-597c48f967-bmf5w          1/1       Running   0          23s
+     tunnelfront-b595dc468-tjvwz             1/1       Running   0          14m
    #
    ```
 
-2. Review and then deploy the Kubernetes *Service* manifest file `./k8s-resources/internal-lb.yaml`.  Refer to the command snippet below.
+2. Create an ingress controller and ALB
+
+   Review the helm parameter values file `./k8s-resources/internal-ingress.yaml`.  This file will be passed in to the helm *install* command.  Refer to the command snippet below to deploy the ingress controller.
   
    ```
    # Make sure you are in the 'azure-apim' directory
    $ cd ./extensions/azure-apim
    #
    # Deploy the k8s service for internal lb.
-   $ kubectl apply -f ./k8s-resources/internal-lb.yaml
+   $ helm install stable/nginx-ingress --namespace kube-system -f ./k8s-resources/internal-ingress.yaml
    #
    # List the helm releases
    $ helm list
@@ -112,8 +139,9 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
      NAME            REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
      iced-zorse      1               Tue Nov  6 16:30:16 2018        DEPLOYED        nginx-ingress-0.30.0    kube-system
    #
+   # List the services deployed in 'kube-system' namespace.  The ALB's IP address should be listed under column
+   # 'EXTERNAL-IP' and the ingress controller's service IP should be under column 'CLUSTER_IP'.
    $ kubectl get svc -n kube-system
-     $ kubectl get svc -n kube-systemespace kube-
      NAME                                       TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)                      AGE
      heapster                                   ClusterIP      10.2.0.142   <none>        80/TCP                       3h
      iced-zorse-nginx-ingress-controller        LoadBalancer   10.2.0.17    10.0.0.35     80:32598/TCP,443:30758/TCP   3m
@@ -124,7 +152,10 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
      tiller-deploy                              ClusterIP      10.2.0.136   <none>        44134/TCP                    2h
    #
    ```
-   Use the *Load Balancers* blade in the Azure Portal to view the properties of the internal ALB.  See screenshots below.
+
+   A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.
+
+   Use the *Load Balancers* blade in the Azure Portal to view all the properties of the internal ALB.  See screenshots below.
 
    ![alt tag](./images/B-01.PNG)
 
@@ -151,7 +182,7 @@ In this section, we will provision and configure an Azure API Management Service
 
    Click on **Create**.  The APIM service will take a few minutes to get provisioned.
 
-2. Connect APIM Service to the AKS Virtual Network
+2. Connect APIM Service to the AKS Virtual Network subnet *apim-subnet*
 
    The APIM service has to be deployed in the AKS virtual network (VNET), so it can access the API's exposed by the *po-service* microservice.
 
@@ -159,7 +190,7 @@ In this section, we will provision and configure an Azure API Management Service
 
    ![alt tag](./images/C-04.PNG)
 
-   Click on the **External** button.  Verify and make sure the **Location** field displays the *Region* in which the AKS cluster is deployed.  Click on the field below **VIRTUAL NETWORK** and select the VNET and **Subnet** used by the AKS cluster nodes.  Click **Apply**.  See screenshot below.
+   Click on the **External** button.  Verify and make sure the **Location** field displays the *Region* in which the AKS cluster is deployed.  Click on the field below **VIRTUAL NETWORK** and select the VNET **aks-cluster-vnet** and subnet **apim-subnet** created in Section A.  Click **Apply**.  See screenshot below.
 
    ![alt tag](./images/C-05.PNG)
 
