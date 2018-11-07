@@ -5,7 +5,7 @@ The overall goal of this sub-project (extension) is summarized below.
 - Demonstrate the use of **Azure API Management** (APIM) to secure and manage the lifecyle of Web API's.
 
   An API managemnet platform provides core capabilities to engage application developers, secure API's, retrieve business insights and analyze API usage, reduce latency and many other value add features.  This project will demonstrate use of many of these features.
-- Demonstrate how to deploy a AKS cluster in a private virtual network and route Web traffic to services deployed on the cluster thru an ingress controller and internal *Load Balancer*.
+- Demonstrate how to deploy a AKS cluster in a private virtual network and route Web traffic to services deployed on the cluster thru an **Ingress Controller** and internal **Load Balancer**.
 - Demonstrate the use of **Helm** (CLI) for deploying containerized applications on Kubernetes (AKS).
 
   Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
@@ -20,12 +20,10 @@ The overall goal of this sub-project (extension) is summarized below.
 
 In a nutshell, you will work on the following tasks.
 1. Configure a private virtual network and two subnets.  Deploy an AKS cluster and configure it to use the private virtual network.
-2. Deploy an internal load balancer (ALB) and ingress controller (NGINX) to provide a single point of entry for all web traffic destined to microservices deployed on the AKS cluster.
-3. Provision an APIM service and configure access to backend services (microservices) deployed on the AKS cluster.
+2. Deploy an internal (private) load balancer (ALB) and ingress controller (NGINX) to provide a single point of entry for all web traffic destined to microservices deployed on the AKS cluster.
+3. Provision an APIM service and configure it to use the private virtual network. 
 4. Deploy the po-service microservice on AKS using Helm
-5. Configure products and api's on APIM and examine various features and capabilities.
-
-**Workflow:**
+5. Configure proxy API's on APIM and expose backend microservices deployed on the AKS cluster. Examine various features and capabilities supported by APIM.
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/?path=browse)
