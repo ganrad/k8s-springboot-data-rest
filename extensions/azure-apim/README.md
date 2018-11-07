@@ -3,9 +3,11 @@
 The overall goal of this sub-project (extension) is summarized below.
 
 - Demonstrate the use of **Azure API Management** (APIM) to secure and manage the lifecyle of Web API's.
+
   An API managemnet platform provides core capabilities to engage application developers, secure API's, retrieve business insights and analyze API usage, reduce latency and many other value add features.  This project will demonstrate use of many of these features.
 - Demonstrate how to deploy a AKS cluster in a private virtual network and route Web traffic to services deployed on the cluster thru an ingress controller and internal *Load Balancer*.
 - Demonstrate the use of **Helm** (CLI) for deploying containerized applications on Kubernetes (AKS).
+
   Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
 - Demonstrate how to secure API's using keys and encrypt payloads using TLS/SSL
 
