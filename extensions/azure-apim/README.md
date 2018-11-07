@@ -1,17 +1,36 @@
 ## Use Azure API Manager to manage the lifecycle of Web API's
 
+The overall goal of this sub-project (extension) is summarized below.
+
+- Demonstrate the use of **Azure API Management** (APIM) to secure and manage the lifecyle of Web API's.
+  An API managemnet platform provides core capabilities to engage application developers, secure API's, retrieve business insights and analyze API usage, reduce latency and many other value add features.  This project will demonstrate use of many of these features.
+- Demonstrate how to deploy a AKS cluster in a private virtual network and route Web traffic to services deployed on the cluster thru an ingress controller and internal *Load Balancer*.
+- Demonstrate the use of **Helm** (CLI) for deploying containerized applications on Kubernetes (AKS).
+  Helm is a package manager for Kubernetes and is a part of [CNCF](https://www.cncf.io/). Helm is used for managing Kubernetes packages called *Charts*.  In layman's terms, a chart is a bundle of Kubernetes manifest files necessary to create an instance of a Kubernetes application.
+- Demonstrate how to secure API's using keys and encrypt payloads using TLS/SSL
+
 **Prerequisites:**
 1.  Before beginning to work on this project, readers are required to complete all hands-on labs (Sections) in the [parent project](https://github.com/ganrad/k8s-springboot-data-rest).  In case you have come to this project directly, go back and finish the lab exercises in the parent project.
+2.  Readers are required to have prior experience working with Linux systems
+3.  Readers are advised to refer to the CLI documentation for **kubectl** & **helm** as needed.  Links to documentation are provided below.
 
 **Description:**
 
 In a nutshell, you will work on the following tasks.
-1. Define a *Product and API's* in **Azure API Management** PaaS to expose the *po-service* API 
+1. Configure a private virtual network and two subnets.  Deploy an AKS cluster and configure it to use the private virtual network.
+2. Deploy an internal load balancer (ALB) and ingress controller (NGINX) to provide a single point of entry for all web traffic destined to microservices deployed on the AKS cluster.
+3. Provision an APIM service and configure access to backend services (microservices) deployed on the AKS cluster.
+4. Deploy the po-service microservice on AKS using Helm
+5. Configure products and api's on APIM and examine various features and capabilities.
 
 **Workflow:**
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/?path=browse)
+- [kubectl CLI](https://kubernetes.io/docs/reference/kubectl/overview/)
+- [Helm Documentation](https://docs.helm.sh/)
 - [Azure API Management](https://docs.microsoft.com/en-us/azure/api-management/api-management-key-concepts)
+- [Azure Load Balancer](https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview)
 
 **Important Notes:**
 
