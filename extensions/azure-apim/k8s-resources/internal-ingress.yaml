@@ -1,0 +1,9 @@
+controller:
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+rbac:
+  create: false
+
+serviceAccount:
+  create: false
