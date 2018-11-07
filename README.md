@@ -11,7 +11,7 @@ In a nutshell, you will work on the following tasks.
 2.  Deploy an AKS (Azure Kubernetes Service) Kubernetes cluster and manually deploy the containerized microservice application on AKS.  Complete Step [D].
 3.  Define a **Release Pipeline** in VSTS.  Execute both build and release pipelines in VSTS in order to update and re-deploy the SpringBoot microservice (**po-service 2.0**) application on AKS.  This task focuses on the **Continuous Deployment** aspect of the DevOps process.  Complete Step [E].
 4.  Define Azure DevOps pipelines to build and deploy a custom **Jenkins Container** on AKS.  Then define and execute a **Continuous Delivery** pipeline in Jenkins to build and deploy the Springboot Java Microservice (**po-service**) Application on AKS.  This task focuses on the **Continuous Delivery** aspect of the DevOps process. Complete extension [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd).
-5.  Configure an Azure API Management Service to manage the lifecycle of API's exposed by **po-service** Springboot Microservice Application [TBD].
+5.  Configure an Azure API Management Service to manage the lifecycle of API's exposed by **po-service** Springboot Microservice Application [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim).
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
@@ -677,6 +677,7 @@ In this project, we experienced how DevOps, Microservices and Containers can be 
 Next, continue to explore other container solutions available on Azure.  Use the links below.
 - Proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in **Jenkins** to build and release the *po-service* microservice to AKS.
 - Proceed to the sub-project [PaaS Container Solutions](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/po-deploy-azuredb-mysql) to learn how to build and deploy a containerized microservice application using only **Azure PaaS**.  Learn how to refactor the *po-service* microservice to persist *Purchase Order* data in a **Azure database for MySQL** (managed) server instance.  This sub-project will also detail the steps for deploying the *po-service* microservice on **Azure Container Instances**.
+- Proceed to the sub-project [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim) to learn how to secure, manage and analyze Web API's using *Azure API Management* Service.  This sub-project will describe the steps for securing the API's exposed by *po-service* microservice using Azure APIM PaaS.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
