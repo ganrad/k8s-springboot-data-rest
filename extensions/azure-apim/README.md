@@ -18,7 +18,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 ### A] Provision a new AKS cluster and configure advanced networking (Azure CNI)
 **Approx. time to complete this section: 30 Minutes**
 
-By default, AKS clusters use *Basic* networking which creates and configures a virtual network and subnet for the cluster nodes.  For this project, we will deploy an AKS cluster with *Advanced* networking option to allow us to configure APIM Service on the same subnet.   The advanced networking option configures Azure CNI (Container networking interface) for the AKS cluster.  The end result is that Azure networking assigns IP addresses for all cluster nodes and pods.
+By default, AKS clusters use *Basic* networking which creates and configures a virtual network and subnet for the cluster nodes.  For this project, we will deploy an AKS cluster with *Advanced* networking option to allow us to configure APIM Service on the same subnet as the cluster.   The advanced networking option configures Azure CNI (Container networking interface) for the AKS cluster.  The end result is that Azure networking assigns IP addresses for all cluster nodes and pods.
 
 Login to [Azure Portal](https://portal.azure.com/).
 
@@ -44,7 +44,7 @@ Login to [Azure Portal](https://portal.azure.com/).
 
 3. Create the AKS Cluster with *Advanced networking* (Azure CNI) option
 
-   Refer to the command snippet below to provision an AKS cluster.  Specify the *--network-plugin azure* option to create an AKS cluster with advanced networking option (Azure CNI).  Also, make sure to specify the subnet resource ID value for parameter *--vnet-subnet-id*.
+   Refer to the command snippet below to provision an AKS cluster.  Specify **azure** for the *--network-plugin* option to create an AKS cluster with advanced networking option (Azure CNI).  Also, make sure to specify the subnet resource ID value for parameter *--vnet-subnet-id*, the value which you saved in the previous step.
 
    ```
    # Retrieve k8s versions
@@ -60,6 +60,9 @@ Login to [Azure Portal](https://portal.azure.com/).
    ```
    # Verify state of aks-apim-cluster
    $ az aks show -g myResourceGroup -n aks-apim-cluster --output table
+     Name              Location    ResourceGroup     KubernetesVersion    ProvisioningState    Fqdn
+     ----------------  ----------  ----------------  -------------------  -------------------  -------------------------------------
+     aks-apim-cluster  westus      mtcs-dev-grts-rg  1.11.3               Succeeded            akslab2-a70564cc.hcp.westus.azmk8s.io
    #
    # Connect to the AKS cluster.  Substitute correct values for 'Resource Group' and 'AKS Cluster Name'
    $ az aks get-credentials --resource-group myResourceGroup --name aks-apim-cluster
@@ -79,7 +82,7 @@ Login to [Azure Portal](https://portal.azure.com/).
 
 An internal ingress controller makes Web API's deployed on a Kubernetes cluster accessible only to applications running in the same virtual network as the cluster.  As part of the ingress controller deployment, an internal Azure Load Balancer (ALB) instance is also provisioned.  An available private IP address from the virtual network subnet is assigned to the ALB instance's frontend.  The *Backend pool* of the ALB instance is configured to point to the AKS cluster nodes.  Load balancing rules are configured to direct traffic (HTTP/HTTPS) from the frontend IP to the backend pool.
 
-The internal ingress controller will be used to direct web traffic destined to all services deployed within the AKS cluster.
+The internal ingress controller will expose ports 80 and 443 and provide a single point of entry for all web traffic destined to all services deployed within the AKS cluster.
 
 1. Initialize *Helm* by installing *Tiller* on the AKS cluster
 
@@ -94,7 +97,7 @@ The internal ingress controller will be used to direct web traffic destined to a
    #
    ```
 
-2. Review and deploy the Kubernetes *Service* manifest file `./k8s-resources/internal-lb.yaml`.  Refer to the command snippet below.
+2. Review and then deploy the Kubernetes *Service* manifest file `./k8s-resources/internal-lb.yaml`.  Refer to the command snippet below.
   
    ```
    # Make sure you are in the 'azure-apim' directory
@@ -128,13 +131,13 @@ The internal ingress controller will be used to direct web traffic destined to a
    ![alt tag](./images/B-02.PNG)
 
 ### C] Provision an Azure API Management (APIM) Service
-**Approx. time to complete this section: 1 Hour**
+**Approx. time to complete this section: 30 Minutes**
 
 In this section, we will provision and configure an Azure API Management Service.
 
 1. Create the APIM Service
 
-   Click on **All Services** in the left navigational panel and search for text **API**, then select the star besides APi Management Services as shown in the screenshot below.  This will add the API Management Services link to the navigational panel.
+   Click on **All Services** in the left navigational panel and search for text **API**, then select the star besides API Management Services as shown in the screenshot below.  This will add the API Management Services link to the navigational panel.
 
    ![alt tag](./images/C-01.PNG)
 
@@ -150,9 +153,9 @@ In this section, we will provision and configure an Azure API Management Service
 
 2. Connect APIM Service to the AKS Virtual Network
 
-   The APIM service has to be deployed in the AKS virtual network (VNET), so it can access the *po-service* microservice API's.
+   The APIM service has to be deployed in the AKS virtual network (VNET), so it can access the API's exposed by the *po-service* microservice.
 
-   Click on the APIM service and then click on **Virtual network** under **SETTINGS** in the navigational menu on the left.  See screenshot below.
+   Click on the APIM service and then click on **Virtual network** under **Settings** in the navigational menu on the left.  See screenshot below.
 
    ![alt tag](./images/C-04.PNG)
 
