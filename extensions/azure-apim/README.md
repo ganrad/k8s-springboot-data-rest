@@ -1,4 +1,4 @@
-## Use Azure API Manager to manage the lifecycle of Web API's
+## Use Azure API Management to manage the lifecycle of Web API's
 
 The overall goal of this sub-project (extension) is summarized below.
 
