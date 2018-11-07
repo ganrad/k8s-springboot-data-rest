@@ -505,7 +505,7 @@ Open a terminal window and use SSH to login to the Linux VM (Bastion Host) which
 
     Use the FQDN to access the microservice.  Remember the microservice running within the ACI container exposes the *Purchase Order* API on port `8080`.
 
-    URI end-point : http://po-service-<YourInitial>.westus.azurecontainer.io:8080/orders
+    URI end-point : http://po-service-[YourInitial].westus.azurecontainer.io:8080/orders
 
     See the screenshot below.
 

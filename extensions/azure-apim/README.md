@@ -162,7 +162,7 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    ![alt tag](./images/B-02.PNG)
 
 ### C] Provision an Azure API Management (APIM) Service
-**Approx. time to complete this section: 30 Minutes**
+**Approx. time to complete this section: 45 Minutes**
 
 In this section, we will provision and configure an Azure API Management Service.
 
@@ -198,7 +198,7 @@ In this section, we will provision and configure an Azure API Management Service
 
    ![alt tag](./images/C-06.PNG)
    
-   It will take a few minutes for the APIM service to get updated.  
+   It will take approx. 10-15 minutes for the APIM service to get updated.  
 
 ### D] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
 **Approx. time to complete this section: 1 Hour**
