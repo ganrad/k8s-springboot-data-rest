@@ -25,6 +25,10 @@ In a nutshell, you will work on the following tasks.
 4. Deploy the po-service microservice on AKS using Helm
 5. Configure proxy API's on APIM and expose backend microservices deployed on the AKS cluster. Examine various features and capabilities supported by APIM.
 
+**Workflow:**
+
+![alt tag](./images/azure-apim.jpg)
+
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/?path=browse)
 - [kubectl CLI](https://kubernetes.io/docs/reference/kubectl/overview/)
