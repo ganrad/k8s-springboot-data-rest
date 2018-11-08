@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "po-service.fullname" . }}
+  labels:
+    app: {{ template "po-service.name" . }}
+    chart: {{ template "po-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "po-service.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "po-service.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+      - name: mysqlcm
+        configMap:
+          name: mysql-db-name
+      - name: mysqlse
+        secret:
+          secretName: mysql-secret
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          volumeMounts:
+          - name: mysqlcm
+            mountPath: /etc/config
+          - name: mysqlse
+            mountPath: /etc/vol-secrets
+          env:
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: mysql-database
+                key: mysql.dbname
+          - name: SPRING_DATASOURCE_URL
+            value: "jdbc:mysql://{{ .Release.Name }}-mysql.development.svc.cluster.local:{{ .Values.global.mysqlPort }}/$(DB_NAME)"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

@@ -146,7 +146,7 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    Review the helm parameter values file `./k8s-resources/internal-ingress.yaml`.  This file will be passed in to the helm *install* command.  Refer to the command snippet below to deploy the ingress controller.
   
    ```
-   # Make sure you are in the 'azure-apim' directory
+   # Make sure you are in the 'azure-apim' extension sub directory
    $ cd ./extensions/azure-apim
    #
    # Deploy the k8s service for internal lb.
@@ -172,7 +172,8 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    #
    ```
 
-   A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.
+   The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.  A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  Note down the ALB's external (Private IP) IP address.  We will use this IP address to test the *po-service* later in Section [D].
+
 
    Use the *Load Balancers* blade in the Azure Portal to view all the properties of the internal ALB.  See screenshots below.
 
@@ -219,7 +220,70 @@ In this section, we will provision and configure an Azure API Management Service
    
    It will take approx. 10-15 minutes for the APIM service to get updated.  
 
-### D] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
+### D] Deploy the *po-service* microservice on AKS
+
+In this section, we will use *Helm* to deploy the *po-service* microservice on AKS.  Review the Helm charts under directory `./po-service`.
+
+1. Configure AKS to pull application container images from ACR (configured in parent project).
+
+   In the Linux VM terminal window, update the shell script `./shell-scripts/acr-auth.sh` with correct values for the following variables.
+
+   Variable | Description
+   ----------------- | -------------------
+   AKS_RESOURCE_GROUP | Name of the AKS resource group
+   AKS_CLUSTER_NAME | Name of the AKS cluster instance
+   ACR_RESOURCE_GROUP | Name of the ACR resource group
+   ACR_NAME | Name of ACR instance
+
+   Then execute this shell script.  Refer to the command snippet below.
+   ```
+   # chmod 700 ./shell-scripts/acr-auth.sh
+   #
+   # Update the shell script and then run it
+   $ ./shell-scripts/acr-auth.sh
+   # 
+   ```
+
+2. Use *Helm* to deploy the *po-service* microservice to AKS cluster (`aks-cluster-apim`)
+
+   Substitute the correct value of your image repository (ACR) in the *helm install* command as shown in the command snippet below.
+   ```
+   # Make sure you are in the 'azure-apim' extension sub directory
+   $ pwd
+   # 
+   # Remember to substitute the correct value of the ACR in the install command below
+   $ helm install ./po-service --namespace development --set image.repository=xxxx.azurecr.io/po-service
+   # 
+   # Check status of Pods.  Should be in 'RUNNING' state
+   $ kubectl get pods -n development
+     NAME                                     READY     STATUS    RESTARTS   AGE
+     jolly-moth-mysql-85bccdf47b-bjhfw        1/1       Running   0          1m
+     jolly-moth-po-service-57465485dd-hlgpr   1/1       Running   3          1m
+   #
+   ```
+
+3. Test the *po-service* microservice by accessing the internal load balancer (ALB)
+
+   Create a test pod (Debian Linux) and attach a terminal session to it.  See below.
+   ```
+   # Create a test pod running Debian Linux and attach a terminal session.  When the command completes, you should
+   # be logged in to the debian container.
+   $ kubectl run -it --rm po-service-test --image=debian
+   #
+   # Update binaries and install 'curl'
+   $ apt-get update && apt-get install -y curl
+   #
+   ```
+
+   Use `curl` command to access the ALB IP address.  You should have saved this IP address in Section [B].
+   ```
+   # Curl to the ALB IP address and access the po-service end-point at '/bcc'.  The HTTP call should return
+   # JSON data with HTTP response status code 200
+   $ curl -L -v http://<ALB IP address>/bcc/orders
+   #
+   ```
+
+### E] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
 **Approx. time to complete this section: 1 Hour**
 
 1. Create and Publish an API Product

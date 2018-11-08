@@ -11,7 +11,7 @@ In a nutshell, you will work on the following tasks.
 2.  Deploy an AKS (Azure Kubernetes Service) Kubernetes cluster and manually deploy the containerized microservice application on AKS.  Complete Step [D].
 3.  Define a **Release Pipeline** in VSTS.  Execute both build and release pipelines in VSTS in order to update and re-deploy the SpringBoot microservice (**po-service 2.0**) application on AKS.  This task focuses on the **Continuous Deployment** aspect of the DevOps process.  Complete Step [E].
 4.  Define Azure DevOps pipelines to build and deploy a custom **Jenkins Container** on AKS.  Then define and execute a **Continuous Delivery** pipeline in Jenkins to build and deploy the Springboot Java Microservice (**po-service**) Application on AKS.  This task focuses on the **Continuous Delivery** aspect of the DevOps process. Complete extension [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd).
-5.  Configure an Azure API Management Service to manage the lifecycle of API's exposed by **po-service** Springboot Microservice Application [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim).
+5.  Configure an Azure API Management Service to manage the lifecycle of API's exposed by **po-service** Springboot Microservice.  Complete extension [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim).
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
 
