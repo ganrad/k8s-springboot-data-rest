@@ -25,7 +25,7 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 
 **Workflow:**
 
-![alt tag](./images/SB-VSTS-AKS.jpg)
+![alt tag](./images/SB-VSTS-AKS_v2.jpg)
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Spring Getting Started Guides](https://spring.io/guides)
