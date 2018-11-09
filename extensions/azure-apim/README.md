@@ -176,7 +176,7 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    #
    ```
 
-   The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.  A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  Note down the ALB's external (Private IP) IP address.  We will use this IP address to test the *po-service* later in Section [D].
+   The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.  A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  Note down the ALB's external (Private IP) IP address.  We will use this IP address to test the *po-service* later in Section [E].
 
 
    Use the *Load Balancers* blade in the Azure Portal to view all the properties of the internal ALB.  See screenshots below.
