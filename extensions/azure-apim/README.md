@@ -290,16 +290,50 @@ In this section, we will use *Helm* to deploy the *po-service* microservice on A
 ### E] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
 **Approx. time to complete this section: 1 Hour**
 
-1. Create and Publish an API Product
-   A *Product* is used to group a set of API's offered by a department, a group (organizational unit) or a line of business within a given organization.  A Product can also be used to group API's for a specific product (or product group) manufactured and sold by a company.
+1. Create and Publish a set of API's for a *Product* (Purchase Order Management)
+
+   A *Product* is used to group a set of API's offered by a department, a group (organizational unit) or a line of business within a given organization.
    
    Click on the APIM service and then click on **Products** in the navigational menu on the left to display the **Products** page.  Then click on **Add**.  See Screenshot below.
 
    ![alt tag](./images/D-01.PNG)
 
-   Specify a name for the API in the **Display name** field.  For **State**, leave **Not Published** selected.  API Products have to be published before they can be invoked.  Un-published products can only be invoked and viewed by members of the **Administrators** group.  Check **Require Subscription** as we want clients to subscribe to an API Product before they can start consuming it.  Leave **Requires approval** unchecked as we don't want to approve subscription requests from API consumers.  Do not click on the **Select API** link as we will create an API for the **po-service** in the next step.  Click **Create**.
+   Specify name **PO-Service** for the API in the **Display name** field.  For **State**, leave **Not Published** selected.  API Products have to be published before they can be invoked.  Un-published products can only be invoked and viewed by members of the **Administrators** group.  Check **Require Subscription** as we want clients to subscribe to an API Product before they can start consuming it.  Leave **Requires approval** unchecked as we don't want to approve subscription requests from API consumers.  Do not click on the **Select API** link as we will create an API for the **po-service** in the next step.  Click **Create**.
 
    ![alt tag](./images/D-02.PNG)
+
+   Click on **APIs** in the navigational panel on the left.  Then click on **Add API** and select **Blank API** tab on the right.  See screenshot below.
+
+   ![alt tag](./images/D-03.PNG)
+
+   Use the table below to fill in the values on the **Create a blank API** form.
+
+   Field | Value   | Description
+   ----- | ------- | ------------
+   Display name | po-service-api |
+   Name | po-service-api |
+   Description | Secures and tracks usage of the po-service API's
+   Web service URL | http://10.0.0.35/bcc | Use the private IP address of the Azure Load Balancer which you saved in Section [B]
+   API URL suffix | bcc |
+   Products | PO-Service | Select the **PO-Service** product which you created in the previous step
+
+   After filling the values, click on **Create** as shown in the screenshot below.
+
+   ![alt tag](./images/D-04.PNG)
+
+2. Add API Operations
+
+   In the **Design** tab, click on **Add Operation** and fill out the field values as shown in the screenshot below.  Then click **Save**.
+
+   ![alt tag](./images/D-05.PNG)
+
+   Test the **GET-POs** operation of the **po-service-api**.  Click on the **Test** tab, then click on the **GET GET-POs** operation and hit **Send**.  See screenshow below.
+
+   ![alt tag](./images/D-06.PNG)
+
+   Scroll down to view the **Request URL**, **HTTP request** and **HTTP response**.  See screenshot below.
+
+   ![alt tag](./images/D-07.PNG)
 
 
    You have now successfully completed this lab.  Congrats!
