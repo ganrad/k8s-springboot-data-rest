@@ -32,6 +32,10 @@ In a nutshell, you will work on the following tasks.
 
    The microservice will use the managed MySQL instance on Azure to persist *Purchase Orders*.
 
+**Functional Architecture:**
+
+![alt tag](./images/aks-osba-po-deploy.jpg)
+
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Helm](https://docs.helm.sh/)
 - [Open Service Broker API](https://www.openservicebrokerapi.org/)
