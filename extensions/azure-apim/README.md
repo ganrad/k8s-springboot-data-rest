@@ -337,7 +337,9 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    ![alt tag](./images/D-07.PNG)
 
-2. Mock a response for an API Operation
+3. Mock a response for an API Operation
+
+   In this step, we will examine the Web API *response mocking* feature in APIM.  With this feature, consumers of API's and producer's (authors/developers) of the API's can work independently with little to no dependency on one another.  As soon as the development team publishes the API specification (interface) in APIM, the consumer's of the API's can start testing their applications with test data.  Azure APIM also provides a *Developer Portal* to allow application development teams to quickly read API documentation, create an account and subsribe to get API access keys, analyze API usage etc. 
 
    Add another API Operation for retrieving the details of a *Purchase Order* by it's ID.
 
@@ -385,7 +387,7 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    You will also notice there is a message **Mocking is enabled** just below the **Test** tab.
 
-   To delete the mock response go back to the **Design** tab, select the **GET-PO-By-ID** operation, click on the ellipses (...) beside the **mock-response** field in the **Inbound processing** window.  Then select **Delete**.  See screenshot below.
+   To delete the mock response, go back to the **Design** tab, select the **GET-PO-By-ID** operation, click on the ellipses (...) beside the **mock-response** field in the **Inbound processing** window.  Then select **Delete**.  See screenshot below.
  
    ![alt tag](./images/D-14.PNG)
 
@@ -395,7 +397,54 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    ![alt tag](./images/D-15.PNG)
 
-   You have now successfully completed this lab.  Congrats!
+4. Examine built-in transformation features in APIM
 
-   To recap, during this lab you completed the following steps -
+   Hide backend API URL's in the HTTP response (payload) and replace them with APIM gateway URL.  We will replace the original backend (microservice) URL contained in the body of the API's HTTP response and redirect users to the APIM Gateway.
 
+   In the **Design** tab, select the **GET-PO-By-ID** operation and click on **</>** icon in the **Outbound processing** window as shown in the screenshot below.
+
+   ![alt tag](./images/D-16.PNG)
+
+   In the *policy* editor, position the cursor below the **outbound** element and click on **Find and replace string in body** under **Transformation policies** on the right panel.  See screenshot below.
+
+   ![alt tag](./images/D-17.PNG)
+
+   Update the **from** and **to** URL's and then click on **Save** as shown in the screenshot below.  The **from** URL should point to the internal (private) ALB IP address and the **to** URL should point to your APIM Gateway.  Copy the APIM Gateway URL from the APIM service **Overview** tab (value of **Gateway URL**).
+
+   ![alt tag](./images/D-18.PNG)
+
+   Next, protect an API operation by adding rate limit policy (throttling).  We will protect the backend (*po-service*) API by configuring **rate limits**.  For demo purposes and to highlight this feature, we will limit the number of calls to the **GET-PO-By-ID** operation to 3 calls in 20 seconds.  If this operation is called more than 3 times in 20 seconds, the APIM Gateway will return a HTTP Status Code 429 (**Too many requests**).
+
+   In the **Design** tab, select the **GET-PO-By-ID** operation and click on **</>** icon in the **Inbound processing** window as shown in the screenshot below.
+
+   ![alt tag](./images/D-19.PNG)
+
+   In the *policy* editor, position the cursor below the **inbound** element and click on **Limit call rate per key** under **Access restriction policies** on the right panel.  See screenshot below.
+
+   ![alt tag](./images/D-20.PNG)
+
+   Update the values for attributes **calls**, **renewal-period** and **counter-key** as shown in the screenshot below.  Then Click **Save**.
+
+   ![alt tag](./images/D-21.PNG)
+
+   The **Design** window should now contain the inbound and outbound policies as shown in the screenshot below.
+
+   ![alt tag](./images/D-22.PNG)
+
+   Finally, test the transformations.
+
+   Test the replaced URL.  Select the **po-service-api**, click on the **Test** tab and select the **GET-PO-By-ID** operation.  Then, click on **Send**.  
+
+   ![alt tag](./images/D-23.PNG)
+
+   The URL in the API response (payload) should have been replaced with the APIM Gateway URL.
+
+   Test the rate limit (throttling).  Select the **po-service-api**, click on the **Test** tab and select the **GET-PO-By-ID** operation.  Then, click on **Send** 4 times in a row.  You should get a **429 Too many requests** response.  See screenshot below.
+
+   ![alt tag](./images/D-24.PNG)
+
+   Wait for 20 seconds and hit **Send** again.  This time you should get a **200 OK** response.
+
+   This brings us to the end of this project.  We have only scratched the surface in terms of exploring the built-in features offered by Azure APIM.  Adding the **CUD** operations to the **po-service-api** API is left as an exercise to readers.  
+
+   Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project](https://github.com/ganrad/k8s-springboot-data-rest) to work on other sub-projects.
