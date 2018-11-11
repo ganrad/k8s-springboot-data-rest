@@ -290,9 +290,11 @@ In this section, we will use *Helm* to deploy the *po-service* microservice on A
 ### E] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
 **Approx. time to complete this section: 1 Hour**
 
-1. Create and Publish a set of API's for a *Product* (Purchase Order Management)
+In this section, we will create an API for *Purchase Order Management* and examine built-in features provided by Azure APIM.
 
-   A *Product* is used to group a set of API's offered by a department, a group (organizational unit) or a line of business within a given organization.
+1. Create and Publish an API for a *Product*
+
+   A *Product* is used to group a set of API's offered by a department, a group (organizational unit) or a line of business within a given organization.  For this project, we will create a *Product* to expose an API for *Purchase Order Management*.
    
    Click on the APIM service and then click on **Products** in the navigational menu on the left to display the **Products** page.  Then click on **Add**.  See Screenshot below.
 
@@ -335,6 +337,63 @@ In this section, we will use *Helm* to deploy the *po-service* microservice on A
 
    ![alt tag](./images/D-07.PNG)
 
+2. Mock a response for an API Operation
+
+   Add another API Operation for retrieving the details of a *Purchase Order* by it's ID.
+
+   In the **Design** tab, click on **Add Operation** and fill out the field values as shown in the screenshot below.  Click on the *Responses* tab and then click **+ Add response**.  Select **200 OK** from the response drop down box.  Next, Click on **+ Add representation** and fill out the data as shown in the screenshot below.  Use the sample JSON response data for the mock response.
+   
+   ```
+   {
+    "item": "Test Breakfast Blend",
+    "price": 80.5,
+    "quantity": 2,
+    "description": "Testing the Breakfast blend coffee",
+    "cname": "Ashley's Coffee Corner",
+    "dcode": "7.5",
+    "origin": "Web",
+    "_links": {
+        "self": {
+            "href": "http://xyz.com/orders/1"
+        },
+        "purchaseOrder": {
+            "href": "http://xyz.com/orders/1"
+        }
+    }
+   }
+   ```
+
+   Click on **Save**.  See screenshot below.
+
+   ![alt tag](./images/D-08.PNG)
+
+   Next, select the **GET-PO-By-ID** operation and then click on the **Design** tab.  In the **Inbound processing** window, click on **Add policy**.  Select **Mock responses** tile from the gallery.  In the **API Management response** textbox, select **200 OK, application/json**.  This is the mock response which we just defined.  Click on Save.  See screenshots below.
+
+   ![alt tag](./images/D-09.PNG)
+
+   ![alt tag](./images/D-10.PNG)
+
+   ![alt tag](./images/D-11.PNG)
+
+   Click **Save**.
+
+   Switch to the **Test** tab, select the **GET-PO-By-ID** operation and hit **Send**.  You should see the mock HTTP response as shown in the screenshot below.
+
+   ![alt tag](./images/D-12.PNG)
+
+   ![alt tag](./images/D-13.PNG)
+
+   You will also notice there is a message **Mocking is enabled** just below the **Test** tab.
+
+   To delete the mock response go back to the **Design** tab, select the **GET-PO-By-ID** operation, click on the ellipses (...) beside the **mock-response** field in the **Inbound processing** window.  Then select **Delete**.  See screenshot below.
+ 
+   ![alt tag](./images/D-14.PNG)
+
+   Click **Save**.
+
+   Click on the **Test** tab and click **Send**.  You should now hit the backend *po-service* microservice and get the actual JSON response.
+
+   ![alt tag](./images/D-15.PNG)
 
    You have now successfully completed this lab.  Congrats!
 
