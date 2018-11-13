@@ -445,7 +445,7 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    Wait for 20 seconds and hit **Send** again.  This time you should get a **200 OK** response.
 
-5. Test built-in API response *Caching* feature
+5. Test the built-in API response *Caching* feature
 
    Add an API operation **GET-PO-By-ITEM** to retrieve all PO's for a *Coffee Bean* type.  In the **Design** tab, click on **+ Add Operation** and fill out the field values as shown in the screenshot below. 
 
@@ -461,7 +461,7 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    Click **Save**.
 
-   Next, load 10 to 15 PO's for coffee bean *Colombia* using the shell script `./shell-scripts/post-orders.sh`.  Before running this script, update the values for HTTP headers **Ocp-Apim-Trace** and **Ocp-Apim-Subscription-Key**.  Also, update the API end-point URI to point to your APIM instance.  Run the shell script.
+   Next, load 10 to 15 PO's for coffee bean type *Colombia* using the shell script `./shell-scripts/post-orders.sh`.  Before running this script, update the values for HTTP headers **Ocp-Apim-Trace** and **Ocp-Apim-Subscription-Key**.  Also, update the API **End-point URI** to point to your APIM instance.  Run the shell script.
    ```
    # Make sure you are in the 'azure-apim' extension directory
    $ ./shell-scripts/post-orders.sh
@@ -507,6 +507,6 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    Switch back to the **Developer portal** and invoke the **GET-PO-By-ITEM** operation a few times and observe the **Response latency**.  Within a given 30 second window, the first API invokation will take a few milliseconds to hit the backend **po-service** microservice and return the response.  However, subsequent HTTP calls will execute much faster as they serve the data from the internal cache resulting in higher throughput, reduced response latency and improved performance.
 
-   This brings us to the end of this project.  We have only scratched the surface in terms of exploring the built-in features offered by Azure APIM.  Adding the **CUD** operations to the **po-service-api** API is left as an exercise to readers.  
+This brings us to the end of this project.  We have only scratched the surface in terms of exploring the built-in features offered by Azure APIM.  Adding the **UD** operations to the **po-service-api** API is left as an exercise to readers.
 
-   Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project](https://github.com/ganrad/k8s-springboot-data-rest) to work on other sub-projects.
+Congrats!  You have now successfully completed all sections in this sub-project.  Feel free to go back to the [parent project](https://github.com/ganrad/k8s-springboot-data-rest) to work on other sub-projects.
