@@ -325,7 +325,7 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
 2. Add API Operations
 
-   In the **Design** tab, click on **Add Operation** and fill out the field values as shown in the screenshot below.  Then click **Save**.
+   In the **Design** tab, click on **+ Add Operation** and fill out the field values as shown in the screenshot below.  Then click **Save**.
 
    ![alt tag](./images/D-05.PNG)
 
@@ -343,7 +343,7 @@ In this section, we will create an API for *Purchase Order Management* and exami
 
    Add another API Operation for retrieving the details of a *Purchase Order* by it's ID.
 
-   In the **Design** tab, click on **Add Operation** and fill out the field values as shown in the screenshot below.  Click on the *Responses* tab and then click **+ Add response**.  Select **200 OK** from the response drop down box.  Next, Click on **+ Add representation** and fill out the data as shown in the screenshot below.  Use the sample JSON response data for the mock response.
+   In the **Design** tab, click on **+ Add Operation** and fill out the field values as shown in the screenshot below.  Click on the *Responses* tab and then click **+ Add response**.  Select **200 OK** from the response drop down box.  Next, Click on **+ Add representation** and fill out the data as shown in the screenshot below.  Use the sample JSON response data for the mock response.
    
    ```
    {
@@ -444,6 +444,68 @@ In this section, we will create an API for *Purchase Order Management* and exami
    ![alt tag](./images/D-24.PNG)
 
    Wait for 20 seconds and hit **Send** again.  This time you should get a **200 OK** response.
+
+5. Test built-in API response *Caching* feature
+
+   Add an API operation **GET-PO-By-ITEM** to retrieve all PO's for a *Coffee Bean* type.  In the **Design** tab, click on **+ Add Operation** and fill out the field values as shown in the screenshot below. 
+
+   ![alt tag](./images/D-25.PNG)
+
+   Click **Save**.  Test the API operation as shown in the screenshot below.
+
+   ![alt tag](./images/D-26.PNG)
+
+   Add an API operation **ADD-PO** to add a PO.  In the **Design** tab, click on **+ Add Operation** and fill out the field values as shown in the screenshot below. 
+
+   ![alt tag](./images/D-27.PNG)
+
+   Click **Save**.
+
+   Next, load 10 to 15 PO's for coffee bean *Colombia* using the shell script `./shell-scripts/post-orders.sh`.  Before running this script, update the values for HTTP headers **Ocp-Apim-Trace** and **Ocp-Apim-Subscription-Key**.  Also, update the API end-point URI to point to your APIM instance.  Run the shell script.
+   ```
+   # Make sure you are in the 'azure-apim' extension directory
+   $ ./shell-scripts/post-orders.sh
+   #
+   ```
+   After the shell script has posted a few PO's, click cancel (Control-C).  Click on the **Overview** tab of the APIM service to view the **Requests**, **Capacity** and **Latency** graphs.
+
+   ![alt tag](./images/D-28.PNG)
+
+   Use the **Developer Portal** to test the **GET-PO-By-ITEM** operation. Click on the **Developer portal** link below the APIM service name.
+
+   ![alt tag](./images/D-29.PNG)
+
+   The developer portal will open in a new browser tab.  Click on **APIS** on the top navigational panel.
+
+   ![alt tag](./images/D-30.PNG)
+
+   Click on *po-service-api* and then click on **GET-PO-By-ITEM** operation.
+
+   ![alt tag](./images/D-31.PNG)
+
+   ![alt tag](./images/D-32.PNG)
+
+   Click on **Try it**.  Enter *Colombia* for **item** and click on **Send** a few times.
+
+   ![alt tag](./images/D-33.PNG)
+
+   Take a note of the **Response latency**.
+
+   Switch back to the Azure Portal.  In the **Design** tab, click on operation **GET-PO-By-ITEM**.  Then click on **+ Add policy** link in the **Inbound processing** window.
+
+   ![alt tag](./images/D-34.PNG)
+
+   Next, click on the **Cache responses** tile as shown in the screenshot below.
+
+   ![alt tag](./images/D-35.PNG)
+
+   Specify **30 seconds** as the cache duration and click on the **Full** link to expose the cache settings.  Update the cache settings as shown in the screenshot below.  The APIM service will cache the response of an API request for upto 30 seconds before evicting it from the cache.  The first API request (within a 30 sec window) will retrieve data from the backend *po-service* API and all subsequent requests will be served from the cache resulting in much higher throughput and low latency.  
+
+   ![alt tag](./images/D-36.PNG)
+
+   Click **Save**.
+
+   Switch back to the **Developer portal** and invoke the **GET-PO-By-ITEM** operation a few times and observe the **Response latency**.  Within a given 30 second window, the first API invokation will take a few milliseconds to hit the backend **po-service** microservice and return the response.  However, subsequent HTTP calls will execute much faster as they serve the data from the internal cache resulting in higher throughput, reduced response latency and improved performance.
 
    This brings us to the end of this project.  We have only scratched the surface in terms of exploring the built-in features offered by Azure APIM.  Adding the **CUD** operations to the **po-service-api** API is left as an exercise to readers.  
 
