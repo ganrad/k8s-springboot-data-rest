@@ -41,7 +41,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 ### A] Provision a new AKS cluster and configure advanced networking (Azure CNI)
 **Approx. time to complete this section: 45 Minutes**
 
-By default, AKS clusters use *Basic* networking which creates and configures a virtual network and subnet for the cluster nodes.  For this project, we will deploy an AKS cluster with *Advanced* networking option to allow us to configure APIM Service on the same subnet as the cluster.   The advanced networking option configures Azure CNI (Container networking interface) for the AKS cluster.  The end result is that Azure networking assigns IP addresses for all cluster nodes and pods.
+By default, AKS clusters use *Basic* networking which creates and configures a virtual network and subnet for the cluster nodes.  For this project, we will deploy an AKS cluster with *Advanced* networking option to allow us to configure APIM Service on the same VNET as the cluster.   The advanced networking option configures Azure CNI (Container networking interface) for the AKS cluster.  The end result is that Azure networking assigns IP addresses for all cluster nodes and pods.
 
 Login to [Azure Portal](https://portal.azure.com/).
 
@@ -117,7 +117,7 @@ Login to [Azure Portal](https://portal.azure.com/).
 ### B] Deploy an internal (Private) *Ingress Controller* and *Load Balancer*
 **Approx. time to complete this section: 30 Minutes**
 
-An internal ingress controller makes Web API's deployed on a Kubernetes cluster accessible only to applications running in the same virtual network as the cluster.  As part of the ingress controller deployment, an internal Azure Load Balancer (ALB) instance is also provisioned.  An available private IP address from the virtual network subnet is assigned to the ALB instance's frontend.  The *Backend pool* of the ALB instance is configured to point to the AKS cluster nodes.  Load balancing rules are configured to direct traffic (HTTP/HTTPS) from the frontend IP to the backend pool.
+An internal ingress controller makes Web API's deployed on a Kubernetes cluster accessible only to applications running in the same virtual network as the cluster.  As part of the ingress controller deployment, an internal Azure Load Balancer (ALB) instance is also provisioned.  An available private IP address from the virtual network subnet is assigned to the ALB instance's frontend.  The *Backend pool* of the ALB instance is configured to point to the AKS cluster node.  Load balancing rules are configured to direct traffic (HTTP/HTTPS) from the frontend IP to the backend pool.
 
 The internal ingress controller will expose ports 80 and 443 and provide a single point of entry for all web traffic destined to all services deployed within the AKS cluster.
 
@@ -176,7 +176,7 @@ The internal ingress controller will expose ports 80 and 443 and provide a singl
    #
    ```
 
-   The ingress controller's *Service* IP address is listed under column **CLUSTER-IP'.  A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  Note down the ALB's external (Private IP) IP address.  We will use this IP address to test the *po-service* later in Section [E].
+   The ingress controller's *Service* IP address is listed under column **CLUSTER-IP**.  A private IP address from the *aks-cluster-subnet* is assigned to the *Azure Load Balancer* as listed under the **EXTERNAL-IP** column in the command output above.  Note down the ALB's external (Private IP) IP address.  We will use this IP address to test the *po-service* later in Section [E].
 
 
    Use the *Load Balancers* blade in the Azure Portal to view all the properties of the internal ALB.  See screenshots below.
@@ -200,7 +200,7 @@ In this section, we will provision and configure an Azure API Management Service
 
    ![alt tag](./images/C-02.PNG)
 
-   In the API Management service definition web page, specify values as shown in the screenshot below.  The value for field **Name** has to be unique across all APIM services in Azure.  For field **Organization name**, provide a fictious value and select *Developer (No SLA)* for **Pricing tier**.  The Organization name will be used in the title of the **Developer Portal** (Website) exposed by Azure APIM.  For **Location** field, specify the same *Region* in which you deployed the AKS cluster in the parent project labs.
+   In the API Management service definition web page, specify values as shown in the screenshot below.  The value for field **Name** has to be unique across all APIM services in Azure.  For field **Organization name**, provide a fictious value and select *Developer (No SLA)* for **Pricing tier**.  The Organization name will be used in the title of the **Developer Portal** (Website) exposed by Azure APIM.  For **Location** field, specify the same *Region* in which you deployed the AKS cluster in Section [B].
 
    ![alt tag](./images/C-03.PNG)
 
@@ -214,7 +214,7 @@ In this section, we will provision and configure an Azure API Management Service
 
    ![alt tag](./images/C-04.PNG)
 
-   Click on the **External** button.  Verify and make sure the **Location** field displays the *Region* in which the AKS cluster is deployed.  Click on the field below **VIRTUAL NETWORK** and select the VNET **aks-cluster-vnet** and subnet **apim-subnet** created in Section A.  Click **Apply**.  See screenshot below.
+   Click on the **External** button.  Verify and make sure the **Location** field displays the *Region* in which the AKS cluster is deployed.  Click on the field below **VIRTUAL NETWORK** and select the VNET **aks-cluster-vnet** and subnet **apim-subnet** created in Section [A].  Click **Apply**.  See screenshot below.
 
    ![alt tag](./images/C-05.PNG)
 
@@ -225,6 +225,7 @@ In this section, we will provision and configure an Azure API Management Service
    It will take approx. 10-15 minutes for the APIM service to get updated.  
 
 ### D] Deploy the *po-service* microservice on AKS
+**Approx. time to complete this section: 20 Minutes**
 
 In this section, we will use *Helm* to deploy the *po-service* microservice on AKS.  Review the Helm charts under directory `./po-service`.
 
@@ -281,14 +282,14 @@ In this section, we will use *Helm* to deploy the *po-service* microservice on A
 
    Use `curl` command to access the ALB IP address.  You should have saved this IP address in Section [B].
    ```
-   # Curl to the ALB IP address and access the po-service end-point at '/bcc'.  The HTTP call should return
-   # JSON data with HTTP response status code 200
+   # Curl to the ALB IP address and access the po-service end-point at '/bcc'.
+   # The HTTP call should return JSON data with HTTP response status code 200
    $ curl -L -v http://<ALB IP address>/bcc/orders
    #
    ```
 
-### E] Expose the Springboot Java Microservice APIs (po-service) using Azure API Management Service
-**Approx. time to complete this section: 1 Hour**
+### E] Expose the Springboot Java Microservice *po-service* APIs using Azure API Management Service
+**Approx. time to complete this section: 2 Hours**
 
 In this section, we will create an API for *Purchase Order Management* and examine built-in features provided by Azure APIM.
 
