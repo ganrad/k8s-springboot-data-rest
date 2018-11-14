@@ -55,7 +55,7 @@ Login to [Azure Portal](https://portal.azure.com/).
 
    ![alt tag](./images/A-02.PNG)
 
-   Next, click on the VNET *aks-cluster-vnet* and create another */28* subnet *apim-subnet*.  This subnet will be used to allocate IP addresses for the APIM services.  See screenshots below.
+   Next, click on the VNET *aks-cluster-vnet* and create another */27* subnet *apim-subnet*.  This subnet will be used to allocate IP addresses for the APIM services.  See screenshots below.
 
    ![alt tag](./images/A-03.PNG)
 
