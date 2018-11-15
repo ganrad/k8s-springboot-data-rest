@@ -1,6 +1,10 @@
 #!/bin/bash
 # Author: Ganesh Radhakrishnan, garadha@microsoft.com
 # Dated: 10-05-2018
+# Notes:
+# 1. Make sure you run this script in your home directory (of the logged in user)!
+# 
+
 set -e
 
 if [ $# -ne 2 ]; then
@@ -8,6 +12,9 @@ if [ $# -ne 2 ]; then
 	echo -e "\tMissing arguments : Azure User name and/or password"
 	exit 1
 fi
+
+# Set the user name variable
+USER=`whoami`
 
 # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
 #
@@ -97,9 +104,9 @@ $ cd
 # Finally, update '.bashrc' file and set the path to Maven, Helm and Kubectl binaries
 echo "Configuring PATH ..."
 cd
-KUBECLI=/home/labuser/aztools
-MAVEN=/home/labuser/maven/apache-maven-3.5.4/bin
-HELM=/home/labuser/helm/linux-amd64
+KUBECLI=/home/${USER}/aztools
+MAVEN=/home/${USER}/maven/apache-maven-3.5.4/bin
+HELM=/home/${USER}/helm/linux-amd64
 echo "export PATH=$MAVEN:$KUBECLI:$HELM:${PATH}" >> ~/.bashrc
 echo "Configuration of jump-host environment completed!"
 # End
