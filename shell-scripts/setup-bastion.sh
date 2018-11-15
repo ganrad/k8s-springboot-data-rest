@@ -6,6 +6,7 @@ set -e
 if [ $# -ne 2 ]; then
 	echo -e "\nUsage: setup-bastion.sh <Azure User> <Password>"
 	echo -e "\tMissing arguments : Azure User name and/or password"
+	exit 1
 fi
 
 # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
