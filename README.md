@@ -653,6 +653,11 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
     ![alt tag](./images/E-16.PNG)
 
 4.  Modify the microservice code to calculate **Discount amount** and **Order total** for purchase orders.  These values will be returned in the JSON response for the **GET** API (operation).  
+    Update the `src/main/java/ocp/s2i/springboot/rest/model/PurchaseOrder.java` class in your forked GitHub repository by using one one of these options.
+    - Update this class in your cloned repository on the Linux host.  Then commit and push the updates to your forked GitHub repository.
+    - Alternatively, update this Java class using the browser by accessing your forked GitHub repository.
+
+    The changes to be made to the Java Class are described below.
 
     Open a web browser tab and navigate to your forked project on GitHub.  Go to the **model** sub directory within **src** directory and click on **PurchaseOrder.java** file.  See screenshot below.
 
