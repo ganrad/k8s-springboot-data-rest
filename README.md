@@ -557,7 +557,7 @@ Use the command below to determine the *External* (public) IP address (Azure loa
 # List the kubernetes service objects
 $ kubectl get svc
 ```
-The above command will list the **IP Address** (both internal and external) for all services deployed within the *development* namespace as shown below.  Note how the **mysql** service doesn't have an *External IP* assisgned to it.  Reason for that is, we don't want the *MySQL* service to be accessible from outside the AKS cluster.
+The above command will list the **IP Address** (both internal and external) for all services deployed within the *development* namespace as shown below.  Note how the **mysql** service doesn't have an *External IP* assigned to it.  Reason for that is, we don't want the *MySQL* service to be accessible from outside the AKS cluster.
 
 ![alt tag](./images/E-01.png)
 
