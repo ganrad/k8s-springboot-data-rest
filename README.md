@@ -408,7 +408,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
     ```
     # Create a 1 Node AKS cluster
-    $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys --disable-rbac  --kubernetes-version "1.11.2"
+    $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys --disable-rbac  --kubernetes-version "1.11.4"
     #
     # Verify state of AKS cluster
     $ az aks show -g myResourceGroup -n akscluster --output table
