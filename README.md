@@ -466,7 +466,8 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     Then execute this shell script.  See below.
 
     ```
-    # chmod 700 ./shell-scripts/acr-auth.sh
+    # Change file permission to allow user to execute the script
+    $ chmod 700 ./shell-scripts/acr-auth.sh
     #
     # Update the shell script and then run it
     $ ./shell-scripts/acr-auth.sh
