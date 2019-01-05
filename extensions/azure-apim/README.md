@@ -88,7 +88,7 @@ Login to [Azure Portal](https://portal.azure.com/).
    $ az aks get-versions
    #
    # Substitute correct values for 'Resource Group', 'Cluster Name' and '--vnet-subnet-id'.  Deploy ks8 v1.11.3 or specify another version.
-   $ az aks create --resource-group myResourceGroup --name aks-cluster-apim --network-plugin azure --vnet-subnet-id <subnet-id> --docker-bridge-address 172.17.0.1/16 --dns-service-ip 10.2.0.10 --service-cidr 10.2.0.0/24 --node-count 1 --kubernetes-version "1.11.3" --dns-name-prefix akslab2 --location westus --disable-rbac
+   $ az aks create --resource-group myResourceGroup --name aks-cluster-apim --network-plugin azure --vnet-subnet-id <subnet-id> --docker-bridge-address 172.17.0.1/16 --dns-service-ip 10.2.0.10 --service-cidr 10.2.0.0/24 --node-count 1 --kubernetes-version "1.11.4" --dns-name-prefix akslab2 --location westus --disable-rbac
    #
    ```
 
