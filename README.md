@@ -22,6 +22,8 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 <!-- 4.  To connect your VSTS project to your Azure subscription, you may need to define a **Service Endpoint** in VSTS.  Refer to the article [Service endpoints for builds and releases](https://docs.microsoft.com/en-us/vsts/pipelines/library/service-endpoints?view=vsts).  Review the steps for [Azure Resource Manager service endpoint](https://docs.microsoft.com/en-us/vsts/pipelines/library/service-endpoints?view=vsts#sep-servbus). -->
 4.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  **Azure Cloud Shell** is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM).
 5.  **This project assumes readers are familiar with Linux containers (`eg., docker, OCI runc, Clear Containers ...`), Container Platforms (`eg., Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.**
+6.  A **terminal emulator** is required to login (SSH) into the Linux VM (Bastion) host. Download and install [Putty](https://putty.org/) or [Windows Sub-System for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+7.  (Optional) Download and install [Postman App](https://www.getpostman.com/apps), a REST API Client used for testing the Web API's.
 
 **Functional Architecture:**
 
@@ -37,7 +39,7 @@ For easy and quick reference, readers can refer to the following on-line resourc
 - [Azure DevOps (VSTS) Documentation](https://docs.microsoft.com/en-us/vsts/index?view=vsts)
 - [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
-**Steps:**
+**Workflow:**
 
 ![alt tag](./images/Steps.jpg)
 
