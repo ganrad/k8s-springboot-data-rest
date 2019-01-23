@@ -11,7 +11,7 @@ In a nutshell, you will work on the following tasks.
 2.  Deploy an AKS (Azure Kubernetes Service) Kubernetes cluster and manually deploy the containerized microservice application on AKS.  Complete Step [D].
 3.  Define a **Release Pipeline** in Azure DevOps Services.  Execute both build and release pipelines in Azure DevOps in order to update and re-deploy the SpringBoot microservice (**po-service 2.0**) application on AKS.  This task focuses on the **Continuous Deployment** aspect of the DevOps process.  Complete Step [E].
 4.  Define Azure DevOps pipelines to build and deploy a custom **Jenkins Container** on AKS.  Then define and execute a **Continuous Delivery** pipeline in Jenkins to build and deploy the Springboot Java Microservice (**po-service**) Application on AKS.  This task focuses on the **Continuous Delivery** aspect of the DevOps process. Complete extension [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd).
-5.  Configure an Azure API Management Service to manage the lifecycle of API's exposed by **po-service** Springboot Microservice.  Complete extension [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim).
+5.  Configure an [Azure API Management Service](https://docs.microsoft.com/en-us/azure/api-management/) to manage the lifecycle of API's exposed by **po-service** Springboot Microservice.  Complete extension [Manage APIs](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/azure-apim).
 6.  Use [Open Service Broker for Azure](https://github.com/Azure/open-service-broker-azure) (OSBA) to deploy and configure [Azure Database for MySQL](https://docs.microsoft.com/en-us/azure/mysql/) as the database backend for the Springboot Microservice Application.  Deploy the microservice to both AKS and [Azure Container Instances](https://docs.microsoft.com/en-us/azure/container-instances/) (ACI).  Complete extension [Automate with Azure PaaS](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/po-deploy-azuredb-mysql).
 
 This Springboot application demonstrates how to build and deploy a *Purchase Order* microservice (`po-service`) as a containerized application on Azure Kubernetes Service (AKS) on Microsoft Azure. The deployed microservice supports all CRUD operations on purchase orders.
@@ -54,6 +54,8 @@ For easy and quick reference, readers can refer to the following on-line resourc
 ### A] Deploy a Linux CentOS VM on Azure (~ Bastion Host)
 **Approx. time to complete this section: 45 minutes**
 
+As a first step, we will deploy a Linux VM (CentOS) on Azure and install prerequisite CLI tools on it.  This VM will serve as a jump box (Bastion host) and allow us to manage PaaS services on Azure using CLI.
+
 The following tools (binaries) will be installed on this VM.
 - VSTS build agent (docker container). This build container will be used for running application and container builds.
 - Azure CLI 2.0 client.  Azure CLI will be used to administer and manage all Azure resources including the AKS cluster resources.
@@ -69,17 +71,21 @@ Follow the steps below to create the Bastion host (Linux VM), install pre-requis
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  From the Cloud Shell, use Azure CLI to create a **Resource Group**.  Azure CLI is already pre-installed and configured to use your Azure account (subscription) in the Cloud Shell.  Alternatively, you can also use Azure Portal to create this resource group.  
     ```
-    az group create --name myResourceGroup --location eastus
+    # Create the resource group
+    $ az group create --name myResourceGroup --location eastus
     ```
     **NOTE:** Keep in mind, if you specify a different name for the resource group (other than **myResourceGroup**), you will need to substitute the same value in multiple CLI commands in the remainder of this project!  If you are new to Azure or AKS, it's best to use the suggested name.
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the **Public IP address**, **Login name** and **Password** info. so that we can connect to this VM using SSH (secure shell).
 Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
     ```
-    az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
+    # Remember to specify the password for the 'labuser'.
+    $ az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
+    # When the above command exits, it will print the public IP address, login name (labuser) and password.  Make a note of these values.
     ```
 
-4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the Windows Sub-System for Linux (Windows 10) to login into the VM.
+4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the [Windows Sub-System for Linux (Windows 10)](https://docs.mic
+rosoft.com/en-us/windows/wsl/install-win10) to login into the VM.
 
     **NOTE:** Use of Cloud Shell to SSH into the VM is **NOT** recommended.
     ```
@@ -88,7 +94,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     ```
 
-5.  Install Azure CLI, K8s CLI, Helm CLI, Service Catalog CLI, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
+5.  Install Azure CLI, Kubernetes CLI, Helm CLI, Service Catalog CLI, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
     ```
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
@@ -139,12 +145,12 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     # Switch back to home directory
     $ cd
     #
-    # Install Helm v2.9.1
+    # Install Helm v2.11.0
     # Create a new directory 'Helm' under home directory to store the helm binary
     $ mkdir helm
     $ cd helm
-    $ wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
-    $ tar -xzvf helm-v2.9.1-linux-amd64.tar.gz
+    $ wget https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz
+    $ tar -xzvf helm-v2.11.0-linux-amd64.tar.gz
     #
     # Switch back to home directory
     $ cd
@@ -188,21 +194,21 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     $ docker info
     ```
 
-7.  Pull the Microsoft VSTS agent container from docker hub.  It will take a few minutes to download the image (~ 10+ GB).
+7.  Pull the Microsoft VSTS agent container from docker hub.  It will take approx. 20 to 30 minutes to download the image (~ 10+ GB).  Take a break and get some coffee!
     ```
     $ docker pull microsoft/vsts-agent
     $ docker images
     ```
 
-8.  Next, we will generate a VSTS personal access token (PAT) to connect our VSTS build agent to your VSTS account.  Login to VSTS using your account ID. In the upper right, click on your profile image and click **security**.  
+8.  Next, we will generate a Azure DevOps Services personal access token (PAT) to connect our VSTS build agent to your Azure DevOps account.  Open a browser tab and login to Azure DevOps using your account ID. In the upper right, click on your profile image and click **Security**.  
 
     ![alt tag](./images/C-01.png)
 
-    Click on **Add** to create a new PAT.  In the next page, provide a short description for this token, select a expiry period and click **Create Token**.  See screenshot below.
+    Click on **+ New Token** to create a new PAT.  In the **Create a new personal access token** tab, provide a short **Name** for the token, select **Expiration**, select *Full access* for **Scopes** and click **Create**.  See screenshot below.
 
     ![alt tag](./images/C-02.png)
 
-    In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  So save this PAT (token) to a file.
+    In the next page, make sure to **copy and store** the PAT (token) into a file.  Keep in mind, you will not be able to retrieve this token again.  Incase you happen to lose or misplace the token, you will need to generate a new PAT and use it to reconfigure the VSTS build agent.  Save this PAT (token) to a file.
 
 9.  In the Linux VM terminal window, use the command below to start the VSTS build container.  Refer to the table below to set the build container parameter values correctly.
 

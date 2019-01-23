@@ -75,13 +75,13 @@ tar -xzvf apache-maven-3.5.4-bin.tar.gz
 # Switch back to home directory
 cd
 #
-# Install Helm v2.9.1
+# Install Helm v2.11.0
 # Create a new directory 'Helm' under home directory to store the helm binary
 echo "Installing Helm"
 mkdir helm
 cd helm
-wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
-tar -xzvf helm-v2.9.1-linux-amd64.tar.gz
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz
+tar -xzvf helm-v2.11.0-linux-amd64.tar.gz
 #
 # Switch back to home directory
 cd
