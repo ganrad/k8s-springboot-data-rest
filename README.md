@@ -23,9 +23,9 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 4.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  **Azure Cloud Shell** is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM).
 5.  **This project assumes readers are familiar with Linux containers (`eg., docker, OCI runc, Clear Containers ...`), Container Platforms (`eg., Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.**
 
-**Workflow:**
+**Functional Architecture:**
 
-![alt tag](./images/SB-VSTS-AKS_v2.jpg)
+![alt tag](./images/k8s-springboot-data-rest.png)
 
 For easy and quick reference, readers can refer to the following on-line resources as needed.
 - [Spring Getting Started Guides](https://spring.io/guides)
