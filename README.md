@@ -607,7 +607,7 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
 
     ![alt tag](./images/E-06.PNG)
 
-    Next, click on *1 job, 0 task* in the **Stages** box under environment *Staging-A*.  Click on *Agent job* under the *Tasks* tab and make sure **Agent queue** value is set to *Hosted VS2017*.  Leave the remaining field values as is.  See screenshots below.
+    Next, click on *1 job, 0 task* in the **Stages** box under environment *Staging-A*.  Click on *Agent job* under the *Tasks* tab and make sure **Agent pool** value is set to *Hosted VS2017*.  Leave the remaining field values as is.  See screenshots below.
 
     ![alt tag](./images/E-07.PNG)
 
