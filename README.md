@@ -84,8 +84,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     # When the above command exits, it will print the public IP address, login name (labuser) and password.  Make a note of these values.
     ```
 
-4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the [Windows Sub-System for Linux (Windows 10)](https://docs.mic
-rosoft.com/en-us/windows/wsl/install-win10) to login into the VM.
+4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the [Windows Sub-System for Linux (Windows 10)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to login into the VM.
 
     **NOTE:** Use of Cloud Shell to SSH into the VM is **NOT** recommended.
     ```
