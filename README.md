@@ -263,7 +263,7 @@ In this step, we will deploy an instance of Azure Container Registry to store co
     ![alt tag](./images/B-02.png)
 
 
-### C] Create a new Build definition in VSTS to deploy the Springboot microservice
+### C] Create a *Build Pipeline* in Azure DevOps to deploy the Springboot microservice
 **Approx. time to complete this section: 1 Hour**
 
 In this step, we will define the tasks for building the microservice (binary artifacts) application and packaging (layering) it within a docker container.  The build tasks use **Maven** to build the Springboot microservice & **docker-compose** to build the application container.  During the application container build process, the application binary is layered on top of a base docker image (CentOS 7).  Finally, the built application container is pushed into ACR which we deployed in step [B] above.
@@ -388,7 +388,7 @@ In this step, we will first deploy an AKS cluster on Azure.  The Springboot **Pu
 
 Kubernetes manifest files for deploying the **MySQL** and **po-service** (Springboot application) containers are provided in the **k8s-scripts/** folder in this GitHub repository.  There are two manifest files in this folder **mysql-deploy.yaml** and **app-deploy.yaml**.  As the names suggest, the *mysql-deploy* manifest file is used to deploy the **MySQL** database container and the other file is used to deploy the **Springboot** microservice respectively.
 
-Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box capabilities provided by Kubernetes.
+Before proceeding with the next steps, feel free to inspect the Kubernetes manifest files to get a better understanding of the following.  These are all out-of-box features provided by Kubernetes.
 -  How confidential data such as database user names & passwords are injected (at runtime) into the application container using **Secrets**
 -  How application configuration information (non-confidential) such as database connection URL and the database name parameters are injected (at runtime) into the application container using **ConfigMaps**
 -  How **environment variables** such as the MySQL listening port is injected (at runtime) into the application container.
@@ -421,7 +421,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
     ```
     # Create a 1 Node AKS cluster
-    $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys --disable-rbac  --kubernetes-version "1.11.4"
+    $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys --disable-rbac  --kubernetes-version "1.11.5"
     #
     # Verify state of AKS cluster
     $ az aks show -g myResourceGroup -n akscluster --output table
@@ -444,6 +444,8 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     # Check if Helm client is able to connect to Tiller on AKS.
     # This command should list both client and server versions.
     $ helm version
+    Client: &version.Version{SemVer:"v2.11.0", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
+    Server: &version.Version{SemVer:"v2.11.0", GitCommit:"2e55dbe1fdb5fdb96b75ff144a339489417b146b", GitTreeState:"clean"}
     ```
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
@@ -597,10 +599,10 @@ Congrats!  You have just built and deployed a Java Springboot microservice on Az
 
 We will define a **Release Pipeline** in Azure DevOps to perform automated application deployments to AKS next.
 
-### E] Create a simple *Release Pipeline* in VSTS
+### E] Create a *Release Pipeline* in Azure DevOps to re-deploy the Springboot microservice
 **Approx. time to complete this section: 1 Hour**
 
-1.  Using a web browser, login to your VSTS account (if you haven't already) and select your project which you created in Step [C]. Click on *Build and Release* menu on the top panel and select *Releases*.  Next, click on *+ New pipeline*.
+1.  Using a web browser, login to your Azure DevOps account (if you haven't already) and select your project which you created in Step [C]. Click on *Pipelines* menu in the left navigational panel and select *Releases*.  Next, click on *New pipeline*.
 
     ![alt tag](./images/E-02.PNG)
 
@@ -612,9 +614,15 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
 
     ![alt tag](./images/E-04.PNG)
 
-    In the *Add artifact* page, select *Build* for **Source type**, select your VSTS project from the **Project** drop down menu and select your *Build definition* in the drop down menu for **Source (Build definition)**.  Leave the remaining field values as is and click **Add**.  See screenshot below. 
+    In the *Add artifact* page, select *Build* for **Source type**, select your Azure DevOps project from the **Project** drop down menu and select your *Build definition* in the drop down menu for **Source (build pipeline)**.  Select *Latest* for field **Default version**. See screenshot below. 
 
     ![alt tag](./images/E-05.PNG)
+
+    Click on **Add**.
+
+    Change the name of the *Release pipeline* as shown in the screenshot below.
+
+    ![alt tag](./images/E-051.PNG)
 
     In the *Pipeline* tab, click on the *trigger* icon (highlighted in yellow) and enable **Continuous deployment trigger**.  See screenshot below.
 
@@ -638,31 +646,25 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
 
     ![alt tag](./images/E-10.PNG)
 
-    Again, click on the ** + ** symbol beside **Agent job** and search for text **Deploy to Kubernetes**, select this extension and click **Add*.  See screenshot below.
+    Again, click on the ** + ** symbol beside **Agent job** and search for text **Deploy to Kubernetes**, select this extension and click **Add**.  See screenshot below.
 
     ![alt tag](./images/E-11.PNG)
 
-    Click on the **Deploy to Kubernetes** task on the left panel and fill out the details (numbered) as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
+    Click on the **Deploy to Kubernetes** task on the left panel and fill out the details as shown in the screenshot below.  This task will **apply** (update) the changes (image tag) to the kubernetes **Deployment** object on the Azure AKS cluster and do a **Rolling** deployment for the **po-service** microservice application.
 
-    If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into VSTS for `Server URL`.
+    If you do not see your Kubernetes Cluster in the drop down menu, you will need to add it.  You can select `+NEW` and then fill out the information.  You will need the API Address, which you can find if you view your Kubernetes Cluster within the portal.  It will look similar to `akslab-ae1a2677.hcp.centralus.azmk8s.io`  Be sure to add `https://` before it when pasting it into Azure DevOps for `Server URL`.
 
     Additionally you will need your Kubernetes Configuration file from earlier.  Simply copy the contents in full to the `KubeConfig` section.
 
+    After filling out all the field values (as shown), click **Save** on the top panel.  Provide a comment and click **OK**.
+
     ![alt tag](./images/E-12.PNG)
-
-    Change the name of the release pipeline to **cd-po-service** and click **Save** on the top panel.  Provide a comment and click **OK**.
-
-    ![alt tag](./images/E-14.PNG)
 
     We have now finished defining the **Release pipeline**.  This pipeline will in turn be triggered whenever the build pipeline completes Ok.
 
 2.  In the po-service deployment manifest file **'./k8s-scripts/app-update-deploy.yaml'**, update the container **image** attribute value by specifying the name of your ACR repository.  You can make this change locally on your cloned repository (on the Linux VM) and then push (git push) the updates to your GitHub repository.  Alternatively, you can make this change directly in your GitHub repository (via web browser).  Search for the **image** attribute in file **'app-update-deploy.yaml'** and specify the correct **name** of your ACR repository (eg., Replace ACR_NAME in **ACR_NAME.azurecr.io**).  
 
-3.  Edit the build pipeline and click on the **Triggers** tab.  See screenshot below.
-
-    ![alt tag](./images/E-15.PNG)
-
-    Click the checkbox for both **Enable continuous integration** and **Batch changes while a build is in progress**.  Leave other fields as is.  Click on **Save & queue** menu and select the **Save** option.
+3.  Edit the build pipeline and click on the **Triggers** tab.  Click the checkbox for both **Enable continuous integration** and **Batch changes while a build is in progress**.  Leave other fields as is.  Click on **Save & queue** menu and select the **Save** option.
 
     ![alt tag](./images/E-16.PNG)
 
