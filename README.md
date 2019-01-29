@@ -70,7 +70,7 @@ Follow the steps below to create the Bastion host (Linux VM), install pre-requis
 1.  Login to the [Azure Portal](https://portal.azure.com) using your credentials and use a **Azure Cloud Shell** session to perform the next steps.  Azure Cloud Shell is an interactive, browser-accessible shell for managing Azure resources.  The first time you access the Cloud Shell, you will be prompted to create a resource group, storage account and file share.  You can use the defaults or click on *Advanced Settings* to customize the defaults.  Accessing the Cloud Shell is described in [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview). 
 
 2.  An Azure resource group is a logical container into which Azure resources are deployed and managed.  From the Cloud Shell, use Azure CLI to create a **Resource Group**.  Azure CLI is already pre-installed and configured to use your Azure account (subscription) in the Cloud Shell.  Alternatively, you can also use Azure Portal to create this resource group.  
-    ```
+    ```bash
     # Create the resource group
     $ az group create --name myResourceGroup --location eastus
     ```
@@ -78,7 +78,7 @@ Follow the steps below to create the Bastion host (Linux VM), install pre-requis
 
 3.  Use the command below to create a **CentOS 7.4** VM on Azure.  Make sure you specify the correct **resource group** name and provide a value for the *password*.  Once the command completes, it will print the VM connection info. in the JSON message (response).  Note down the **Public IP address**, **Login name** and **Password** info. so that we can connect to this VM using SSH (secure shell).
 Alternatively, if you prefer you can use SSH based authentication to connect to the Linux VM.  The steps for creating and using an SSH key pair for Linux VMs in Azure is documented [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/mac-create-ssh-keys).  You can then specify the location of the public key with the `--ssh-key-path` option to the `az vm create ...` command.
-    ```
+    ```bash
     # Remember to specify the password for the 'labuser'.
     $ az vm create --resource-group myResourceGroup --name k8s-lab --image OpenLogic:CentOS:7.4:7.4.20180118 --size Standard_B2s --generate-ssh-keys --admin-username labuser --admin-password <password> --authentication-type password
     # When the above command exits, it will print the public IP address, login name (labuser) and password.  Make a note of these values.
@@ -87,14 +87,14 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 4.  Login into the Linux VM via SSH.  On a Windows PC, you can use a SSH client such as [Putty](https://putty.org/) or the [Windows Sub-System for Linux (Windows 10)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to login into the VM.
 
     **NOTE:** Use of Cloud Shell to SSH into the VM is **NOT** recommended.
-    ```
+    ```bash
     # SSH into the VM.  Substitute the public IP address for the Linux VM in the command below.
     $ ssh labuser@x.x.x.x
     #
     ```
 
 5.  Install Azure CLI, Kubernetes CLI, Helm CLI, Service Catalog CLI, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
-    ```
+    ```bash
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
     # Import the Microsoft repository key.
@@ -177,7 +177,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     ```
 
 6.  Next, install **docker-ce** container runtime. Refer to the commands below.  You can also refer to the [Docker CE install docs for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/).
-    ```
+    ```bash
     $ sudo yum update
     $ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     $ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
@@ -189,12 +189,12 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
 
     LOGOUT AND RESTART YOUR LINUX VM BEFORE PROCEEDING.  You can restart the VM via Azure Portal.  Once the VM is back up, log back in to the Linux VM via SSH.  Run the command below to verify **docker** engine is running.
 
-    ```
+    ```bash
     $ docker info
     ```
 
 7.  Pull the Microsoft VSTS agent container from docker hub.  It will take approx. 20 to 30 minutes to download the image (~ 10+ GB).  Take a break and get some coffee!
-    ```
+    ```bash
     $ docker pull microsoft/vsts-agent
     $ docker images
     ```
@@ -216,7 +216,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     VSTS_TOKEN | VSTS PAT Token.  This is the value which you copied and saved in a file in the previous step.
     VSTS_ACCOUNT | VSTS Organization name.  An Org. is a container for DevOps projects in Azure DevOps (VSTS) platform.  It's usually the first part (Prefix) of the VSTS URL (eg., **Prefix**.visualstudio.com).  If you are using Azure DevOps URL, then it is the last part (ContextPath) of the URL (eg., dev.azure.com/**ContextPath**).
 
-    ```
+    ```bash
     $ docker run -e VSTS_ACCOUNT=<Org. Name> -e VSTS_TOKEN=<PAT Token> -v /var/run/docker.sock:/var/run/docker.sock --name vstsagent -it microsoft/vsts-agent
     ```
     The VSTS build agent will initialize and you should see a message indicating "Listening for Jobs".  See below.  
@@ -275,7 +275,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
     ![alt tag](./images/A-01.png)
 
     From the terminal window connected to the Bastion host (Linux VM), clone this repository.  Ensure that you are using the URL of your fork when cloning this repository.
-    ```
+    ```bash
     # Switch to home directory
     $ cd
     # Clone your GitHub repository.  This will allow you to make changes to the application artifacts without affecting resources in the forked (original) GitHub project.
@@ -287,7 +287,7 @@ Before proceeding with the next steps, feel free to inspect the dockerfile and s
 
 2.  Create an Azure Service Principal (SP) and assign *Contributor* role access to the ACR created in Section [B].  This SP will be used in a subsequent lab (Jenkins-CI-CD) to push the *po-service* container image into ACR and re-deploy the microservice to AKS.
     Execute the shell script `./shell-scripts/jenkins-acr-auth.sh` in the Linux VM (Bastion Host) terminal window.  The command output will be displayed on the console and also saved to a file (SP_ACR.txt) in the current directory.  Before running the shell script, open it in 'vi' editor (or 'nano') and specify the correct values for variables 'ACR_RESOURCE_GROUP' and 'ACR_NAME'. 
-    ```
+    ```bash
     # Enable execute permission for this script
     $ chmod 700 ./shell-scripts/jenkins-acr-auth.sh
     #
@@ -398,11 +398,11 @@ In case you want to modify the default values used for MySQL database name and/o
 
 Follow the steps below to provision the AKS cluster and deploy the *po-service* microservice.
 1.  Ensure the *Resource provider* for AKS service is enabled (registered) for your subscription.  A quick and easy way to verify this is, use the Azure portal and go to *->Azure Portal->Subscriptions->Your Subscription->Resource providers->Microsoft.ContainerService->(Ensure registered)*.  Alternatively, you can use Azure CLI to register all required service providers.  See below.
-    ```
-    az provider register -n Microsoft.Network
-    az provider register -n Microsoft.Storage
-    az provider register -n Microsoft.Compute
-    az provider register -n Microsoft.ContainerService
+    ```bash
+    $ az provider register -n Microsoft.Network
+    $ az provider register -n Microsoft.Storage
+    $ az provider register -n Microsoft.Compute
+    $ az provider register -n Microsoft.ContainerService
     ```
 
 2.  At this point, you can use a) The Azure Portal Web UI to create an AKS cluster and b) The Kubernetes Dashboard UI to deploy the Springboot Microservice application artifacts.  To use a web browser (*Web UI*) for deploying the AKS cluster and application artifacts, refer to the steps in [extensions/k8s-dash-deploy](./extensions/k8s-dash-deploy).
@@ -412,14 +412,14 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     Alternatively, if you prefer CLI for deploying and managing resources on Azure and Kubernetes, continue with the next steps.
 
     (If you haven't already) Open a terminal window and login to the Linux VM (Bastion host).
-    ```
+    ```bash
     #
     # Check if kubectl is installed OK
     $ kubectl version -o yaml
     ```
 
 3.  Refer to the commands below to create an AKS cluster.  If you haven't already created a **resource group**, you will need to create one first.  If needed, go back to step [A] and review the steps for the same.  Cluster creation will take a few minutes to complete.
-    ```
+    ```bash
     # Create a 1 Node AKS cluster
     $ az aks create --resource-group myResourceGroup --name akscluster --node-count 1 --dns-name-prefix akslab --generate-ssh-keys --disable-rbac  --kubernetes-version "1.11.5"
     #
@@ -428,7 +428,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ```
 
 4.  Connect to the AKS cluster and initialize **Helm** package manager.
-    ```
+    ```bash
     # Configure kubectl to connect to the AKS cluster
     $ az aks get-credentials --resource-group myResourceGroup --name akscluster
     #
@@ -449,7 +449,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ```
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
-    ```
+    ```bash
     # Make sure you are in the *k8s-springboot-data-rest* directory.
     $ kubectl create -f k8s-scripts/dev-namespace.json 
     #
@@ -458,7 +458,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ```
 
 6.  Create a new Kubernetes context and associate it with the **development** namespace.  We will be deploying all our application artifacts into this namespace in subsequent steps.
-    ```
+    ```bash
     # Create the 'dev' context
     $ kubectl config set-context dev --cluster=akscluster --user=clusterUser_myResourceGroup_akscluster --namespace=development
     #
@@ -480,7 +480,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
 
     Then execute this shell script.  See below.
 
-    ```
+    ```bash
     # Change file permission to allow user to execute the script
     $ chmod 700 ./shell-scripts/acr-auth.sh
     #
@@ -490,13 +490,13 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ```
 
     At this point you will also want to save your Kube Configuation file to a known temporary location.  You will need this to properly setup your Kubernetes cluster in a subsequent lab.  To do this, in your Terminal, `cat` the kube config file and cut and paste it's contents into another file. Save this config file to a directory location on you local workstation/PC.
-    ```
-    cat ~/.kube/config
+    ```bash
+    $ cat ~/.kube/config
     ```
 
     It should appear similar to this
 
-    ```
+    ```YAML
     apiVersion: v1
     clusters:
     - cluster:
@@ -530,7 +530,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ![alt tag](./images/D-01.PNG)
 
 9.  Deploy the **MySQL** database container.
-    ```
+    ```bash
     # Make sure you are in the *k8s-springboot-data-rest* directory.
     $ kubectl create -f k8s-scripts/mysql-deploy.yaml
     #
@@ -542,12 +542,12 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     ![alt tag](./images/D-02.png)
 
     (Optional) You can login to the mysql container using the command below. Specify the correct value for the pod ID (Value under 'Name' column listed in the previous command output).  The password for the 'mysql' user is 'password'.
-    ```
+    ```bash
     $ kubectl exec <pod ID> -i -t -- mysql -u mysql -p sampledb
     ```
 
 10.  Deploy the **po-service** microservice container.
-     ```
+     ```bash
      # Make sure you are in the *k8s-springboot-data-rest* directory.
      $ kubectl create -f k8s-scripts/app-deploy.yaml
      #
@@ -704,7 +704,7 @@ Next, continue to explore other container solutions available on Azure.  Use the
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
 
 - Update the *Secret* object **mysql** in file *./k8s-scripts/mysql-deploy.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
-```
+```bash
 # Create Base64 encoded values for the MySQL server user name, password, root password and database name. Repeat this command to generate values for each property you want to change.
 $ echo "xxxx" | base64 -w 0
 # Then update the corresponding parameter value in the Secret object.
@@ -713,7 +713,7 @@ $ echo "xxxx" | base64 -w 0
 - Update the *./k8s-scripts/app-deploy.yaml* file.  Specify the correct value for the database name in the *ConfigMap* object **mysql-db-name** parameter **mysql.dbname** 
 
 - Update the *Secret* object **mysql-sql** in file *./k8s-scripts/app-deploy.yaml* file with appropriate values (replace 'xxxx' with actual values) by issuing the commands below.
-```
+```bash
 # Create Base64 encoded values for the MySQL server user name and password.
 $ echo "mysql.user=xxxx" | base64 -w 0
 $ echo "mysql.password=xxxx" | base64 -w 0
@@ -722,7 +722,7 @@ $ echo "mysql.password=xxxx" | base64 -w 0
 
 ### Troubleshooting
 - In case you created the **po-service** application artifacts in the wrong Kubernetes namespace (other than `development`), use the commands below to clean all API objects from the current namespace.  Then follow instructions in Section D starting Step 6 to create the API objects in the 'development' namespace.
-```
+```bash
 #
 # Delete replication controllers - mysql, po-service
 $ kubectl delete rc mysql
@@ -742,7 +742,7 @@ $ kubectl delete configmap mysql-db-name
 ```
 
 - In case you want to delete all API objects in the 'development' namespace and start over again, delete the 'development' namespace.  Also, delete the 'dev' context.  Then start from Section D Step 5 to create the 'development' namespace, create the API objects and deploy the microservices.
-```
+```bash
 # Make sure you are in the 'dev' context
 $ kubectl config current-context
 #
@@ -757,7 +757,7 @@ $ kubectl delete namespace development
 ```
 
 - A few useful Kubernetes commands.
-```
+```bash
 # List all user contexts
 $ kubectl config view
 #
