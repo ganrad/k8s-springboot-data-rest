@@ -1,6 +1,6 @@
 ##  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS)
 
-**Updates:**
+***Updates:***
 - **June 13th 2018:** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.  The list of supported regions for AKS can be found [here](https://docs.microsoft.com/en-us/azure/aks/container-service-quotas).
 - **Sep. 10th 2018:** Visual Studio Team Services has been renamed to [Azure DevOps Services](https://azure.microsoft.com/en-us/services/devops/).  Due to this recent change, for the remainder of this text, **VSTS**, **Visual Studio Team Services** and **Azure DevOps** are used interchangably to refer to *Microsoft's Open DevOps Platform*.
 
