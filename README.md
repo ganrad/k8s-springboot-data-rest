@@ -1,4 +1,4 @@
-#  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS)
+##  Build and deploy a Java Springboot microservice application on Azure Kubernetes Service (AKS)
 
 **Updates:**
 - **June 13th 2018:** [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) is generally available in 10 regions.  The list of supported regions for AKS can be found [here](https://docs.microsoft.com/en-us/azure/aks/container-service-quotas).
